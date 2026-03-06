@@ -4,11 +4,11 @@ import { createClient } from '@/utils/supabase/server';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
-  const mallId = searchParams.get('mall_id');
-  const state = searchParams.get('state'); // Typically contains user ID or session ID
+  const state = searchParams.get('state'); 
+  const mallId = state || searchParams.get('mall_id'); // We pass mallId in the state parameter
 
   if (!code || !mallId) {
-    return NextResponse.json({ error: 'Missing code or mall_id' }, { status: 400 });
+    return NextResponse.json({ error: 'Missing code or mall_id (state)' }, { status: 400 });
   }
 
   // TODO: Securely fetch from environment variables in production

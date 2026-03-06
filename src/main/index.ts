@@ -270,7 +270,7 @@ app.whenReady().then(() => {
       }
 
       // 1-Click License Check against the Next.js unified endpoint
-      const apiUrl = app.isPackaged ? 'https://wise-web.vercel.app/api/verify-license' : 'http://localhost:3000/api/verify-license';
+      const apiUrl = 'https://teamwise-sand.vercel.app/api/verify-license';
       
       const response = await fetch(apiUrl, {
         method: 'POST',

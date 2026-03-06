@@ -502,8 +502,8 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId }) => {
                                     return;
                                 }
                                 const clientId = 'hxHOk08wCdCv4QSzDL0JpA'; // WISE 통합 앱 Client ID
-                                const redirectUri = 'http://localhost:3000/api/market/cafe24/callback';
-                                const authUrl = `https://${cafe24Credentials.mallId}.cafe24api.com/api/v2/oauth/authorize?response_type=code&client_id=${clientId}&state=desktop&redirect_uri=${redirectUri}&scope=mall.read_product,mall.write_product,mall.read_category`;
+                                const redirectUri = 'https://teamwise-sand.vercel.app/api/market/cafe24/callback';
+                                const authUrl = `https://${cafe24Credentials.mallId}.cafe24api.com/api/v2/oauth/authorize?response_type=code&client_id=${clientId}&state=${cafe24Credentials.mallId}&redirect_uri=${redirectUri}&scope=mall.read_product,mall.write_product,mall.read_category`;
                                 window.electron.ipcRenderer.send('open-external-window', authUrl);
                             }}
                         >

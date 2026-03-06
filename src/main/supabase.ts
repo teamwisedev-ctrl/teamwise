@@ -53,7 +53,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
         // The most robust way in Electron is to use the standard Supabase Auth UI
         // hosted on your website, then capture the session token from local storage or cookie.
         
-        loginWin.loadURL('http://localhost:3000/login');
+        loginWin.loadURL('https://teamwise-sand.vercel.app/login');
 
         // Periodically check local storage or cookies to see if user logged in
         // In Next.js with Supabase SSR, a cookie like `sb-XXX-auth-token` is set.
@@ -66,7 +66,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
             try {
                 // Execute JS to grab the Supabase auth token from local storage if using client auth
                 // Or check cookies
-                const cookies = await session.defaultSession.cookies.get({ url: 'http://localhost:3000' });
+                const cookies = await session.defaultSession.cookies.get({ url: 'https://teamwise-sand.vercel.app' });
                 // Alternatively, we can just intercept the redirect to /admin!
                 // Since our web app redirects to /admin upon login, detecting /admin means success.
             } catch (e) {
@@ -80,7 +80,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
                 clearInterval(checkInterval);
                 
                 // User is authenticated. Let's pull the session cookie from the browser window.
-                const cookies = await session.defaultSession.cookies.get({ url: 'http://localhost:3000' });
+                const cookies = await session.defaultSession.cookies.get({ url: 'https://teamwise-sand.vercel.app' });
                 
                 // Due to SSR, Next.js holds the session cookies. 
                 // To get the user ID, we can inject a script to ask the page, or read the token.
