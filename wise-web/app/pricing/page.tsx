@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import TossPaymentWidget from "@/components/TossPaymentWidget";
 
 export default async function PricingPage() {
     const supabase = await createClient();
@@ -20,42 +21,9 @@ export default async function PricingPage() {
         subData = data;
     }
 
-    // Server Action for simulating a subscription purchase
-    async function subscribe(formData: FormData) {
-        'use server';
-        const planId = formData.get('planId') as string;
-
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            redirect("/login");
-        }
-
-        // Upsert a simulated active subscription using Admin privileges to bypass RLS
-        const { createClient: createSupabaseAdmin } = await import('@supabase/supabase-js');
-        const supabaseAdmin = createSupabaseAdmin(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
-
-        const { error } = await supabaseAdmin.from('subscriptions').upsert({
-            user_id: user.id,
-            status: 'active',
-            plan_id: planId,
-            current_period_start: new Date().toISOString(),
-            // Set expiration to 1 month or 1 year from now based on plan
-            current_period_end: new Date(new Date().setMonth(new Date().getMonth() + (planId === 'pro_yearly' ? 12 : 1))).toISOString(),
-        });
-
-        if (error) {
-            console.error("Subscription update failed:", error);
-            // In a real app we'd throw or return an error state here
-        }
-
-        revalidatePath('/admin');
-        redirect('/admin');
-    }
+    // We will use the client-side TossPaymentWidget instead of server actions for real payments
+    const userEmail = user?.email || "anonymous@wise.com";
+    const userName = user?.user_metadata?.full_name || "WISE User";
 
     return (
         <div className="container animate-fade-in" style={{ padding: '80px 24px', textAlign: 'center' }}>
@@ -71,88 +39,82 @@ export default async function PricingPage() {
             <div style={pricingGridStyles}>
                 {/* Free Tier */}
                 <div className="glass-panel animate-slide-up delay-100" style={pricingCardStyles}>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>🚀 Starter (Trial)</h3>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>🚀 Starter (Free)</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
-                        ₩0 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 14일</span>
+                        ₩0 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 평생 무료</span>
                     </div>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
-                        WISE의 모든 기능을 제한 없이<br />충분히 경험해보세요.
+                        기본 채널 연동과 제한된 볼륨으로<br />충분히 경험해보세요.
                     </p>
                     <ul style={featureListStyles}>
-                        <li>✔️ 다중 마켓 1:N 동기화 (제한없음)</li>
-                        <li>✔️ 무제한 상품 수집 및 등록</li>
-                        <li>✔️ 이미지 릴레이 파이프라인 지원</li>
-                        <li>✔️ 이메일 고객지원</li>
+                        <li>✔️ 네이버 스마트스토어 연동</li>
+                        <li>✔️ <b>카페24(자사몰) 무제한 연동</b></li>
+                        <li>✔️ 기본 소싱처 (도매토피아) 연동</li>
+                        <li>✔️ 월 동기화 최대 500건 제한</li>
                     </ul>
-                    {subData?.plan_id === 'trial_14days' ? (
-                        <button disabled className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
-                            이미 이용 중입니다
-                        </button>
-                    ) : (
-                        <form action={subscribe} style={{ marginTop: 'auto' }}>
-                            <input type="hidden" name="planId" value="trial_14days" />
-                            <button type="submit" className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem' }}>
-                                무료 체험 시작하기
-                            </button>
-                        </form>
-                    )}
+                    <button disabled className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
+                        기본 제공
+                    </button>
                 </div>
 
-                {/* Pro Tier */}
-                <div className="glass-panel animate-slide-up delay-200" style={{ ...pricingCardStyles, border: '2px solid var(--accent-primary)', transform: 'scale(1.05)', backgroundColor: 'rgba(20, 20, 22, 0.9)' }}>
-                    <div style={popularBadgeStyles}>가장 인기</div>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>⭐ Pro (월간)</h3>
+                {/* Coupang Add-on */}
+                <div className="glass-panel animate-slide-up delay-200" style={pricingCardStyles}>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>📦 쿠팡 무제한 연동권</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
-                        ₩49,000 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
+                        ₩9,900 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
                     </div>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
-                        본격적인 판매 자동화가 필요한<br />전문 셀러를 위한 플랜
+                        가장 폭발적인 트래픽을 자랑하는<br />쿠팡(Coupang) 전송 모듈 추가
                     </p>
                     <ul style={featureListStyles}>
-                        <li>✔️ Starter의 모든 기능 포함</li>
-                        <li>✔️ 무제한 상품 수집 및 등록</li>
-                        <li>✔️ IP 프록시 우회 지원 (예정)</li>
-                        <li>✔️ 1:1 우선 고객지원</li>
+                        <li>✔️ 쿠팡 상품 카테고리 자동 매핑</li>
+                        <li>✔️ 쿠팡 옵션 형태 자동 변환</li>
+                        <li>✔️ 쿠팡 배송비/출고지 관리 연동</li>
+                        <li>✔️ 무제한 쿠팡 스토어 계정 연결</li>
                     </ul>
-                    {subData?.plan_id === 'pro_monthly' ? (
+                    {subData?.plan_id === 'addon_coupang' ? (
                         <button disabled className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
                             이용 중인 플랜입니다
                         </button>
                     ) : (
-                        <form action={subscribe} style={{ marginTop: 'auto' }}>
-                            <input type="hidden" name="planId" value="pro_monthly" />
-                            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem' }}>
-                                월간 구독 결제하기 (테스트)
-                            </button>
-                        </form>
+                        <TossPaymentWidget
+                            planId="addon_coupang"
+                            amount={9900}
+                            orderName="쿠팡 무제한 멀티연동 모듈"
+                            customerEmail={userEmail}
+                            customerName={userName}
+                            buttonText="구매하기 (₩9,900/월)" />
                     )}
                 </div>
 
-                {/* Yearly Tier */}
-                <div className="glass-panel animate-slide-up delay-300" style={pricingCardStyles}>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>🔥 Pro (연간)</h3>
+                {/* Super Seller Unlimited */}
+                <div className="glass-panel animate-slide-up delay-300" style={{ ...pricingCardStyles, border: '2px solid var(--accent-primary)', transform: 'scale(1.05)', backgroundColor: 'rgba(20, 20, 22, 0.9)' }}>
+                    <div style={popularBadgeStyles}>가장 추천</div>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>⚡ 슈퍼셀러 무제한팩</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
-                        ₩39,000 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
+                        ₩19,900 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
                     </div>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
-                        1년 결제 시 20% 할인 혜택<br />(총 ₩468,000 / 년)
+                        월 500건 제한을 전면 해제하고<br />초고속 다중 스레드 업로드 제공
                     </p>
                     <ul style={featureListStyles}>
-                        <li>✔️ Pro 월간의 모든 기능 포함</li>
-                        <li>✔️ 2개월 분 요금 할인</li>
-                        <li>✔️ 신규 플랫폼 연동 시 우선 적용</li>
+                        <li>✔️ 월 상품 동기화 <b>무제한 해제</b></li>
+                        <li>✔️ 다중 스레드 속도 부스트 제공</li>
+                        <li>✔️ 대량 엑셀 다운로드 최적화</li>
+                        <li>✔️ 1:1 VIP 기술 지원</li>
                     </ul>
-                    {subData?.plan_id === 'pro_yearly' ? (
+                    {subData?.plan_id === 'pro_unlimited' ? (
                         <button disabled className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
                             이용 중인 플랜입니다
                         </button>
                     ) : (
-                        <form action={subscribe} style={{ marginTop: 'auto' }}>
-                            <input type="hidden" name="planId" value="pro_yearly" />
-                            <button type="submit" className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem' }}>
-                                연간 구독 결제하기 (테스트)
-                            </button>
-                        </form>
+                        <TossPaymentWidget
+                            planId="pro_unlimited"
+                            amount={19900}
+                            orderName="WISE 슈퍼셀러 무제한팩"
+                            customerEmail={userEmail}
+                            customerName={userName}
+                            buttonText="구독하기 (₩19,900/월)" />
                     )}
                 </div>
             </div>
