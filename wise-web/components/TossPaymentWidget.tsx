@@ -31,8 +31,8 @@ export default function TossPaymentWidget({
     const containerId = `payment-widget-${planId}`;
     const agreementId = `agreement-widget-${planId}`;
 
-    // TODO: Replace with real Toss Payments Client Key from environment variables
-    const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || "test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq";
+    // Use Toss Payments Widget Test Key from environment variables, or fallback to the official public Widget test key
+    const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
 
     // When modal opens, initialize the Toss SDK and render it into the DOM in a single asynchronous flow
     useEffect(() => {
