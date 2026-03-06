@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: Request) {
   try {
@@ -9,10 +9,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing mallId' }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false }
+    });
     
     // 1. Retrieve stored tokens from Supabase
-    const { data: credentials, error: dbError } = await supabase
+    const { data: credentials, error: dbError } = await supabaseAdmin
       .from('market_credentials')
       .select('*')
       .eq('market_type', 'cafe24')
@@ -64,7 +68,7 @@ export async function POST(request: Request) {
       const newRefreshToken = tokenData.refresh_token || credentials.refresh_token; 
       
       // Update DB with new tokens
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseAdmin
         .from('market_credentials')
         .update({
           access_token: newAccessToken,

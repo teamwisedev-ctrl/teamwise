@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -48,20 +48,20 @@ export async function GET(request: Request) {
 
     // Save tokens securely to Supabase associated with the user
     // In a real flow, 'state' might be a JWT or session identifier to link to the correct Supabase user
-    const supabase = await createClient();
-
-    // Verify user session
-    // (If the flow started from the Electron app, we might need a custom verification mechanism mapped via 'state')
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false }
+    });
     
     // For now, if no user is found in the current web session, just store it under the specific mall_id
     // and let the desktop app fetch it by mallId. Ideally, link it to the user's UUID.
     
     // Using a hypothetic 'market_credentials' table
-    const { error: dbError } = await supabase
+    const { error: dbError } = await supabaseAdmin
       .from('market_credentials')
       .upsert({
-        user_id: user?.id || null, // Best effort
+        user_id: null, // Best effort
         market_type: 'cafe24',
         mall_id: mallId,
         access_token,
