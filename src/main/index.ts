@@ -32,7 +32,7 @@ function createWindow(): void {
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
+    shell.openExternal(details.url).catch((err) => console.error('Failed to open external url:', err));
     return { action: 'deny' }
   })
 
@@ -221,8 +221,12 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.on('open-external-window', (_: unknown, url: string) => {
-    shell.openExternal(url);
+  ipcMain.on('open-external-window', async (_: unknown, url: string) => {
+    try {
+      await shell.openExternal(url);
+    } catch (err) {
+      console.error('Failed to open external window via IPC:', err);
+    }
   });
 
   // Cafe24 Handlers
@@ -260,7 +264,8 @@ app.whenReady().then(() => {
     try {
       const authClient = await authorize();
       
-      const accessToken = authClient.credentials.access_token;
+      const tokenResponse = await authClient.getAccessToken();
+      const accessToken = tokenResponse.token;
       if (!accessToken) {
          throw new Error('Google 서버와의 연결이 원활하지 않습니다.\n앱을 껐다가 다시 실행해 주세요.');
       }

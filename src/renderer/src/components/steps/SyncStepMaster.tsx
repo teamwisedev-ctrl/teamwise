@@ -494,20 +494,51 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId }) => {
                             </div>
                         </div>
                         <button
-                            className="secondary"
+                            className={cafe24Credentials.connected ? "success" : "secondary"}
                             style={{ width: '100%', padding: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
                             onClick={() => {
                                 if (!cafe24Credentials.mallId) {
                                     alert('먼저 카페24 쇼핑몰 아이디를 입력해주세요.');
                                     return;
                                 }
+                                if (cafe24Credentials.connected) return;
+
                                 const clientId = 'hxHOk08wCdCv4QSzDL0JpA'; // WISE 통합 앱 Client ID
                                 const redirectUri = 'https://teamwise-sand.vercel.app/api/market/cafe24/callback';
                                 const authUrl = `https://${cafe24Credentials.mallId}.cafe24api.com/api/v2/oauth/authorize?response_type=code&client_id=${clientId}&state=${cafe24Credentials.mallId}&redirect_uri=${redirectUri}&scope=mall.read_product,mall.write_product,mall.read_category`;
+
+                                // Open the browser
                                 window.electron.ipcRenderer.send('open-external-window', authUrl);
+
+                                // Show "connecting" state
+                                addLog(`카페24(${cafe24Credentials.mallId}) 연동 브라우저 창을 열었습니다. (잠시 나타났다 사라지는 것은 정상적인 자동 연결 과정입니다.)`);
+
+                                // Poll the server to check if the token has been saved successfully
+                                let attempts = 0;
+                                const pollInterval = setInterval(async () => {
+                                    attempts++;
+                                    try {
+                                        const res = await fetch(`https://teamwise-sand.vercel.app/api/market/cafe24/token`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ mallId: cafe24Credentials.mallId })
+                                        });
+                                        const data = await res.json();
+                                        if (data && data.access_token) {
+                                            setCafe24Credentials(prev => ({ ...prev, connected: true }));
+                                            clearInterval(pollInterval);
+                                            addLog(`✅ 카페24(${cafe24Credentials.mallId}) API 연동이 성공적으로 확정되었습니다!`);
+                                        }
+                                    } catch (e) {
+                                        // Ignore fetch errors during polling
+                                    }
+
+                                    // Stop polling after 2 minutes (120 attempts * 1s)
+                                    if (attempts > 120) clearInterval(pollInterval);
+                                }, 1500);
                             }}
                         >
-                            🔗 1초만에 쇼핑몰 연동하기
+                            {cafe24Credentials.connected ? "✅ 카페24 연동 완료" : "🔗 1초만에 쇼핑몰 연동하기"}
                         </button>
                     </div>
                 )}

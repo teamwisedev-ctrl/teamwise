@@ -84,8 +84,9 @@ export async function GET(request: Request) {
           <h2>연동 성공!</h2>
           <p>카페24 쇼핑몰(${mallId}) 권한 인증이 완료되었습니다. 창을 닫아주세요.</p>
           <script>
-            // Attempt to tell the opener or parent
-            window.close();
+            setTimeout(() => {
+              window.close();
+            }, 3000);
           </script>
         </body>
       </html>

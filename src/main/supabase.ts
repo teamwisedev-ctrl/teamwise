@@ -66,7 +66,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
             try {
                 // Execute JS to grab the Supabase auth token from local storage if using client auth
                 // Or check cookies
-                const cookies = await session.defaultSession.cookies.get({ url: 'https://teamwise-sand.vercel.app' });
+                await session.defaultSession.cookies.get({ url: 'https://teamwise-sand.vercel.app' });
                 // Alternatively, we can just intercept the redirect to /admin!
                 // Since our web app redirects to /admin upon login, detecting /admin means success.
             } catch (e) {
@@ -80,7 +80,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
                 clearInterval(checkInterval);
                 
                 // User is authenticated. Let's pull the session cookie from the browser window.
-                const cookies = await session.defaultSession.cookies.get({ url: 'https://teamwise-sand.vercel.app' });
+                await session.defaultSession.cookies.get({ url: 'https://teamwise-sand.vercel.app' });
                 
                 // Due to SSR, Next.js holds the session cookies. 
                 // To get the user ID, we can inject a script to ask the page, or read the token.

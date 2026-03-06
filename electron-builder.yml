@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: my-app
+appId: com.teamwise.wise
+productName: WISE
 directories:
   buildResources: build
 extraResources:
@@ -15,7 +15,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: my-app
+  executableName: WISE
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
