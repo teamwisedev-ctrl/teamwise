@@ -66,21 +66,41 @@ export default function TossPaymentWidget({
             return;
         }
 
-        try {
-            const paymentMethodsWidget = paymentWidget.renderPaymentMethods(
-                `#${containerId}`,
-                { value: amount },
-                { variantKey: 'DEFAULT' }
-            );
+        let mountTimer: NodeJS.Timeout;
 
-            // Allow the UI to render smoothly before enabling the purchase button
-            setTimeout(() => {
-                setIsWidgetLoaded(true);
-            }, 500);
+        const mountWidget = () => {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                // If the DOM element isn't ready yet, try again in 50ms
+                mountTimer = setTimeout(mountWidget, 50);
+                return;
+            }
 
-        } catch (error) {
-            console.error("Error rendering payment methods:", error);
-        }
+            try {
+                const paymentMethodsWidget = paymentWidget.renderPaymentMethods(
+                    `#${containerId}`,
+                    { value: amount },
+                    { variantKey: 'DEFAULT' }
+                );
+
+                // Allow the UI to render smoothly before enabling the purchase button
+                setTimeout(() => {
+                    setIsWidgetLoaded(true);
+                }, 500);
+
+            } catch (error) {
+                console.error("Error rendering payment methods:", error);
+            }
+        };
+
+        mountWidget();
+
+        return () => {
+            clearTimeout(mountTimer);
+            if (!isModalOpen) {
+                setIsWidgetLoaded(false);
+            }
+        };
 
     }, [isModalOpen, paymentWidget, amount, containerId]);
 
