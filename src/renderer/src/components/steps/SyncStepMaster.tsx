@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 
 interface SyncStepProps {
     masterSheetId: string;
+    activePlans?: string[];
 }
 
-export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId }) => {
+export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activePlans = [] }) => {
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncProgress, setSyncProgress] = useState(0);
     const [syncTotal, setSyncTotal] = useState(0);
@@ -427,9 +428,9 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId }) => {
                     <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#f8fafc' }}>전송할 타겟 마켓 선택 (1:N 다중 배포)</h3>
                     <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                         {[
-                            { id: 'naver', label: '네이버 스마트스토어', color: '#03C75A' },
-                            { id: 'cafe24', label: '카페24 (Cafe24)', color: '#000000' },
-                            { id: 'coupang', label: '쿠팡 (연동예정)', color: '#cb1400', disabled: true },
+                            { id: 'naver', label: '네이버 스마트스토어', color: '#03C75A', disabled: false },
+                            { id: 'cafe24', label: '카페24 (Cafe24)', color: '#000000', disabled: false },
+                            { id: 'coupang', label: activePlans.includes('addon_coupang') ? '쿠팡' : '🔒 쿠팡 (Add-on 필요)', color: '#cb1400', disabled: false },
                             { id: 'elevenst', label: '11번가 (연동예정)', color: '#FF0000', disabled: true }
                         ].map(market => (
                             <label key={market.id} style={{
@@ -441,7 +442,15 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId }) => {
                                 <input
                                     type="checkbox"
                                     checked={targetMarkets[market.id] || false}
-                                    onChange={(e) => setTargetMarkets(prev => ({ ...prev, [market.id]: e.target.checked }))}
+                                    onChange={(e) => {
+                                        if (market.id === 'coupang' && !activePlans.includes('addon_coupang')) {
+                                            if (window.confirm('쿠팡 연동은 [쿠팡 전용 확장팩] 구매가 필요한 기능입니다. 결제 페이지로 이동하시겠습니까?')) {
+                                                window.electron.ipcRenderer.send('open-external-window', 'https://teamwise-sand.vercel.app/pricing');
+                                            }
+                                            return;
+                                        }
+                                        setTargetMarkets(prev => ({ ...prev, [market.id]: e.target.checked }))
+                                    }}
                                     disabled={market.disabled}
                                     style={{ accentColor: market.color, width: '16px', height: '16px' }}
                                 />

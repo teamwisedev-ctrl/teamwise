@@ -285,7 +285,7 @@ app.whenReady().then(() => {
         throw new Error(result.error || '라이선스 확인 실패');
       }
 
-      return { success: true, email: result.email, tier: result.tier };
+      return { success: true, email: result.email, activePlans: result.activePlans || [] };
     } catch (error: any) {
       console.error('### GOOGLE AUTH CRASH ###', error);
       return { success: false, error: error.message };

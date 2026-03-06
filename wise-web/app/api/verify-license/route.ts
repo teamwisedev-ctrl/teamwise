@@ -67,40 +67,26 @@ export async function POST(request: Request) {
       }, { status: 403 });
     }
 
-    // 2b. Check the user's active subscription status
-    const { data: subscription, error: subError } = await supabaseAdmin
+    // 2b. Check the user's active subscription status(es) for Add-ons
+    const { data: subscriptions, error: subError } = await supabaseAdmin
       .from('subscriptions')
-      .select('status, plan_id')
+      .select('plan_id, status')
       .eq('user_id', profile.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+      .eq('status', 'active');
 
-    if (subError || !subscription) {
+    if (subError) {
       console.error('Subscription Query Error:', subError);
-      return NextResponse.json({ 
-        success: false, 
-        error: '라이선스 결제 내역을 찾을 수 없습니다. 웹사이트에서 구독을 완료해 주세요.' 
-      }, { status: 403 });
     }
+    
+    // Convert active subscriptions into an array of plan_ids
+    const activePlans = subscriptions ? subscriptions.map(sub => sub.plan_id) : [];
 
-    const { status, plan_id } = subscription;
-    // Allow if status is 'active', 'trial', 'trialing', or if the plan_id implies a trial
-    const isValid = status === 'active' || status === 'trial' || status === 'trialing' || plan_id?.includes('trial');
-
-    if (!isValid) {
-      return NextResponse.json({ 
-        success: false, 
-        error: `현재 구독 상태(${status})로는 데스크톱 앱을 이용할 수 없습니다. 요금제를 갱신해 주세요.` 
-      }, { status: 403 });
-    }
-
-    // 3. Return Success to Desktop
+    // 3. Return Success to Desktop (always success for Freemium model)
     return NextResponse.json({
       success: true,
       email: email,
-      tier: plan_id,
-      message: '라이선스 확인 성공',
+      activePlans: activePlans,
+      message: '보유 라이선스 정보 조회 성공',
     });
 
   } catch (error: any) {

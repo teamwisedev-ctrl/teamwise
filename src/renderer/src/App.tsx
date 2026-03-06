@@ -12,7 +12,7 @@ type SyncStatus = 'pending' | 'syncing' | 'success' | 'failed'
 function App(): React.JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [licenseTier, setLicenseTier] = useState<string | null>(null);
+  const [activePlans, setActivePlans] = useState<string[]>([]);
   const [logs, setLogs] = useState<string[]>([])
   const [sheetId, setSheetId] = useState<string | null>(null)
   const [sheetData, setSheetData] = useState<string[][]>([])
@@ -248,9 +248,9 @@ function App(): React.JSX.Element {
       if (googleRes.success) {
         addLog(`✅ 통합 인증 완료! (계정: ${googleRes.email})`)
         setUserEmail(googleRes.email);
-        if (googleRes.tier) {
-          addLog(`✨ 적용 완료된 요금제: ${googleRes.tier.toUpperCase()}`)
-          setLicenseTier(googleRes.tier);
+        if (googleRes.activePlans && googleRes.activePlans.length > 0) {
+          addLog(`✨ 적용 완료된 부가서비스: ${googleRes.activePlans.join(', ')}`)
+          setActivePlans(googleRes.activePlans);
         }
         setIsAuthenticated(true)
 
@@ -283,7 +283,7 @@ function App(): React.JSX.Element {
       await window.electron.ipcRenderer.invoke('google-logout');
       setIsAuthenticated(false);
       setUserEmail(null);
-      setLicenseTier(null);
+      setActivePlans([]);
       setMasterSheetId('');
       addLog('✅ 로그아웃 되었습니다.');
     } catch (error: unknown) {
@@ -827,7 +827,7 @@ function App(): React.JSX.Element {
                 )}
 
                 {syncMode === 'master' && (
-                  <SyncStepMaster masterSheetId={masterSheetId!} />
+                  <SyncStepMaster masterSheetId={masterSheetId!} activePlans={activePlans} />
                 )}
               </div>
             )}
