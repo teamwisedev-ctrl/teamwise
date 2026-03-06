@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { loadPaymentWidget, PaymentWidgetInstance } from '@tosspayments/payment-widget-sdk';
 
 interface TossPaymentWidgetProps {
@@ -22,96 +22,84 @@ export default function TossPaymentWidget({
     disabled = false,
     buttonText
 }: TossPaymentWidgetProps) {
-    const [paymentWidget, setPaymentWidget] = useState<PaymentWidgetInstance | null>(null);
+    const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null);
     const [isWidgetLoaded, setIsWidgetLoaded] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [orderId, setOrderId] = useState<string>('');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const containerId = `payment-widget-${planId}`;
+    const agreementId = `agreement-widget-${planId}`;
 
     // TODO: Replace with real Toss Payments Client Key from environment variables
     const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || "test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq";
 
+    // When modal opens, initialize the Toss SDK and render it into the DOM in a single asynchronous flow
     useEffect(() => {
-        // Generate a unique order ID once on mount to avoid impure function warnings during render
-        setOrderId(`order_${Math.random().toString(36).substring(2, 10)}_${Date.now()}`);
-
-        let isMounted = true;
-
-        const fetchPaymentWidget = async () => {
-            try {
-                // Initialize the widget with the customer key (can be 'ANONYMOUS' for testing or a unique user ID)
-                const customerKey = customerEmail ? customerEmail.replace(/[^a-zA-Z0-9-]/g, '_') : "ANONYMOUS";
-                const widget = await loadPaymentWidget(clientKey, customerKey);
-
-                if (isMounted) {
-                    setPaymentWidget(widget);
-                }
-            } catch (error) {
-                console.error("Failed to load Toss Payments Widget:", error);
-            }
-        };
-
-        fetchPaymentWidget();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [clientKey, customerEmail]);
-
-    useEffect(() => {
-        // Only render the payment widget when the modal is open
-        if (!isModalOpen || paymentWidget == null) {
+        if (!isModalOpen) {
+            // Cleanup on close to force a fresh render next time
+            setTimeout(() => {
+                setIsWidgetLoaded(false);
+            }, 0);
+            paymentWidgetRef.current = null;
             return;
         }
 
-        let mountTimer: NodeJS.Timeout;
+        // Generate a fresh unique order ID each time the modal opens
+        setTimeout(() => {
+            setOrderId(`order_${Math.random().toString(36).substring(2, 10)}_${Date.now()}`);
+        }, 0);
+        let isMounted = true;
 
-        const mountWidget = () => {
-            const container = document.getElementById(containerId);
-            if (!container) {
-                // If the DOM element isn't ready yet, try again in 50ms
-                mountTimer = setTimeout(mountWidget, 50);
-                return;
-            }
-
+        const initializeTossWidget = async () => {
             try {
-                const paymentMethodsWidget = paymentWidget.renderPaymentMethods(
+                // 1. Authenticate with SDK
+                const customerKey = customerEmail ? customerEmail.replace(/[^a-zA-Z0-9-]/g, '_') : "ANONYMOUS";
+                const paymentWidget = await loadPaymentWidget(clientKey, customerKey);
+
+                if (!isMounted) return;
+
+                // 2. Render Payment Methods inside the Modal
+                paymentWidget.renderPaymentMethods(
                     `#${containerId}`,
                     { value: amount },
                     { variantKey: 'DEFAULT' }
                 );
 
-                // Allow the UI to render smoothly before enabling the purchase button
-                setTimeout(() => {
-                    setIsWidgetLoaded(true);
-                }, 500);
+                // 3. Render Agreement UI (Required by Toss)
+                paymentWidget.renderAgreement(
+                    `#${agreementId}`,
+                    { variantKey: 'AGREEMENT' }
+                );
+
+                paymentWidgetRef.current = paymentWidget;
+                setIsWidgetLoaded(true);
 
             } catch (error) {
-                console.error("Error rendering payment methods:", error);
+                console.error("Failed to initialize Toss Payments:", error);
             }
         };
 
-        mountWidget();
+        // Enforce a tiny delay to ensure React has painted the modal DOM elements before querying them
+        const renderTimer = setTimeout(() => {
+            initializeTossWidget();
+        }, 100);
 
         return () => {
-            clearTimeout(mountTimer);
-            if (!isModalOpen) {
-                setIsWidgetLoaded(false);
-            }
+            isMounted = false;
+            clearTimeout(renderTimer);
         };
+    }, [isModalOpen, clientKey, customerEmail, amount, containerId, agreementId]);
 
-    }, [isModalOpen, paymentWidget, amount, containerId]);
 
     const handlePaymentRequest = async () => {
-        if (!paymentWidget) return;
+        if (!paymentWidgetRef.current) return;
 
         setIsProcessing(true);
 
         try {
             // Initiate the payment request
-            await paymentWidget.requestPayment({
+            await paymentWidgetRef.current.requestPayment({
                 orderId,
                 orderName,
                 customerName,
@@ -150,7 +138,7 @@ export default function TossPaymentWidget({
 
             {isModalOpen && (
                 <div style={modalBackdropStyles}>
-                    <div style={modalContentStyles} className="glass-panel">
+                    <div style={modalContentStyles} className="glass-panel animate-fade-in">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                             <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>결제 진행</h2>
                             <button
@@ -161,8 +149,15 @@ export default function TossPaymentWidget({
                             </button>
                         </div>
 
+                        {!isWidgetLoaded && (
+                            <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                                결제 모듈을 불러오는 중입니다...
+                            </div>
+                        )}
+
                         {/* Toss Payment Methods Widget mounts here */}
-                        <div id={containerId} style={{ minHeight: '300px', marginBottom: '16px', background: 'white', borderRadius: '8px' }} />
+                        <div id={containerId} style={{ background: 'white', borderRadius: '8px', minHeight: '300px' }} />
+                        <div id={agreementId} style={{ marginTop: '8px', marginBottom: '24px', background: 'white', borderRadius: '8px' }} />
 
                         <button
                             className="btn-primary"
@@ -176,7 +171,7 @@ export default function TossPaymentWidget({
                                 cursor: (!isWidgetLoaded || isProcessing) ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            {isProcessing ? '결제 및 등록 중...' : (!isWidgetLoaded ? '결제 수단 로딩 중...' : `${amount.toLocaleString()}원 결제하기`)}
+                            {isProcessing ? '결제 요청 중...' : `${amount.toLocaleString()}원 안전결제`}
                         </button>
                     </div>
                 </div>
