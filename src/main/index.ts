@@ -225,10 +225,6 @@ app.whenReady().then(() => {
     shell.openExternal(url);
   });
 
-  ipcMain.on('open-external-window', (_: unknown, url: string) => {
-    shell.openExternal(url);
-  });
-
   // Cafe24 Handlers
   ipcMain.handle('register-cafe24-product', async (_: unknown, credentials: any, payload: Cafe24ProductPayload) => {
     try {
