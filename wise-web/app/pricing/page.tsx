@@ -47,8 +47,8 @@ export default async function PricingPage() {
                         기본 채널 연동과 제한된 볼륨으로<br />충분히 경험해보세요.
                     </p>
                     <ul style={featureListStyles}>
-                        <li>✔️ 네이버 스마트스토어 연동</li>
-                        <li>✔️ <b>카페24(자사몰) 무제한 연동</b></li>
+                        <li>✔️ <b>카페24(자사몰) 단독 연동</b></li>
+                        <li style={{ color: 'var(--text-muted)' }}>❌ 네이버 스마트스토어 연동 불가</li>
                         <li>✔️ 기본 소싱처 (도매토피아) 연동</li>
                         <li>✔️ 월 동기화 최대 500건 제한</li>
                     </ul>
