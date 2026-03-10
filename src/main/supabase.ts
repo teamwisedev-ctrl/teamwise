@@ -117,3 +117,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
         });
     });
 }
+
+export function setupAuthHandlers() {
+    // Add setup logic here if needed
+}

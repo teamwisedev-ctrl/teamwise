@@ -13,6 +13,8 @@ declare global {
         invoke(channel: 'delete-smartstore-product', data: { credentials: any; channelProductNo: string }): Promise<{ success: boolean; result?: boolean; error?: string }>;
         invoke(channel: 'supabase-auth'): Promise<{ success: boolean; email?: string; error?: string }>;
         invoke(channel: 'scrape-category', url: string): Promise<{ success: boolean; links?: string[]; error?: string }>;
+        invoke(channel: 'ai-extract-category-keyword', productName: string, categoryPath: string[]): Promise<{ success: boolean; keyword?: string; error?: string }>;
+        invoke(channel: 'ai-calculate-margin', productName: string, finalPrice: number, originalPrice: number): Promise<{ success: boolean; suggestedPrice?: number; error?: string }>;
         invoke(channel: string, ...args: any[]): Promise<any>;
       }
     }

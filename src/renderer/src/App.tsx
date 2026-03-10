@@ -1,9 +1,12 @@
 import * as React from 'react'
 import { useState, useRef } from 'react'
+import { Rocket, ShieldCheck } from 'lucide-react';
 import { ActionLogs } from './components/ActionLogs';
 import { DataPrepStep, ScrapeMethod } from './components/steps/DataPrepStep';
 import { MarketSyncStep } from './components/steps/MarketSyncStep';
 import { SyncStepMaster } from './components/steps/SyncStepMaster';
+import { SettingsStep } from './components/steps/SettingsStep';
+import { OrderSyncStep } from './components/steps/OrderSyncStep';
 import { Sidebar, ViewType } from './components/Sidebar';
 
 type SyncStatus = 'pending' | 'syncing' | 'success' | 'failed'
@@ -12,6 +15,11 @@ type SyncStatus = 'pending' | 'syncing' | 'success' | 'failed'
 function App(): React.JSX.Element {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [licenseTier, setLicenseTier] = useState<'free' | 'pro'>('free');
+  const [usageInfo, setUsageInfo] = useState<{ currentMonthCount: number, limit: number | 'unlimited' }>({ currentMonthCount: 0, limit: 100 });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [betaMarketsInfo, setBetaMarketsInfo] = useState<any>({});
+
   const [activePlans, setActivePlans] = useState<string[]>([]);
   const [logs, setLogs] = useState<string[]>([])
   const [sheetId, setSheetId] = useState<string | null>(null)
@@ -32,7 +40,41 @@ function App(): React.JSX.Element {
 
 
   const [masterSheetId, setMasterSheetId] = useState<string>('');
+  const [categoryMasterSheetId, setCategoryMasterSheetId] = useState<string>('');
+  const [categoryMappingCache, setCategoryMappingCache] = useState<Record<string, { naver?: string, cafe24?: string, coupang?: string }>>({});
   const [syncMode, setSyncMode] = useState<'register' | 'master'>('register');
+
+  // Shared Authentication State for Markets
+  const [credentials, setCredentials] = useState({
+    clientId: localStorage.getItem('naverClientId') || '',
+    clientSecret: localStorage.getItem('naverClientSecret') || ''
+  });
+
+  const [cafe24Credentials, setCafe24Credentials] = useState({
+    mallId: localStorage.getItem('cafe24MallId') || '',
+    connected: false
+  });
+
+  React.useEffect(() => {
+    const savedMallId = localStorage.getItem('cafe24MallId');
+    if (savedMallId) {
+      // 백그라운드에서 카페24 연동 상태(토큰 유효성)를 자동 복구
+      fetch(`https://teamwise-sand.vercel.app/api/market/cafe24/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mallId: savedMallId })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.access_token) {
+            setCafe24Credentials(prev => ({ ...prev, connected: true }));
+          }
+        })
+        .catch(() => {
+          // Ignore network errors silently; user will just appear disconnected
+        });
+    }
+  }, []);
 
   const addLog = (message: string) => {
     setLogs((prev) => [...prev, message])
@@ -131,7 +173,18 @@ function App(): React.JSX.Element {
 
           // 2. 스마트 카테고리 매핑 (휴리스틱 & 폴백 로직)
           let categoryId = "50004393"; // 최후의 보루 기본값 (생활/주방)
-          addLog(`  분석 중인 카테고리 경로: ${response.data.categoryPath ? response.data.categoryPath.join(' > ') : '없음'}`);
+          const fullCategoryPath = response.data.categoryPath ? response.data.categoryPath.join(' > ') : '';
+          addLog(`  분석 중인 카테고리 경로: ${fullCategoryPath || '없음'}`);
+
+          let mappedFromCache = false;
+          if (fullCategoryPath) {
+            const cacheKey = `도매토피아::${fullCategoryPath}`;
+            if (categoryMappingCache[cacheKey] && categoryMappingCache[cacheKey].naver) {
+              categoryId = categoryMappingCache[cacheKey].naver!;
+              addLog(`  ✨ [마스터 DB 매핑 적중!] ➔ 네이버 카테고리 ID: ${categoryId} 즉시 적용`);
+              mappedFromCache = true;
+            }
+          }
 
           let searchKeyword = "";
           let fallbackKeyword = "";
@@ -161,33 +214,35 @@ function App(): React.JSX.Element {
             }
           }
 
-          addLog(`  🔍 네이버 카테고리 자동 검색 시도 중... (키워드: '${searchKeyword}')`);
-          try {
-            let catRes = await window.electron.ipcRenderer.invoke('search-categories', clientId, clientSecret, searchKeyword);
+          if (!mappedFromCache) {
+            addLog(`  🔍 네이버 카테고리 자동 검색 시도 중... (키워드: '${searchKeyword}')`);
+            try {
+              let catRes = await window.electron.ipcRenderer.invoke('search-categories', clientId, clientSecret, searchKeyword);
 
-            // 1차 검색 실패 & fallbackKeyword 가 있다면 2차 시도
-            if ((!catRes.success || !catRes.data || catRes.data.length === 0) && fallbackKeyword) {
-              addLog(`  ⚠️ 검색 실패. 상위 카테고리('${fallbackKeyword}')로 2차 검색을 시도합니다.`);
-              catRes = await window.electron.ipcRenderer.invoke('search-categories', clientId, clientSecret, fallbackKeyword);
-            }
+              // 1차 검색 실패 & fallbackKeyword 가 있다면 2차 시도
+              if ((!catRes.success || !catRes.data || catRes.data.length === 0) && fallbackKeyword) {
+                addLog(`  ⚠️ 검색 실패. 상위 카테고리('${fallbackKeyword}')로 2차 검색을 시도합니다.`);
+                catRes = await window.electron.ipcRenderer.invoke('search-categories', clientId, clientSecret, fallbackKeyword);
+              }
 
-            // 1/2차도 다 실패했다면 상품명 2어절로 최후 검색 시도
-            if (!catRes.success || !catRes.data || catRes.data.length === 0) {
-              const nameParts = response.data.name.split(' ');
-              const finalFallback = nameParts.slice(0, 2).join(' ').substring(0, 20);
-              addLog(`  ⚠️ 검색 결과 없음. 최후 안전망으로 상품명('${finalFallback}') 기반 검색을 시도합니다.`);
-              catRes = await window.electron.ipcRenderer.invoke('search-categories', clientId, clientSecret, finalFallback);
-            }
+              // 1/2차도 다 실패했다면 상품명 2어절로 최후 검색 시도
+              if (!catRes.success || !catRes.data || catRes.data.length === 0) {
+                const nameParts = response.data.name.split(' ');
+                const finalFallback = nameParts.slice(0, 2).join(' ').substring(0, 20);
+                addLog(`  ⚠️ 검색 결과 없음. 최후 안전망으로 상품명('${finalFallback}') 기반 검색을 시도합니다.`);
+                catRes = await window.electron.ipcRenderer.invoke('search-categories', clientId, clientSecret, finalFallback);
+              }
 
-            if (catRes.success && catRes.data && catRes.data.length > 0) {
-              categoryId = catRes.data[0].id.toString();
-              // 매핑 결과 시인성 좋게 로깅
-              addLog(`  [자동 카테고리 매핑 완료] ➔ 네이버 카테고리 [${catRes.data[0].name}] (ID: ${categoryId}) 적용 완료!`);
-            } else {
-              addLog(`  ❌ 모든 방식의 카테고리 매칭 실패. 기본값(${categoryId})으로 설정됩니다.`);
+              if (catRes.success && catRes.data && catRes.data.length > 0) {
+                categoryId = catRes.data[0].id.toString();
+                // 매핑 결과 시인성 좋게 로깅
+                addLog(`  [자동 카테고리 매핑 완료] ➔ 네이버 카테고리 [${catRes.data[0].name}] (ID: ${categoryId}) 적용 완료!`);
+              } else {
+                addLog(`  ❌ 모든 방식의 카테고리 매칭 실패. 기본값(${categoryId})으로 설정됩니다.`);
+              }
+            } catch {
+              addLog(`  ❌ 네이버 카테고리 검색 에러 발생. 기본값 사용.`);
             }
-          } catch {
-            addLog(`  ❌ 네이버 카테고리 검색 에러 발생. 기본값 사용.`);
           }
 
           const rowData = [
@@ -248,6 +303,11 @@ function App(): React.JSX.Element {
       if (googleRes.success) {
         addLog(`✅ 통합 인증 완료! (계정: ${googleRes.email})`)
         setUserEmail(googleRes.email);
+
+        if (googleRes.tier) setLicenseTier(googleRes.tier);
+        if (googleRes.usage) setUsageInfo(googleRes.usage);
+        if (googleRes.betaMarkets) setBetaMarketsInfo(googleRes.betaMarkets);
+
         if (googleRes.activePlans && googleRes.activePlans.length > 0) {
           addLog(`✨ 적용 완료된 부가서비스: ${googleRes.activePlans.join(', ')}`)
           setActivePlans(googleRes.activePlans);
@@ -262,6 +322,35 @@ function App(): React.JSX.Element {
           addLog(`✅ 마스터 DB 연결 완료! ID: ${masterRes.sheetId}`);
         } else {
           addLog(`⚠️ 마스터 DB 초기화 실패: ${masterRes.error}`);
+        }
+
+        // Category DB Connection
+        addLog('카테고리 매핑 마스터 시트를 병합 중입니다...');
+        const catRes = await window.electron.ipcRenderer.invoke('get-or-create-category-master-sheet');
+        if (catRes.success && catRes.sheetId) {
+          setCategoryMasterSheetId(catRes.sheetId);
+          addLog(`✅ 카테고리 마스터 DB 연결 완료! ID: ${catRes.sheetId}`);
+
+          const catDataRes = await window.electron.ipcRenderer.invoke('read-sheet', catRes.sheetId, 'A2:F');
+          if (catDataRes.success && catDataRes.data) {
+            const newCache: Record<string, { naver?: string, cafe24?: string, coupang?: string }> = {};
+            catDataRes.data.forEach((row: string[]) => {
+              const vendor = row[0]?.trim() || '';
+              const catName = row[1]?.trim() || '';
+              if (vendor && catName) {
+                const key = `${vendor}::${catName}`;
+                newCache[key] = {
+                  naver: row[2]?.trim(),
+                  cafe24: row[3]?.trim(),
+                  coupang: row[4]?.trim()
+                };
+              }
+            });
+            setCategoryMappingCache(newCache);
+            addLog(`✅ ${Object.keys(newCache).length}개의 카테고리 매핑 캐시 로드 완료`);
+          }
+        } else {
+          addLog(`⚠️ 카테고리 마스터 DB 초기화 실패: ${catRes.error}`);
         }
 
       } else {
@@ -388,7 +477,7 @@ function App(): React.JSX.Element {
     }
   }
 
-  const handleSyncProducts = async (targetMarkets: string[]) => {
+  const handleSyncProducts = async (targetMarkets: string[], selectedCafe24CategoryNo?: number) => {
     if (sheetData.length === 0) {
       addLog('메모리에 상품 데이터가 없습니다. 먼저 [등록할 상품 시트에서 가져오기]를 실행해주세요.');
       return;
@@ -401,6 +490,14 @@ function App(): React.JSX.Element {
     if (itemsCount <= 0) {
       addLog('유효한 상품 데이터가 없습니다.');
       return;
+    }
+
+    if (licenseTier === 'free' && usageInfo.limit !== 'unlimited') {
+      if ((usageInfo.currentMonthCount + itemsCount) > (usageInfo.limit as number)) {
+        alert(`🚨 전송 한도 초과: 무료 플랜은 월 ${usageInfo.limit}건까지만 전송 가능합니다.\n(현재 누적: ${usageInfo.currentMonthCount}건, 시도: ${itemsCount}건)\n\n제한 없이 무제한으로 등록하시려면 Pro 플랜으로 업그레이드 해주세요!`);
+        addLog('❌ 월 무료 전송 한도 초과로 전송이 취소되었습니다.');
+        return;
+      }
     }
 
     addLog(`총 ${itemsCount}개 상품의 연동을 시작합니다...`);
@@ -428,17 +525,28 @@ function App(): React.JSX.Element {
       }
     }
 
-    const clientId = '4aTjpvduCQkMgmJjioSzFK';
-    const clientSecret = '$2a$04$UNqs4AJrZASKpHqfUFGxOe';
+    // Determine target environments from global state
+    const clientId = credentials.clientId;
+    const clientSecret = credentials.clientSecret;
+    const cafe24MallId = cafe24Credentials.mallId;
 
-    const cafe24MallId = localStorage.getItem('cafe24MallId') || '';
-    const cafe24ClientId = localStorage.getItem('cafe24ClientId') || '';
-    const cafe24ClientSecret = localStorage.getItem('cafe24ClientSecret') || '';
-
-    if (targetMarkets.includes('cafe24') && (!cafe24MallId || !cafe24ClientId || !cafe24ClientSecret)) {
+    if (targetMarkets.includes('cafe24') && (!cafe24MallId || !cafe24Credentials.connected)) {
       addLog('에러: 카페24 API 인증 정보가 누락되었습니다. 1:N 설정(스토어 로고 클릭)에서 기입해주세요.');
       return;
     }
+
+    if (targetMarkets.includes('smartstore') && (!clientId || !clientSecret)) {
+      addLog('에러: 네이버 스마트스토어 API 인증 정보가 누락되었습니다. 설정에서 기입해주세요.');
+      return;
+    }
+
+    // --- Cafe24 Selected Category ---
+    const defaultCafe24CategoryNo: number | null = selectedCafe24CategoryNo || null;
+    if (targetMarkets.includes('cafe24')) {
+      if (defaultCafe24CategoryNo) addLog(`적용할 카페24 기본 카테고리 ID: ${defaultCafe24CategoryNo}`);
+      else addLog('⚠️ 카페24 ' + (defaultCafe24CategoryNo ? '기본 매핑 진행' : '지정된 카테고리 없음. 미분류로 전송됨.'));
+    }
+    // ----------------------------------------
 
     // Initialize statuses for all valid rows to pending
     const initialStatuses: { [rowIdx: number]: { status: SyncStatus, message: string } } = { ...syncStatuses };
@@ -462,7 +570,7 @@ function App(): React.JSX.Element {
 
       // Phase 4: Apply Pricing Margin Algorithm (Round to nearest 10 won)
       const payloadRow = [...row];
-      const originalPrice = parseInt(payloadRow[4] || '0', 10);
+      const originalPrice = parseInt((payloadRow[4] || '0').replace(/,/g, ''), 10);
       const rawFinalPrice = originalPrice * (1 + marginRate / 100) + extraShippingCost;
       const finalPrice = Math.floor(rawFinalPrice / 10) * 10;
       payloadRow[4] = finalPrice.toString();
@@ -484,8 +592,8 @@ function App(): React.JSX.Element {
 
       // Phase 5: Lazy Image Uploading to Naver CDN
       const currentImageUrl = payloadRow[3];
-      // 도매토피아 URL이거나 아직 shop1.phinf.naver.net로 변환되지 않은 경우
-      if (currentImageUrl && !currentImageUrl.includes('shop1.phinf.naver.net')) {
+      // 스마트스토어 연동 필수: 도매토피아 URL이거나 아직 shop1.phinf.naver.net로 변환되지 않은 경우
+      if (targetMarkets.includes('smartstore') && currentImageUrl && !currentImageUrl.includes('shop1.phinf.naver.net')) {
         addLog(`[Lazy Upload] ${i}번째 상품 ➔ 이미지 네이버 CDN 업로드 중...`);
         try {
           const uploadRes = await window.electron.ipcRenderer.invoke('upload-naver-image', clientId, clientSecret, currentImageUrl);
@@ -508,6 +616,8 @@ function App(): React.JSX.Element {
       // 1:N Distibution Logic
       const marketLogMsgs: string[] = [];
       let allSuccess = true;
+      let itemCreated = false;
+      let itemUpdated = false;
 
       // [1] Naver SmartStore Target
       if (targetMarkets.includes('smartstore')) {
@@ -522,10 +632,10 @@ function App(): React.JSX.Element {
           if (response.success) {
             marketLogMsgs.push('스마스스토어(성공)');
             if (isUpdate) {
-              updateCount++;
+              itemUpdated = true;
               addLog(`✅ ${i}번째 상품 스토어 [수정] 성공! (상품번호: ${response.channelProductNo})`);
             } else {
-              newRegisterCount++;
+              itemCreated = true;
               addLog(`✅ ${i}번째 상품 스토어 [신규등록] 성공! (채널상풍번호: ${response.channelProductNo})`);
             }
 
@@ -581,27 +691,32 @@ function App(): React.JSX.Element {
               display_state: 'T',
               selling_state: 'T',
               product_name: payloadRow[1],
-              price: finalPrice,
-              retail_price: finalPrice,
-              supply_price: parseInt(payloadRow[2] || '0', 10),
+              price: finalPrice.toString(),
+              retail_price: finalPrice.toString(),
+              supply_price: originalPrice.toString(),
               summary_description: payloadRow[1],
               simple_description: payloadRow[1],
-              description: payloadRow[5] || payloadRow[1],
-              detail_image: payloadRow[3],
+              description: payloadRow[2] || payloadRow[1],
+              detail_image: row[3],
               custom_product_code: uniqueKey, // Our master DB ItemCode
-              origin_classification: 'T', // Domestic
-              origin_place_no: 494, // Placeholder for origin
+              // Origin fields removed to avoid mismatch errors
               has_option: (payloadRow[6] && payloadRow[7]) ? 'T' : 'F',
-              shipping_fee_type: 'T'
+              shipping_fee_type: 'T',
+              ...(defaultCafe24CategoryNo ? { category: [{ category_no: defaultCafe24CategoryNo, recommend: 'F', new: 'F' }] } : {})
             }
           };
 
           const cafe24Response = await window.electron.ipcRenderer.invoke('register-cafe24-product', {
-            mallId: cafe24MallId, clientId: cafe24ClientId, clientSecret: cafe24ClientSecret
+            mallId: cafe24Credentials.mallId
           }, cafe24Payload);
 
           if (cafe24Response.success) {
             marketLogMsgs.push('카페24(성공)');
+
+            // As of now Cafe24 only registers new products in this flow
+            if (isUpdate) itemUpdated = true; // Still mark as updated if exist in master DB mapping
+            else itemCreated = true;
+
             addLog(`✅ ${i}번째 상품 카페24 [신규등록] 성공! (상품번호: ${cafe24Response.productNo})`);
             // Phase 6.5: Sync Cafe24 Product ID to Google Sheets if possible.
             // For now, logging guarantees success visibility. Future update will write back to sheet.
@@ -630,6 +745,16 @@ function App(): React.JSX.Element {
         ...prev,
         [i]: { status: allSuccess ? 'success' : 'failed', message: marketLogMsgs.join(' | ') }
       }));
+
+      // Increment total counts based on if AT LEAST ONE market succeeded
+      if (itemCreated) newRegisterCount++;
+      if (itemUpdated) updateCount++;
+
+      // Phase 7: Rate Limit Delay (Cafe24 Leaky Bucket 2req/s)
+      if (targetMarkets.includes('cafe24') && i < sheetData.length - 1) {
+        addLog(`⏳ (Rate Limit 방어 중: 다음 상품까지 1.5초 대기...)`);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
     }
 
     addLog(`✨ 모든 연동 작업이 완료되었습니다! (신규 등록: ${newRegisterCount}건, 정보 수정: ${updateCount}건)`);
@@ -692,6 +817,12 @@ function App(): React.JSX.Element {
   const handleOpenSheet = async () => {
     if (!sheetId) return;
     const url = `https://docs.google.com/spreadsheets/d/${sheetId}/edit`;
+    await window.electron.ipcRenderer.invoke('open-external', url);
+  }
+
+  const handleOpenCategorySheet = async () => {
+    if (!categoryMasterSheetId) return;
+    const url = `https://docs.google.com/spreadsheets/d/${categoryMasterSheetId}/edit`;
     await window.electron.ipcRenderer.invoke('open-external', url);
   }
 
@@ -790,7 +921,9 @@ function App(): React.JSX.Element {
                       boxShadow: syncMode === 'register' ? '0 2px 8px rgba(0, 0, 0, 0.08)' : 'none'
                     }}
                   >
-                    🚀 마켓 일괄 등록 (1:N 배포)
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Rocket size={18} /> 마켓 일괄 등록 (1:N 배포)
+                    </div>
                   </button>
                   <button
                     onClick={() => setSyncMode('master')}
@@ -807,7 +940,9 @@ function App(): React.JSX.Element {
                       boxShadow: syncMode === 'master' ? '0 2px 8px rgba(0, 0, 0, 0.08)' : 'none'
                     }}
                   >
-                    🛡️ 마스터 DB 동기화 및 모니터링
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <ShieldCheck size={18} /> 마스터 DB 동기화 및 모니터링
+                    </div>
                   </button>
                 </div>
 
@@ -823,29 +958,47 @@ function App(): React.JSX.Element {
                     extraShippingCost={extraShippingCost}
                     setExtraShippingCost={setExtraShippingCost}
                     masterSheetId={masterSheetId!}
+                    licenseTier={licenseTier}
+                    betaMarketsInfo={betaMarketsInfo}
+                    credentials={credentials}
+                    cafe24Credentials={cafe24Credentials}
                   />
                 )}
 
                 {syncMode === 'master' && (
-                  <SyncStepMaster masterSheetId={masterSheetId!} activePlans={activePlans} />
+                  <SyncStepMaster
+                    masterSheetId={masterSheetId!}
+                    activePlans={activePlans}
+                    licenseTier={licenseTier}
+                    betaMarketsInfo={betaMarketsInfo}
+                    credentials={credentials}
+                    cafe24Credentials={cafe24Credentials}
+                  />
                 )}
               </div>
             )}
 
             {currentView === 'ORDERS' && (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#718096' }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
-                <h3 style={{ margin: '0 0 8px 0', color: '#2d3748' }}>주문 자동 수집 및 처리</h3>
-                <p style={{ margin: 0 }}>각 마켓의 신규 주문을 수집하여 발주서 포맷으로 출력하거나 마스터 DB에 기록합니다. (준비 중 항목)</p>
-              </div>
+              <OrderSyncStep
+                addLog={addLog}
+                licenseTier={licenseTier}
+                betaMarketsInfo={betaMarketsInfo}
+                credentials={credentials}
+                cafe24Credentials={cafe24Credentials}
+              />
             )}
 
             {currentView === 'SETTINGS' && (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#718096' }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚙️</div>
-                <h3 style={{ margin: '0 0 8px 0', color: '#2d3748' }}>다중 마켓 인증 및 환경 설정</h3>
-                <p style={{ margin: 0 }}>스마트스토어, 쿠팡, 셀러툴 등 각 연동 서비스의 API 키와 배송지 정보를 통합 관리합니다. (준비 중 항목)</p>
-              </div>
+              <SettingsStep
+                credentials={credentials}
+                setCredentials={setCredentials}
+                cafe24Credentials={cafe24Credentials}
+                setCafe24Credentials={setCafe24Credentials}
+                addLog={addLog}
+                categoryMasterSheetId={categoryMasterSheetId}
+                handleOpenCategorySheet={handleOpenCategorySheet}
+                licenseTier={licenseTier}
+              />
             )}
           </div>
 

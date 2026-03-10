@@ -2,17 +2,19 @@ import React from 'react';
 
 export type ViewType = 'SOURCING' | 'SYNC' | 'ORDERS' | 'SETTINGS';
 
+import { DownloadCloud, Rocket, ShoppingCart, Settings } from 'lucide-react';
+
 interface SidebarProps {
     currentView: ViewType;
     setCurrentView: (view: ViewType) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView }) => {
-    const menuItems: { id: ViewType; label: string; icon: string }[] = [
-        { id: 'SOURCING', label: '상품 수집 (소싱)', icon: '📦' },
-        { id: 'SYNC', label: '마켓 연동 (배포)', icon: '🚀' },
-        { id: 'ORDERS', label: '주문 수집', icon: '📝' },
-        { id: 'SETTINGS', label: '설정', icon: '⚙️' }
+    const menuItems: { id: ViewType; label: string; icon: React.ReactNode }[] = [
+        { id: 'SOURCING', label: 'B2B 상품 소싱', icon: <DownloadCloud size={18} /> },
+        { id: 'SYNC', label: '1:N 다중 마켓 배포', icon: <Rocket size={18} /> },
+        { id: 'ORDERS', label: '통합 주문 관리', icon: <ShoppingCart size={18} /> },
+        { id: 'SETTINGS', label: '연동 및 환경 설정', icon: <Settings size={18} /> }
     ];
 
     return (
@@ -38,7 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView })
                     alignItems: 'center',
                     gap: '12px'
                 }}>
-                    <span style={{ fontSize: '28px' }}>🧭</span>
+                    <span style={{ fontSize: '28px' }}><Rocket size={28} color="#4299e1" /></span>
                     WISE<span style={{ color: '#4299e1' }}>.</span>
                 </h1>
                 <p style={{ color: '#718096', fontSize: '13px', margin: '4px 0 0 0', fontWeight: '500' }}>Multi-Market Hub</p>
@@ -52,8 +54,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView })
                         style={{
                             display: 'flex',
                             alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            width: '100%',
                             gap: '12px',
-                            padding: '14px 16px',
+                            padding: '14px 20px',
                             borderRadius: '12px',
                             border: 'none',
                             backgroundColor: currentView === item.id ? '#4299e1' : 'transparent',

@@ -36,10 +36,11 @@ export async function authorize(): Promise<Auth.OAuth2Client> {
     }
 }
 
-function getNewToken(oAuth2Client: Auth.OAuth2Client): Promise<Auth.OAuth2Client> {
+export function getNewToken(oAuth2Client: Auth.OAuth2Client): Promise<Auth.OAuth2Client> {
     return new Promise((resolve, reject) => {
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
+            prompt: 'consent',
             scope: [
                 'https://www.googleapis.com/auth/spreadsheets',
                 'https://www.googleapis.com/auth/drive.file',

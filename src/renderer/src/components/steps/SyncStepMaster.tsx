@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
+import { RefreshCcw, ShieldCheck, Database, Trash2, Coins, PlayCircle, Rocket, Zap } from 'lucide-react';
 
 interface SyncStepProps {
     masterSheetId: string;
     activePlans?: string[];
+    licenseTier: 'free' | 'pro';
+    betaMarketsInfo: Record<string, { isBeta: boolean; daysLeft: number }>;
+    credentials: { clientId: string, clientSecret: string };
+    cafe24Credentials: { mallId: string, connected: boolean };
 }
 
-export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activePlans = [] }) => {
+export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activePlans = [], licenseTier, betaMarketsInfo = {}, credentials, cafe24Credentials }) => {
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncProgress, setSyncProgress] = useState(0);
     const [syncTotal, setSyncTotal] = useState(0);
@@ -18,42 +23,14 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
 
     // Multi-Market Selection States
     const [targetMarkets, setTargetMarkets] = useState<{ [key: string]: boolean }>({
-        naver: true,
-        cafe24: false,
+        naver: false,
+        cafe24: true,
         coupang: false,
         elevenst: false
     });
 
-    const [credentials, setCredentials] = useState({
-        clientId: localStorage.getItem('naverClientId') || '',
-        clientSecret: localStorage.getItem('naverClientSecret') || ''
-    });
-
-    const [cafe24Credentials, setCafe24Credentials] = useState({
-        mallId: localStorage.getItem('cafe24MallId') || '',
-        connected: false // Will poll or set via IPC in advanced implementation
-    });
-
     const addLog = (msg: string) => {
         setSyncLogs(prev => [...prev, msg]);
-    };
-
-    const handleCredentialsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setCredentials(prev => {
-            const newCreds = { ...prev, [name]: value };
-            localStorage.setItem(name === 'clientId' ? 'naverClientId' : 'naverClientSecret', value);
-            return newCreds;
-        });
-    };
-
-    const handleCafe24CredentialsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setCafe24Credentials(prev => {
-            const newCreds = { ...prev, [name]: value };
-            if (name === 'mallId') localStorage.setItem('cafe24MallId', value);
-            return newCreds;
-        });
     };
 
     const handleSync = async () => {
@@ -115,6 +92,17 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
             })).filter(p => p.channelProductNo && !p.itemCode.includes('[스토어삭제됨]') && !p.vendor.includes('[스토어삭제됨]'));
 
             const total = masterProducts.length;
+
+            if (total > 500 && !activePlans.includes('pro_unlimited')) {
+                addLog(`⚠️ 스타터 요금제(무료)는 1회 최대 500건까지만 동기화가 가능합니다. 현재 ${total}건 감지됨.`);
+                addLog('⚠️ 제한 없는 고속 1:N 씽크를 원하시면 [슈퍼셀러 무제한팩]을 구독해주세요!');
+                if (window.confirm(`스타터 요금제는 최대 500건까지만 동기화됩니다.\n결제 페이지로 이동하여 [슈퍼셀러 무제한팩]으로 업그레이드 하시겠습니까?`)) {
+                    window.electron.ipcRenderer.send('open-external-window', 'https://teamwise-sand.vercel.app/pricing');
+                }
+                setIsSyncing(false);
+                return;
+            }
+
             setSyncTotal(total);
             addLog(`총 ${total}개의 상품을 네이버 스마트스토어와 대조합니다.`);
 
@@ -139,8 +127,9 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                         });
                         addLog(`  ✅ 스마트스토어 판매삭제 완료`);
                         deletedCount++;
-                    } catch (err: any) {
-                        addLog(`  ❌ 판매삭제 실패: ${String(err)}`);
+                    } catch (err: unknown) {
+                        const errMsg = err instanceof Error ? err.message : String(err);
+                        addLog(`  ❌ 판매삭제 실패: ${errMsg}`);
                         errorCount++;
                     }
                     continue;
@@ -197,8 +186,9 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                         skipCount++;
                     }
 
-                } catch (err: any) {
-                    addLog(`❌ 파악 실패 ${productDesc}: ${String(err)}`);
+                } catch (err: unknown) {
+                    const errMsg = err instanceof Error ? err.message : String(err);
+                    addLog(`❌ 파악 실패 ${productDesc}: ${errMsg}`);
                     errorCount++;
                 }
             }
@@ -206,8 +196,9 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
             addLog(`\n🎉 씽크 작업이 모두 완료되었습니다!`);
             addLog(`결과: 상태복원 ${successCount}건, 유지 ${skipCount}건, DB청소/스토어삭제 ${deletedCount}건, 실패 ${errorCount}건`);
 
-        } catch (err: any) {
-            addLog(`❌ 동기화 중 오류가 발생했습니다: ${String(err)}`);
+        } catch (err: unknown) {
+            const errMsg = err instanceof Error ? err.message : String(err);
+            addLog(`❌ 동기화 중 오류가 발생했습니다: ${errMsg}`);
         } finally {
             setIsSyncing(false);
         }
@@ -262,6 +253,17 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
             const dometopiaProducts = masterProducts.filter(p => p.vendor === '도매토피아');
 
             const total = dometopiaProducts.length;
+
+            if (total > 500 && !activePlans.includes('pro_unlimited')) {
+                addLog(`⚠️ 스타터 요금제(무료)는 1회 최대 500건까지만 조회 및 동기화가 가능합니다. 현재 ${total}건 감지됨.`);
+                addLog('⚠️ 제한 없는 고속 1:N 씽크를 원하시면 [슈퍼셀러 무제한팩]을 구독해주세요!');
+                if (window.confirm(`스타터 요금제는 최대 500건까지만 동기화됩니다.\n결제 페이지로 이동하여 [슈퍼셀러 무제한팩]으로 업그레이드 하시겠습니까?`)) {
+                    window.electron.ipcRenderer.send('open-external-window', 'https://teamwise-sand.vercel.app/pricing');
+                }
+                setIsSyncing(false);
+                return;
+            }
+
             setSyncTotal(total);
             addLog(`총 ${total}개의 도매토피아 상품에 대해 가격/단종 정밀 감시를 시작합니다.`);
 
@@ -331,8 +333,9 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                         }
                     }
 
-                } catch (err: any) {
-                    addLog(`  ❌ 처리 실패: ${String(err)}`);
+                } catch (err: unknown) {
+                    const errMsg = err instanceof Error ? err.message : String(err);
+                    addLog(`  ❌ 처리 실패: ${errMsg}`);
                     errorCount++;
                 }
 
@@ -342,8 +345,9 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
 
             addLog(`\n🎉 도매토피아 자동 모니터링이 완료되었습니다!`);
             addLog(`결과: 가격 갱신/유지 ${successCount}건, 품절처리 ${outOfStockCount}건, 오류 ${errorCount}건`);
-        } catch (err: any) {
-            addLog(`❌ 동기화 중 오류가 발생했습니다: ${String(err)}`);
+        } catch (err: unknown) {
+            const errMsg = err instanceof Error ? err.message : String(err);
+            addLog(`❌ 동기화 중 오류가 발생했습니다: ${errMsg}`);
         } finally {
             setIsSyncing(false);
         }
@@ -361,7 +365,9 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                         borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
                     }}
                 >
-                    🧹 스토어 삭제/상태 일치화
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <Trash2 size={16} /> 스토어 삭제/상태 일치화
+                    </div>
                 </button>
                 <button
                     onClick={() => setActiveTab('monitorSync')}
@@ -371,14 +377,16 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                         borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
                     }}
                 >
-                    🛡️ 도매가/단종 자동 모니터링
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <ShieldCheck size={16} /> 도매가/단종 자동 모니터링
+                    </div>
                 </button>
             </div>
 
             <div className="glass-panel" style={{ marginBottom: '24px' }}>
                 {activeTab === 'statusSync' ? (
                     <>
-                        <div className="panel-title">🔄 스마트스토어 - 마스터 DB 씽크 맞추기</div>
+                        <div className="panel-title"><RefreshCcw size={20} color="#3b82f6" style={{ marginRight: '8px' }} /> 스마트스토어 - 마스터 DB 씽크 맞추기</div>
                         <p style={{ color: '#cbd5e1', marginBottom: '24px', fontSize: '15px', lineHeight: '1.6' }}>
                             구글 드라이브에 안전하게 보관된 <b>[WISE] 내 상품 마스터 DB</b>의 기록을
                             단일 진실 공급원(Source of Truth)으로 삼아,
@@ -387,7 +395,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                     </>
                 ) : (
                     <>
-                        <div className="panel-title" style={{ color: '#34d399' }}>🛡️ 도매토피아 자동 가격/단종 모니터링</div>
+                        <div className="panel-title" style={{ color: '#34d399' }}><ShieldCheck size={20} style={{ marginRight: '8px' }} /> 도매토피아 자동 가격/단종 모니터링</div>
                         <p style={{ color: '#cbd5e1', marginBottom: '24px', fontSize: '15px', lineHeight: '1.6' }}>
                             마스터 DB에 등록된 도매토피아 상품들의 <b>현재 도매상태(가격 변동, 단종/품절)</b>를 빠르게 조회하여,
                             스마트스토어의 판매가격과 판매상태를 실시간으로 업데이트합니다.
@@ -406,7 +414,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                     </div>
                 ) : (
                     <div style={{ background: 'var(--color-surface-elevated)', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '16px', marginBottom: '24px' }}>
-                        <div style={{ fontWeight: 600, color: '#34d399', marginBottom: '16px' }}>💰 일괄 적용할 가격 산정 공식 (마진율 + 마진)</div>
+                        <div style={{ fontWeight: 600, color: '#34d399', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}><Coins size={16} /> 일괄 적용할 가격 산정 공식 (마진율 + 마진)</div>
                         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                             <div style={{ flex: 1 }}>
                                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: '#94a3b8' }}>마진율 (%)</label>
@@ -423,134 +431,55 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                     </div>
                 )}
 
-                {/* 1:N Multi-Market Target Selection */}
                 <div style={{ marginBottom: '24px', padding: '16px', background: 'var(--color-surface-elevated)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
                     <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#f8fafc' }}>전송할 타겟 마켓 선택 (1:N 다중 배포)</h3>
                     <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                         {[
-                            { id: 'naver', label: '네이버 스마트스토어', color: '#03C75A', disabled: false },
-                            { id: 'cafe24', label: '카페24 (Cafe24)', color: '#000000', disabled: false },
-                            { id: 'coupang', label: activePlans.includes('addon_coupang') ? '쿠팡' : '🔒 쿠팡 (Add-on 필요)', color: '#cb1400', disabled: false },
-                            { id: 'elevenst', label: '11번가 (연동예정)', color: '#FF0000', disabled: true }
-                        ].map(market => (
-                            <label key={market.id} style={{
-                                display: 'flex', alignItems: 'center', gap: '8px', cursor: market.disabled ? 'not-allowed' : 'pointer',
-                                opacity: market.disabled ? 0.5 : 1, padding: '8px 12px', borderRadius: '6px',
-                                border: targetMarkets[market.id] ? `1px solid ${market.color}` : '1px solid var(--color-border)',
-                                background: targetMarkets[market.id] ? `${market.color}15` : 'transparent'
-                            }}>
-                                <input
-                                    type="checkbox"
-                                    checked={targetMarkets[market.id] || false}
-                                    onChange={(e) => {
-                                        if (market.id === 'coupang' && !activePlans.includes('addon_coupang')) {
-                                            if (window.confirm('쿠팡 연동은 [쿠팡 전용 확장팩] 구매가 필요한 기능입니다. 결제 페이지로 이동하시겠습니까?')) {
-                                                window.electron.ipcRenderer.send('open-external-window', 'https://teamwise-sand.vercel.app/pricing');
+                            { id: 'naver', label: '네이버 스마트스토어', color: '#03C75A', requirePro: true },
+                            { id: 'cafe24', label: '카페24 (Cafe24)', color: '#000000', requirePro: false },
+                            { id: 'coupang', label: activePlans.includes('addon_coupang') ? '쿠팡' : '🔒 쿠팡 (Add-on 필요)', color: '#cb1400', requirePro: true },
+                            { id: 'elevenst', label: '11번가 (연동예정)', color: '#FF0000', requirePro: true, isBeta: true, notReady: true }
+                        ].map(market => {
+                            const isBetaTarget = market.isBeta || betaMarketsInfo[market.id]?.isBeta;
+                            const isLockedFreePlan = market.requirePro && licenseTier === 'free' && !isBetaTarget;
+                            const isDisabled = market.notReady || isLockedFreePlan;
+
+                            let labelContent = market.label;
+                            if (isLockedFreePlan && market.id !== 'coupang') labelContent = `🔒 ${market.label} (Pro 전용)`;
+                            if (isBetaTarget && licenseTier === 'free') labelContent = `${market.label} (BETA 무료)`;
+
+                            return (
+                                <label key={market.id} style={{
+                                    display: 'flex', alignItems: 'center', gap: '8px', cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                    opacity: isDisabled ? 0.5 : 1, padding: '8px 12px', borderRadius: '6px',
+                                    border: targetMarkets[market.id] ? `1px solid ${market.color}` : '1px solid var(--color-border)',
+                                    background: targetMarkets[market.id] ? `${market.color}15` : 'transparent'
+                                }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={targetMarkets[market.id] || false}
+                                        onChange={(e) => {
+                                            if (market.id === 'coupang' && !activePlans.includes('addon_coupang')) {
+                                                if (window.confirm('쿠팡 연동은 [쿠팡 전용 확장팩] 구매가 필요한 기능입니다. 결제 페이지로 이동하시겠습니까?')) {
+                                                    window.electron.ipcRenderer.send('open-external-window', 'https://teamwise-sand.vercel.app/pricing');
+                                                }
+                                                return;
                                             }
-                                            return;
-                                        }
-                                        setTargetMarkets(prev => ({ ...prev, [market.id]: e.target.checked }))
-                                    }}
-                                    disabled={market.disabled}
-                                    style={{ accentColor: market.color, width: '16px', height: '16px' }}
-                                />
-                                <span style={{ fontSize: '14px', fontWeight: 500, color: '#e2e8f0' }}>{market.label}</span>
-                            </label>
-                        ))}
+                                            if (isLockedFreePlan) {
+                                                alert('🔒 Pro 전용 기능\n\n해당 마켓은 Pro 플랜 전용입니다. 업그레이드해주세요.');
+                                                return;
+                                            }
+                                            setTargetMarkets(prev => ({ ...prev, [market.id]: e.target.checked }))
+                                        }}
+                                        disabled={isDisabled}
+                                        style={{ accentColor: market.color, width: '16px', height: '16px', cursor: isDisabled ? 'not-allowed' : 'pointer' }}
+                                    />
+                                    <span style={{ fontSize: '14px', fontWeight: 500, color: '#e2e8f0' }}>{labelContent}</span>
+                                </label>
+                            );
+                        })}
                     </div>
                 </div>
-
-                <div style={{ marginBottom: '24px' }}>
-                    <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '12px' }}>네이버 커머스 API 인증 (조회/수정용)</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                name="clientId"
-                                value={credentials.clientId}
-                                onChange={handleCredentialsChange}
-                                placeholder="Client ID"
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                        <div className="input-group">
-                            <input
-                                type="password"
-                                name="clientSecret"
-                                value={credentials.clientSecret}
-                                onChange={handleCredentialsChange}
-                                placeholder="Client Secret"
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {targetMarkets.cafe24 && (
-                    <div style={{ marginBottom: '24px', padding: '16px', border: '1px solid var(--color-border)', borderRadius: '8px', background: 'rgba(0,0,0,0.1)' }}>
-                        <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '12px' }}>카페24 원클릭 연동 (SaaS)</h3>
-                        <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>쇼핑몰 아이디만 입력하고 [연동하기] 버튼을 눌러 권한을 허용해주세요.</p>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px', marginBottom: '16px' }}>
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    name="mallId"
-                                    value={cafe24Credentials.mallId}
-                                    onChange={handleCafe24CredentialsChange}
-                                    placeholder="Cafe24 Mall ID (예: dometopia)"
-                                    style={{ width: '100%' }}
-                                />
-                            </div>
-                        </div>
-                        <button
-                            className={cafe24Credentials.connected ? "success" : "secondary"}
-                            style={{ width: '100%', padding: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
-                            onClick={() => {
-                                if (!cafe24Credentials.mallId) {
-                                    alert('먼저 카페24 쇼핑몰 아이디를 입력해주세요.');
-                                    return;
-                                }
-                                if (cafe24Credentials.connected) return;
-
-                                const clientId = 'hxHOk08wCdCv4QSzDL0JpA'; // WISE 통합 앱 Client ID
-                                const redirectUri = 'https://teamwise-sand.vercel.app/api/market/cafe24/callback';
-                                const authUrl = `https://${cafe24Credentials.mallId}.cafe24api.com/api/v2/oauth/authorize?response_type=code&client_id=${clientId}&state=${cafe24Credentials.mallId}&redirect_uri=${redirectUri}&scope=mall.read_product,mall.write_product,mall.read_category`;
-
-                                // Open the browser
-                                window.electron.ipcRenderer.send('open-external-window', authUrl);
-
-                                // Show "connecting" state
-                                addLog(`카페24(${cafe24Credentials.mallId}) 연동 브라우저 창을 열었습니다. (잠시 나타났다 사라지는 것은 정상적인 자동 연결 과정입니다.)`);
-
-                                // Poll the server to check if the token has been saved successfully
-                                let attempts = 0;
-                                const pollInterval = setInterval(async () => {
-                                    attempts++;
-                                    try {
-                                        const res = await fetch(`https://teamwise-sand.vercel.app/api/market/cafe24/token`, {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ mallId: cafe24Credentials.mallId })
-                                        });
-                                        const data = await res.json();
-                                        if (data && data.access_token) {
-                                            setCafe24Credentials(prev => ({ ...prev, connected: true }));
-                                            clearInterval(pollInterval);
-                                            addLog(`✅ 카페24(${cafe24Credentials.mallId}) API 연동이 성공적으로 확정되었습니다!`);
-                                        }
-                                    } catch (e) {
-                                        // Ignore fetch errors during polling
-                                    }
-
-                                    // Stop polling after 2 minutes (120 attempts * 1s)
-                                    if (attempts > 120) clearInterval(pollInterval);
-                                }, 1500);
-                            }}
-                        >
-                            {cafe24Credentials.connected ? "✅ 카페24 연동 완료" : "🔗 1초만에 쇼핑몰 연동하기"}
-                        </button>
-                    </div>
-                )}
 
                 <button
                     className={activeTab === 'statusSync' ? 'primary' : 'success'}
@@ -565,7 +494,10 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                         </>
                     ) : (
                         <>
-                            <span>{activeTab === 'statusSync' ? '🚀 스마트스토어 기준 데이터 정리 시작' : '⚡ 100% 자동 모니터링 & 가격 갱신 시작'}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                {activeTab === 'statusSync' ? <Rocket size={20} /> : <Zap size={20} />}
+                                <span>{activeTab === 'statusSync' ? '스마트스토어 기준 데이터 정리 시작' : '100% 자동 모니터링 & 가격 갱신 시작'}</span>
+                            </div>
                         </>
                     )}
                 </button>

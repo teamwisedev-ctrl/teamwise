@@ -608,7 +608,7 @@ export async function searchSmartStoreCategories(credentials: SmartStoreCredenti
     if (!cachedCategories) {
         try {
             const token = await getSmartStoreToken(credentials);
-            const response = await axios.get('https://api.commerce.naver.com/external/v1/standard-categories', {
+            const response = await axios.get('https://api.commerce.naver.com/external/v1/categories', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             cachedCategories = response.data || [];
@@ -621,11 +621,18 @@ export async function searchSmartStoreCategories(credentials: SmartStoreCredenti
         return cachedCategories.slice(0, 20); // 검색어가 없으면 무작위 상위 20개 반환
     }
 
-    const lowerKeyword = keyword.toLowerCase();
-    const filtered = (cachedCategories || []).filter(cat => 
-        cat.wholeCategoryName.toLowerCase().includes(lowerKeyword) ||
-        cat.id.includes(lowerKeyword)
-    );
+    // Use whitespace-stripped lowercased keywords for resilient matching
+    const strippedLowerKwd = keyword.replace(/\s+/g, '').toLowerCase();
+    
+    const filtered = (cachedCategories || []).filter(cat => {
+        const wholeName = (cat.wholeCategoryName || '').replace(/\s+/g, '').toLowerCase();
+        const idStr = (cat.id || '').toString();
+        const nodeName = (cat.name || '').replace(/\s+/g, '').toLowerCase();
+        
+        return wholeName.includes(strippedLowerKwd) || 
+               idStr.includes(strippedLowerKwd) || 
+               nodeName.includes(strippedLowerKwd);
+    });
 
     return filtered.slice(0, 20);
 }
@@ -781,5 +788,9 @@ export async function updateSmartStorePrice(credentials: SmartStoreCredentials, 
          }
          throw new Error(`[SmartStore API 에러] 상품 가격 수정 실패: ${errorMessage}`);
     }
+}
+
+export function setupSmartstoreHandlers() {
+    // Add setup logic here if needed
 }
 

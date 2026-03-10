@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Database, FileSpreadsheet, ExternalLink, CheckCircle2, PenTool, Bot, BarChart } from 'lucide-react';
 export type ScrapeMethod = 'product' | 'category' | 'search';
 
 interface DataPrepStepProps {
@@ -110,7 +111,7 @@ export const DataPrepStep: React.FC<DataPrepStepProps> = ({
             {/* Sheet Connection Status Box */}
             <div className="glass-panel" style={{ marginBottom: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <div className="panel-title" style={{ margin: 0 }}>📊 데이터베이스 연동</div>
+                    <div className="panel-title" style={{ margin: 0 }}><Database size={20} color="#3b82f6" /> 데이터베이스 연동</div>
                 </div>
 
                 <p style={{ color: '#cbd5e1', marginBottom: '20px', fontSize: '15px' }}>
@@ -119,7 +120,7 @@ export const DataPrepStep: React.FC<DataPrepStepProps> = ({
 
                 {!sheetId ? (
                     <button className="primary" onClick={handleCreateSheet}>
-                        📝 상품 마스터 시트 생성
+                        <FileSpreadsheet size={16} /> 상품 마스터 시트 생성
                     </button>
                 ) : (
                     <div style={{
@@ -134,14 +135,14 @@ export const DataPrepStep: React.FC<DataPrepStepProps> = ({
                         gap: '12px'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ fontSize: '20px' }}>✅</div>
+                            <div style={{ fontSize: '20px', display: 'flex' }}><CheckCircle2 size={24} /></div>
                             <div>
                                 <div style={{ fontWeight: 600, marginBottom: '4px' }}>스프레드시트가 성공적으로 연동되었습니다</div>
                                 <div style={{ opacity: 0.8, fontSize: '13px', fontFamily: 'monospace' }}>ID: {sheetId}</div>
                             </div>
                         </div>
-                        <button className="success" onClick={handleOpenSheet} style={{ padding: '8px 16px', fontSize: '14px' }}>
-                            ✨ 브라우저에서 열기
+                        <button className="success" onClick={handleOpenSheet} style={{ padding: '8px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}>
+                            <ExternalLink size={16} /> 브라우저에서 열기
                         </button>
                     </div>
                 )}
@@ -158,28 +159,41 @@ export const DataPrepStep: React.FC<DataPrepStepProps> = ({
                     <label style={{ display: 'block', marginBottom: '8px', color: '#64748b', fontSize: '13px', fontWeight: 600 }}>수집 소스 (도매처) 선택</label>
                     <div style={{ display: 'flex', gap: '8px' }}>
                         {[
-                            { id: 'dometopia', label: '도매토피아' },
-                            { id: 'ownerclan', label: '오너클랜' },
-                            { id: 'domeme', label: '도매매' },
-                            { id: 'domezim', label: '도매찜' }
+                            { id: 'dometopia', label: '도매토피아', ready: true },
+                            { id: 'ownerclan', label: '오너클랜', ready: false },
+                            { id: 'domeme', label: '도매매', ready: false },
+                            { id: 'domezim', label: '도매찜', ready: false }
                         ].map(s => (
                             <button
                                 key={s.id}
-                                onClick={() => setWholesaleSource(s.id)}
+                                onClick={() => {
+                                    if (!s.ready) {
+                                        alert('해당 도매처 연동은 준비 중입니다.');
+                                        return;
+                                    }
+                                    setWholesaleSource(s.id);
+                                }}
+                                disabled={!s.ready}
                                 style={{
                                     flex: 1,
                                     padding: '12px',
                                     borderRadius: '8px',
                                     border: wholesaleSource === s.id ? '2px solid #3b82f6' : '1px solid #e2e8f0',
-                                    backgroundColor: wholesaleSource === s.id ? '#eff6ff' : 'white',
-                                    color: wholesaleSource === s.id ? '#1d4ed8' : '#64748b',
+                                    backgroundColor: s.ready ? (wholesaleSource === s.id ? '#eff6ff' : 'white') : '#f1f5f9',
+                                    color: s.ready ? (wholesaleSource === s.id ? '#1d4ed8' : '#64748b') : '#94a3b8',
                                     fontWeight: wholesaleSource === s.id ? 600 : 500,
-                                    cursor: 'pointer',
+                                    cursor: s.ready ? 'pointer' : 'not-allowed',
                                     transition: 'all 0.2s',
-                                    boxShadow: wholesaleSource === s.id ? '0 2px 4px rgba(59, 130, 246, 0.1)' : 'none'
+                                    boxShadow: wholesaleSource === s.id ? '0 2px 4px rgba(59, 130, 246, 0.1)' : 'none',
+                                    opacity: s.ready ? 1 : 0.6,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px'
                                 }}
                             >
                                 {s.label}
+                                {!s.ready && <span style={{ fontSize: '11px', background: '#e2e8f0', color: '#64748b', padding: '2px 6px', borderRadius: '4px' }}>준비중</span>}
                             </button>
                         ))}
                     </div>
@@ -206,7 +220,7 @@ export const DataPrepStep: React.FC<DataPrepStepProps> = ({
                             gap: '8px'
                         }}
                     >
-                        <span style={{ fontSize: '24px' }}>✍️</span>
+                        <span style={{ fontSize: '24px', display: 'flex' }}><PenTool size={28} /></span>
                         <span>엑셀 수동 작성 (직접 입력)</span>
                     </button>
                     <button
@@ -228,7 +242,7 @@ export const DataPrepStep: React.FC<DataPrepStepProps> = ({
                             gap: '8px'
                         }}
                     >
-                        <span style={{ fontSize: '24px' }}>🤖</span>
+                        <span style={{ fontSize: '24px', display: 'flex' }}><Bot size={28} /></span>
                         <span>도매처 자동 수집 (대량 생성)</span>
                     </button>
                 </div>
@@ -237,7 +251,7 @@ export const DataPrepStep: React.FC<DataPrepStepProps> = ({
                 <div className="glass-panel" style={{ minHeight: '300px' }}>
                     {activeTab === 'manual' && (
                         <div className="animate-fade-in" style={{ textAlign: 'center', padding: '40px 20px' }}>
-                            <div style={{ fontSize: '48px', marginBottom: '24px' }}>📊</div>
+                            <div style={{ fontSize: '48px', marginBottom: '24px', color: '#3b82f6', display: 'flex', justifyContent: 'center' }}><BarChart size={48} /></div>
                             <h3 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px', color: '#f8fafc' }}>
                                 직접 엑셀에 데이터를 입력하세요
                             </h3>

@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     // 2b. Check the user's active subscription status(es) for Add-ons
     const { data: subscriptions, error: subError } = await supabaseAdmin
       .from('subscriptions')
-      .select('plan_id, status')
+      .select('plan_id, status, tier')
       .eq('user_id', profile.id)
       .eq('status', 'active');
 
@@ -78,14 +78,42 @@ export async function POST(request: Request) {
       console.error('Subscription Query Error:', subError);
     }
     
+    // 2c. Get Sync Usage from Profile or Default
+    const { data: profileUsage } = await supabaseAdmin
+      .from('profiles')
+      .select('sync_usage_count')
+      .eq('id', profile.id)
+      .single();
+
+    // 2d. Get Beta Markets logic (Could be from DB, but hardcoding MVP for now)
+    // Beta is active for 1 month from now for testing newly integrated markets
+    const betaMarkets = {
+      '11st': {
+        isBeta: true,
+        daysLeft: 30 // hardcoded for MVP
+      }
+    };
+
     // Convert active subscriptions into an array of plan_ids
     const activePlans = subscriptions ? subscriptions.map(sub => sub.plan_id) : [];
+    
+    // Determine the user's tier based on active plans or the tier column
+    const hasProPlan = subscriptions?.some(sub => 
+      sub.tier === 'pro' || sub.plan_id?.includes('pro') || sub.plan_id?.includes('premium')
+    );
+    const userTier = hasProPlan ? 'pro' : 'free';
 
     // 3. Return Success to Desktop (always success for Freemium model)
     return NextResponse.json({
       success: true,
       email: email,
+      tier: userTier,
       activePlans: activePlans,
+      usage: {
+        currentMonthCount: profileUsage?.sync_usage_count || 0,
+        limit: userTier === 'pro' ? 'unlimited' : 100 // 100 limit for free
+      },
+      betaMarkets: betaMarkets,
       message: '보유 라이선스 정보 조회 성공',
     });
 

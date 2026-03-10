@@ -1,18 +1,30 @@
 import { app, shell, BrowserWindow, ipcMain, session } from 'electron';
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
-import { authorize, logout } from './auth';
-import { createSpreadsheet, writeToSheet, readFromSheet, updateSheetCell, getOrCreateMasterSheet, appendToMasterSheet } from './sheets';
+import { authorize, logout, getNewToken } from './auth';
+import { createSpreadsheet, writeToSheet, readFromSheet, updateSheetCell, getOrCreateMasterSheet, getOrCreateCategoryMasterSheet, appendToMasterSheet } from './sheets';
 import { fetchSmartStoreOrders, registerSmartStoreProduct, updateSmartStoreProduct, uploadImageToNaverFromUrl, searchSmartStoreCategories, fetchSmartstoreProductStatus, updateSmartstoreProductStatus, deleteSmartstoreProduct, updateSmartStorePrice } from './smartstore';
-import { createCafe24Product, updateCafe24Product, deleteCafe24Product, Cafe24ProductPayload } from './cafe24';
+import { createCafe24Product, updateCafe24Product, deleteCafe24Product, Cafe24ProductPayload, fetchCafe24Orders, fetchCafe24Categories, createCafe24Category } from './cafe24';
 import { scrapeDometopiaProduct, scrapeCategoryLinks, checkDometopiaStatus } from './scraper';
 import { getCategoryRules, saveCategoryRule, deleteCategoryRule, findRuleByUrl, CategoryRule } from './db';
 import { requireLogin, checkLicense } from './supabase';
+import { setupSheetHandlers } from './sheets'
+import { setupCrawlerHandlers } from './scraper'
+import { setupSmartstoreHandlers } from './smartstore'
+import { getDBSingleton } from './db'
+import { setupAuthHandlers } from './supabase'
+import { setupAIHandlers } from './ai'
 
 // Dometopia Session Cookie Storage
 let dometopiaSessionCookie: string | null = null;
 
 function createWindow(): void {
+  setupCrawlerHandlers()
+  setupSheetHandlers()
+  setupSmartstoreHandlers()
+  getDBSingleton()
+  setupAuthHandlers()
+  setupAIHandlers()
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -230,6 +242,26 @@ app.whenReady().then(() => {
   });
 
   // Cafe24 Handlers
+  ipcMain.handle('get-cafe24-categories', async (_: unknown, credentials: any) => {
+    try {
+      const result = await fetchCafe24Categories(credentials.mallId);
+      return result;
+    } catch (error: unknown) {
+      const err = error as any;
+      return { success: false, error: err.message };
+    }
+  });
+
+  ipcMain.handle('create-cafe24-category', async (_: unknown, credentials: any, name: string) => {
+    try {
+      const result = await createCafe24Category(credentials.mallId, name);
+      return result;
+    } catch (error: unknown) {
+      const err = error as any;
+      return { success: false, error: err.message };
+    }
+  });
+
   ipcMain.handle('register-cafe24-product', async (_: unknown, credentials: any, payload: Cafe24ProductPayload) => {
     try {
       const result = await createCafe24Product(credentials.mallId, payload);
@@ -260,12 +292,24 @@ app.whenReady().then(() => {
     }
   });
 
+  ipcMain.handle('fetch-cafe24-orders', async (_: unknown, mallId: string, startDate: string, endDate: string) => {
+    try {
+      const result = await fetchCafe24Orders(mallId, startDate, endDate);
+      return result;
+    } catch (error: unknown) {
+      const err = error as any;
+      return { success: false, error: err.message };
+    }
+  });
+
   ipcMain.handle('google-auth', async () => {
     try {
-      const authClient = await authorize();
+      let authClient = await authorize();
       
-      const tokenResponse = await authClient.getAccessToken();
-      const accessToken = tokenResponse.token;
+      // Force refresh if approaching expiry, getAccessToken() usually returns cached
+      let tokenResponse = await authClient.getAccessToken();
+      let accessToken = tokenResponse.token;
+      
       if (!accessToken) {
          throw new Error('Google 서버와의 연결이 원활하지 않습니다.\n앱을 껐다가 다시 실행해 주세요.');
       }
@@ -273,11 +317,30 @@ app.whenReady().then(() => {
       // 1-Click License Check against the Next.js unified endpoint
       const apiUrl = 'https://teamwise-sand.vercel.app/api/verify-license';
       
-      const response = await fetch(apiUrl, {
+      let response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ accessToken })
       });
+
+      // If Server rejects with 401 due to expired Google token, force delete token.json and retry once
+      if (response.status === 401) {
+          console.warn('Got 401 from verify-license, Access Token expired. Forcing re-auth...');
+          logout();
+          authClient = await getNewToken(authClient);
+          tokenResponse = await authClient.getAccessToken();
+          accessToken = tokenResponse.token;
+          
+          if (!accessToken) {
+            throw new Error('Google 인증 갱신에 실패했습니다.');
+          }
+
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accessToken })
+          });
+      }
 
       const result = await response.json();
       
@@ -285,7 +348,7 @@ app.whenReady().then(() => {
         throw new Error(result.error || '라이선스 확인 실패');
       }
 
-      return { success: true, email: result.email, activePlans: result.activePlans || [] };
+      return { success: true, email: result.email, activePlans: result.activePlans || [], tier: result.tier, usage: result.usage, betaMarkets: result.betaMarkets };
     } catch (error: any) {
       console.error('### GOOGLE AUTH CRASH ###', error);
       return { success: false, error: error.message };
@@ -397,6 +460,15 @@ app.whenReady().then(() => {
   ipcMain.handle('get-or-create-master-sheet', async () => {
     try {
       const sheetId = await getOrCreateMasterSheet();
+      return { success: true, sheetId };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle('get-or-create-category-master-sheet', async () => {
+    try {
+      const sheetId = await getOrCreateCategoryMasterSheet();
       return { success: true, sheetId };
     } catch (error: any) {
       return { success: false, error: error.message };

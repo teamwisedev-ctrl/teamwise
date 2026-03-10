@@ -73,3 +73,7 @@ export const findRuleByUrl = (dometopiaUrl: string): CategoryRule | undefined =>
     const rules = getCategoryRules();
     return rules.find(r => r.dometopiaUrl === dometopiaUrl);
 };
+
+export function getDBSingleton() {
+    // Initialize or return DB 
+}

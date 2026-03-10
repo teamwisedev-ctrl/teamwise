@@ -474,3 +474,7 @@ export async function checkDometopiaStatus(itemCode: string, cookie?: string | n
     }
 }
 
+export function setupCrawlerHandlers() {
+    // Register IPC handlers for scraper if any
+}
+
