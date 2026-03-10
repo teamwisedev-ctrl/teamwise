@@ -1,12 +1,22 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(request: Request) {
   try {
     const { mallId } = await request.json();
 
     if (!mallId) {
-      return NextResponse.json({ error: 'Missing mallId' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing mallId' }, { status: 400, headers: corsHeaders });
     }
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -25,7 +35,7 @@ export async function POST(request: Request) {
 
     if (dbError || !credentials || !credentials.access_token) {
       console.error('Credentials not found in DB:', dbError);
-      return NextResponse.json({ error: 'OAuth credentials not found. Please connect Cafe24 again.' }, { status: 404 });
+      return NextResponse.json({ error: 'OAuth credentials not found. Please connect Cafe24 again.' }, { status: 404, headers: corsHeaders });
     }
 
     // 2. Check if Access Token is expired or expiring soon (e.g., within 5 minutes)
@@ -40,7 +50,7 @@ export async function POST(request: Request) {
       const clientSecret = process.env.CAFE24_CLIENT_SECRET;
 
       if (!clientId || !clientSecret || !credentials.refresh_token) {
-        return NextResponse.json({ error: 'Cannot refresh token due to missing client credentials or refresh token.' }, { status: 500 });
+        return NextResponse.json({ error: 'Cannot refresh token due to missing client credentials or refresh token.' }, { status: 500, headers: corsHeaders });
       }
 
       const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
@@ -59,7 +69,7 @@ export async function POST(request: Request) {
 
       if (!refreshResponse.ok) {
         console.error('Failed to refresh token:', await refreshResponse.text());
-        return NextResponse.json({ error: 'Token refresh failed' }, { status: refreshResponse.status });
+        return NextResponse.json({ error: 'Token refresh failed' }, { status: refreshResponse.status, headers: corsHeaders });
       }
 
       const tokenData = await refreshResponse.json();
@@ -84,14 +94,14 @@ export async function POST(request: Request) {
         // We still return the token so the app can function immediately
       }
 
-      return NextResponse.json({ success: true, access_token: newAccessToken, source: 'refreshed' });
+      return NextResponse.json({ success: true, access_token: newAccessToken, source: 'refreshed' }, { headers: corsHeaders });
     }
 
     // 3. Return the valid Access Token
-    return NextResponse.json({ success: true, access_token: credentials.access_token, source: 'cache' });
+    return NextResponse.json({ success: true, access_token: credentials.access_token, source: 'cache' }, { headers: corsHeaders });
 
   } catch (error: any) {
     console.error('Cafe24 token fetch/refresh error:', error);
-    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500, headers: corsHeaders });
   }
 }
