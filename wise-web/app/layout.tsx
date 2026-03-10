@@ -76,8 +76,8 @@ export default async function RootLayout({
             <div>
               <h4 style={{ marginBottom: '16px', fontSize: '1rem' }}>링크</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                <li style={{ marginBottom: '8px' }}><Link href="#" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>이용약관</Link></li>
-                <li style={{ marginBottom: '8px' }}><Link href="#" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>개인정보처리방침</Link></li>
+                <li style={{ marginBottom: '8px' }}><Link href="/terms" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>이용약관</Link></li>
+                <li style={{ marginBottom: '8px' }}><Link href="/privacy" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>개인정보처리방침</Link></li>
                 <li style={{ marginBottom: '8px' }}><Link href="/pricing" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>요금제 안내</Link></li>
               </ul>
             </div>

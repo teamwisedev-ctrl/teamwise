@@ -170,7 +170,7 @@ export default function Home() {
               <div style={stepNumberStyles}>3</div>
               <h3 style={stepTitleStyles}>원클릭 배포</h3>
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                원하는 타겟 마켓(스마트스토어, 쿠팡 등)을 체크하고 [배포] 버튼을 누르면 모든 마켓에 동시 등록됩니다.
+                원하는 타겟 마켓(카페24, 쿠팡, 스마트스토어 등)을 체크하고 [배포] 버튼을 누르면 모든 스토어에 동시 등록됩니다.
               </p>
             </div>
           </div>

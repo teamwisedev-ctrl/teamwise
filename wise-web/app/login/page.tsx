@@ -47,7 +47,7 @@ export default function LoginPage() {
                 </button>
 
                 <div style={{ marginTop: '32px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    가입 시 <a href="#" style={{ textDecoration: 'underline' }}>이용약관</a> 및 <a href="#" style={{ textDecoration: 'underline' }}>개인정보처리방침</a>에 동의하게 됩니다.
+                    가입 시 <a href="/terms" style={{ textDecoration: 'underline' }}>이용약관</a> 및 <a href="/privacy" style={{ textDecoration: 'underline' }}>개인정보처리방침</a>에 동의하게 됩니다.
                 </div>
             </div>
         </div>
