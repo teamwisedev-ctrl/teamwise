@@ -1,30 +1,7 @@
-import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import TossPaymentWidget from "@/components/TossPaymentWidget";
+
+import { Rocket, Package, Zap } from 'lucide-react';
 
 export default async function PricingPage() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    // Fetch user's subscription data if logged in
-    let subData = null;
-
-    if (user) {
-        const { data } = await supabase
-            .from('subscriptions')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
-        subData = data;
-    }
-
-    // We will use the client-side TossPaymentWidget instead of server actions for real payments
-    const userEmail = user?.email || "anonymous@wise.com";
-    const userName = user?.user_metadata?.full_name || "WISE User";
-
     return (
         <div className="container animate-fade-in" style={{ padding: '80px 24px', textAlign: 'center' }}>
             <div style={{ marginBottom: '60px' }}>
@@ -39,7 +16,7 @@ export default async function PricingPage() {
             <div style={pricingGridStyles}>
                 {/* Free Tier */}
                 <div className="glass-panel animate-slide-up delay-100" style={pricingCardStyles}>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>🚀 Starter (Free)</h3>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Rocket size={24} /> Starter (Free)</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
                         ₩0 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 평생 무료</span>
                     </div>
@@ -48,7 +25,6 @@ export default async function PricingPage() {
                     </p>
                     <ul style={featureListStyles}>
                         <li>✔️ <b>카페24(자사몰) 단독 연동</b></li>
-                        <li style={{ color: 'var(--text-muted)' }}>❌ 네이버 스마트스토어 연동 불가</li>
                         <li>✔️ 기본 소싱처 (도매토피아) 연동</li>
                         <li>✔️ 월 동기화 최대 500건 제한</li>
                     </ul>
@@ -59,7 +35,7 @@ export default async function PricingPage() {
 
                 {/* Coupang Add-on */}
                 <div className="glass-panel animate-slide-up delay-200" style={pricingCardStyles}>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>📦 쿠팡 무제한 연동권</h3>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Package size={24} /> 쿠팡 무제한 연동권</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
                         ₩9,900 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
                     </div>
@@ -72,25 +48,15 @@ export default async function PricingPage() {
                         <li>✔️ 쿠팡 배송비/출고지 관리 연동</li>
                         <li>✔️ 무제한 쿠팡 스토어 계정 연결</li>
                     </ul>
-                    {subData?.plan_id === 'addon_coupang' ? (
-                        <button disabled className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
-                            이용 중인 플랜입니다
-                        </button>
-                    ) : (
-                        <TossPaymentWidget
-                            planId="addon_coupang"
-                            amount={9900}
-                            orderName="쿠팡 무제한 멀티연동 모듈"
-                            customerEmail={userEmail}
-                            customerName={userName}
-                            buttonText="구매하기 (₩9,900/월)" />
-                    )}
+                    <button disabled className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
+                        출시 준비 중
+                    </button>
                 </div>
 
                 {/* Super Seller Unlimited */}
                 <div className="glass-panel animate-slide-up delay-300" style={{ ...pricingCardStyles, border: '2px solid var(--accent-primary)', transform: 'scale(1.05)', backgroundColor: 'rgba(20, 20, 22, 0.9)' }}>
                     <div style={popularBadgeStyles}>가장 추천</div>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>⚡ 슈퍼셀러 무제한팩</h3>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Zap size={24} color="#eab308" /> 슈퍼셀러 무제한팩</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
                         ₩19,900 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
                     </div>
@@ -103,19 +69,9 @@ export default async function PricingPage() {
                         <li>✔️ 대량 엑셀 다운로드 최적화</li>
                         <li>✔️ 1:1 VIP 기술 지원</li>
                     </ul>
-                    {subData?.plan_id === 'pro_unlimited' ? (
-                        <button disabled className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
-                            이용 중인 플랜입니다
-                        </button>
-                    ) : (
-                        <TossPaymentWidget
-                            planId="pro_unlimited"
-                            amount={19900}
-                            orderName="WISE 슈퍼셀러 무제한팩"
-                            customerEmail={userEmail}
-                            customerName={userName}
-                            buttonText="구독하기 (₩19,900/월)" />
-                    )}
+                    <button disabled className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
+                        출시 준비 중
+                    </button>
                 </div>
             </div>
         </div>
