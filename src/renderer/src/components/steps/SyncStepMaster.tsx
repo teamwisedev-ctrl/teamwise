@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCcw, ShieldCheck, Database, Trash2, Coins, PlayCircle, Rocket, Zap } from 'lucide-react';
+import { RefreshCcw, ShieldCheck, Trash2, Coins, Rocket, Zap } from 'lucide-react';
 
 interface SyncStepProps {
     masterSheetId: string;
