@@ -200,9 +200,9 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
                                         <th>순번</th>
                                         <th>상품명</th>
                                         <th>카테고리ID</th>
-                                        <th>판매가 (적용 전 ➔ 후)</th>
+                                        <th>최종 판매가</th>
                                         <th>상태</th>
-                                        <th>응답 / 메시지</th>
+                                        <th>응답 결과</th>
                                     </tr>
                                 </thead>
                                 <tbody>
