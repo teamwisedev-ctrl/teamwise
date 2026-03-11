@@ -33,20 +33,20 @@ export default async function PricingPage() {
                     </button>
                 </div>
 
-                {/* Coupang Add-on */}
+                {/* Open Market Add-on */}
                 <div className="glass-panel animate-slide-up delay-200" style={pricingCardStyles}>
-                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Package size={24} /> 쿠팡 무제한 연동권</h3>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Package size={24} /> 오픈마켓 연동(Pro)</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
                         ₩9,900 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
                     </div>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
-                        가장 폭발적인 트래픽을 자랑하는<br />쿠팡(Coupang) 전송 모듈 추가
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', wordBreak: 'keep-all' }}>
+                        네이버, 쿠팡 등 국내 주요 오픈마켓<br />상품 전송 모듈 추가 제공
                     </p>
                     <ul style={featureListStyles}>
-                        <li>✔️ 쿠팡 상품 카테고리 자동 매핑</li>
-                        <li>✔️ 쿠팡 옵션 형태 자동 변환</li>
-                        <li>✔️ 쿠팡 배송비/출고지 관리 연동</li>
-                        <li>✔️ 무제한 쿠팡 스토어 계정 연결</li>
+                        <li>✔️ 오픈마켓 카테고리 자동 매핑</li>
+                        <li>✔️ 각 마켓별 필수 옵션 자동 변환</li>
+                        <li>✔️ 플랫폼별 배송/출고지 템플릿 연동</li>
+                        <li>✔️ 마켓별 무제한 스토어 계정 연결</li>
                     </ul>
                     <button disabled className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
                         출시 준비 중
@@ -84,7 +84,7 @@ const pricingGridStyles: React.CSSProperties = {
     gap: '32px',
     maxWidth: '1100px',
     margin: '0 auto',
-    alignItems: 'center',
+    alignItems: 'stretch',
 };
 
 const pricingCardStyles: React.CSSProperties = {
