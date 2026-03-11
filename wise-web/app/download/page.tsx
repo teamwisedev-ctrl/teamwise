@@ -55,24 +55,26 @@ export default async function DownloadPage() {
                     <div style={{ fontSize: '4rem', marginBottom: '24px' }}>🪟</div>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>Windows 용</h2>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
-                        Windows 10, 11 (64-bit)<br />버전 3.0.0
+                        Windows 10, 11 (64-bit)<br />버전 1.0.0
                     </p>
-                    <button className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem' }}>
+                    <a href="https://github.com/teamwisedev-ctrl/teamwise/releases/latest/download/WISE-1.0.0-setup.exe" className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', textDecoration: 'none', display: 'inline-block' }}>
                         .exe 다운로드 (135MB)
-                    </button>
+                    </a>
                 </div>
 
-                {/* Mac Download */}
+                {/* Mac Download (Hidden for now) */}
+                {/*
                 <div className="glass-panel" style={downloadCardStyles}>
                     <div style={{ fontSize: '4rem', marginBottom: '24px' }}>🍎</div>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px' }}>macOS 용</h2>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
-                        macOS 12.0 이상 (Apple Silicon / Intel)<br />버전 3.0.0
+                        macOS 12.0 이상 (Apple Silicon / Intel)<br />버전 1.0.0
                     </p>
-                    <button className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem' }}>
-                        .dmg 다운로드 (152MB)
+                    <button className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', cursor: 'not-allowed', opacity: 0.5 }}>
+                        출시 준비 중
                     </button>
                 </div>
+                */}
             </div>
 
             <div className="glass-panel" style={{ marginTop: '60px', padding: '32px', maxWidth: '800px', margin: '60px auto 0' }}>
