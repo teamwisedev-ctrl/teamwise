@@ -22,6 +22,8 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
     handleOpenCategorySheet,
     licenseTier
 }) => {
+    const [isCafe24Authenticating, setIsCafe24Authenticating] = React.useState(false);
+
     const handleCredentialsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setCredentials(prev => {
@@ -115,13 +117,16 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
 
                         <button
                             className={cafe24Credentials.connected ? "success" : "secondary"}
-                            style={{ width: '100%', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '15px' }}
+                            style={{ width: '100%', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '15px', opacity: isCafe24Authenticating ? 0.7 : 1 }}
+                            disabled={isCafe24Authenticating}
                             onClick={async () => {
+                                if (isCafe24Authenticating) return;
                                 if (!cafe24Credentials.mallId) {
                                     alert('먼저 카페24 쇼핑몰 아이디를 기입해주세요.');
                                     return;
                                 }
 
+                                setIsCafe24Authenticating(true);
                                 // --- Mall ID Validation (Domain Check) ---
                                 try {
                                     // Use no-cors to prevent CORS issues. We only care if the domain resolves.
@@ -129,6 +134,7 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
                                     await fetch(`https://${cafe24Credentials.mallId}.cafe24api.com/`, { mode: 'no-cors' });
                                 } catch {
                                     alert('❌ 연결할 수 없는 쇼핑몰 아이디입니다.\n\n카페24 관리자 센터 로그인에 사용하는 실제 아이디가 맞는지 오타를 다시 한 번 확인해주세요.\n(예: teamwise, dometopia 등 영문 형태)');
+                                    setIsCafe24Authenticating(false);
                                     return;
                                 }
                                 // -----------------------------------------
@@ -137,10 +143,10 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
                                 const redirectUri = 'https://mo2.kr/api/market/cafe24/callback';
                                 const authUrl = `https://${cafe24Credentials.mallId}.cafe24api.com/api/v2/oauth/authorize?response_type=code&client_id=${clientId}&state=${cafe24Credentials.mallId}&redirect_uri=${redirectUri}&scope=mall.read_product,mall.write_product,mall.read_category,mall.write_category,mall.read_order`;
 
+                                addLog(`카페24(${cafe24Credentials.mallId}) 연동 브라우저 창을 띄웁니다. 새 창에서 권한 동의를 완료해 주세요.`);
+                                
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 (window as any).electron.ipcRenderer.invoke('open-cafe24-auth-window', authUrl);
-
-                                addLog(`카페24(${cafe24Credentials.mallId}) 연동 브라우저 창을 열었습니다. (잠시 나타났다 사라지는 것은 자동 연결 과정입니다.)`);
 
                                 let attempts = 0;
                                 const pollInterval = setInterval(async () => {
@@ -155,17 +161,28 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
                                         if (data && data.access_token) {
                                             setCafe24Credentials(prev => ({ ...prev, connected: true }));
                                             clearInterval(pollInterval);
-                                            addLog(`✅ 카페24(${cafe24Credentials.mallId}) API 웹훅 연동이 성공적으로 확정되었습니다!`);
+                                            setIsCafe24Authenticating(false);
+                                            addLog(`✅ 카페24(${cafe24Credentials.mallId}) 권한 연동 성공! 웹훅 및 API가 정상적으로 연결되었습니다.`);
                                         }
                                     } catch {
                                         // Ignore
                                     }
 
-                                    if (attempts > 120) clearInterval(pollInterval);
+                                    if (attempts > 120) {
+                                        clearInterval(pollInterval);
+                                        setIsCafe24Authenticating(false);
+                                        addLog(`❌ 카페24 인증 시간이 초과되었습니다. 창이 닫혔거나 통신 오류가 발생했습니다.`);
+                                    }
                                 }, 1500);
                             }}
                         >
-                            {cafe24Credentials.connected ? "✅ 카페24 실시간 연동 완료 (클릭하여 권한 재갱신)" : "🔗 1초만에 쇼핑몰 연동하기 (SaaS Auth)"}
+                            {isCafe24Authenticating ? (
+                                <><span className="spinner" style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid white', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span> 카페24 연동 진행 중...</>
+                            ) : cafe24Credentials.connected ? (
+                                "✅ 카페24 실시간 연동 완료 (클릭하여 권한 재갱신)"
+                            ) : (
+                                "🔗 1초만에 쇼핑몰 연동하기 (SaaS Auth)"
+                            )}
                         </button>
                     </div>
                 </div>
