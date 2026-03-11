@@ -54,8 +54,7 @@ export default async function PricingPage() {
                 </div>
 
                 {/* Super Seller Unlimited */}
-                <div className="glass-panel animate-slide-up delay-300" style={{ ...pricingCardStyles, border: '2px solid var(--accent-primary)', transform: 'scale(1.05)', backgroundColor: '#EFF6FF' }}>
-                    <div style={popularBadgeStyles}>가장 추천</div>
+                <div className="glass-panel animate-slide-up delay-300" style={pricingCardStyles}>
                     <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Zap size={24} color="#eab308" /> 슈퍼셀러 무제한팩</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
                         ₩19,900 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
@@ -96,19 +95,7 @@ const pricingCardStyles: React.CSSProperties = {
     minHeight: '500px',
 };
 
-const popularBadgeStyles: React.CSSProperties = {
-    position: 'absolute',
-    top: '-16px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-    color: 'white',
-    padding: '4px 16px',
-    borderRadius: '20px',
-    fontSize: '0.85rem',
-    fontWeight: 'bold',
-    boxShadow: '0 4px 10px rgba(59, 130, 246, 0.3)',
-};
+
 
 const featureListStyles: React.CSSProperties = {
     listStyle: 'none',
