@@ -8,8 +8,8 @@ export default async function PricingPage() {
                 <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '16px' }}>
                     합리적인 <span className="gradient-text-accent">요금제</span>
                 </h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
-                    약정 없이 언제든 해지 가능합니다. 14일 무료 체험으로 먼저 경험해보세요.
+                <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginTop: '16px' }}>
+                    평생 무료 플랜(Starter)으로 결제 등록 없이 지금 바로 시작해보세요.<br />업그레이드는 필요할 때 언제든 가능합니다.
                 </p>
             </div>
 

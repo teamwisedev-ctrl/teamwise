@@ -58,7 +58,7 @@ export default async function RootLayout({
                     로그인
                   </Link>
                   <Link href="/login" className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'inline-block' }}>
-                    무료 체험
+                    무료로 시작하기
                   </Link>
                 </>
               )}
