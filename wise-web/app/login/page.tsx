@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
+import { Layers } from "lucide-react";
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -24,8 +25,9 @@ export default function LoginPage() {
     return (
         <div className="container animate-fade-in" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', paddingTop: '80px' }}>
             <div className="glass-panel animate-slide-up delay-100" style={{ width: '100%', maxWidth: '400px', padding: '40px', textAlign: 'center' }}>
-                <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px' }}>
-                    환영합니다 👋
+                <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                    <Layers size={36} stroke="url(#mo2-gradient)" strokeWidth={2.8} />
+                    <span className="gradient-text-accent">Mo2</span> 시작하기
                 </h1>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '40px', fontSize: '0.95rem' }}>
                     Mo2 솔루션을 다운로드하고 관리하세요.

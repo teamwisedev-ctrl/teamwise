@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { Layers } from "lucide-react";
 
 export default async function AdminPage() {
     const supabase = await createClient();
@@ -30,7 +31,10 @@ export default async function AdminPage() {
         <div className="container animate-fade-in" style={{ padding: '60px 24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px' }}>관리자 대시보드</h1>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <Layers size={36} stroke="url(#mo2-gradient)" strokeWidth={2.8} />
+                        <span className="gradient-text-accent">Mo2</span> 관리자 대시보드
+                    </h1>
                     <p style={{ color: 'var(--text-secondary)' }}>
                         환영합니다, <strong style={{ color: 'var(--text-primary)' }}>{user.email}</strong>님!
                     </p>
