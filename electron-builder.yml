@@ -1,5 +1,5 @@
-appId: com.teamwise.wise
-productName: WISE
+appId: com.teamwise.moi
+productName: Moi
 directories:
   buildResources: build
 extraResources:
@@ -15,7 +15,8 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: WISE
+  executableName: Moi
+  verifyUpdateCodeSignature: false
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

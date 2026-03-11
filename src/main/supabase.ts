@@ -40,7 +40,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
         const loginWin = new BrowserWindow({
             width: 800,
             height: 900,
-            title: 'WISE 라이선스 로그인',
+            title: 'Moi 라이선스 로그인',
             modal: parentWindow ? true : false,
             parent: parentWindow,
             webPreferences: {
@@ -57,7 +57,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
 
         // Periodically check local storage or cookies to see if user logged in
         // In Next.js with Supabase SSR, a cookie like `sb-XXX-auth-token` is set.
-        let checkInterval = setInterval(async () => {
+        const checkInterval = setInterval(async () => {
             if (loginWin.isDestroyed()) {
                 clearInterval(checkInterval);
                 return;
@@ -69,7 +69,7 @@ export function requireLogin(parentWindow?: BrowserWindow): Promise<{ user_id: s
                 await session.defaultSession.cookies.get({ url: 'https://teamwise-sand.vercel.app' });
                 // Alternatively, we can just intercept the redirect to /admin!
                 // Since our web app redirects to /admin upon login, detecting /admin means success.
-            } catch (e) {
+            } catch {
                 // ignore
             }
         }, 1000);

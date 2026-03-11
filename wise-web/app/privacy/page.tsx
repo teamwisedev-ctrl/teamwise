@@ -4,7 +4,7 @@ export default function PrivacyPage() {
     return (
         <div className="min-h-screen bg-slate-900 text-slate-200 py-20 px-6 sm:px-12">
             <div className="max-w-4xl mx-auto bg-slate-800 rounded-2xl p-8 sm:p-12 shadow-xl border border-slate-700">
-                <h1 className="text-3xl font-bold text-white mb-8">WISE 개인정보처리방침</h1>
+                <h1 className="text-3xl font-bold text-white mb-8">모이(Moi) 개인정보처리방침</h1>
 
                 <div className="space-y-6 text-slate-300 leading-relaxed">
                     <p>
@@ -56,8 +56,7 @@ export default function PrivacyPage() {
                         <h2 className="text-xl font-semibold text-white mb-3">6. 개인정보 보호책임자</h2>
                         <p>
                             회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 관련 고충처리 및 피해구제를 위하여 아래와 같이 보호책임자를 지정하고 있습니다.<br />
-                            - 담당부서: WISE 개발팀<br />
-                            - 이메일: support@teamwise.com
+                            본 개인정보처리방침은 Team Moi(이하 &quot;회사&quot;)가 제공하는 모이(Moi) 마켓 통합 솔루션에 적용됩니다.
                         </p>
                     </section>
 

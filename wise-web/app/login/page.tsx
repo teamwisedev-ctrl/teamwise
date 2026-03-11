@@ -28,7 +28,7 @@ export default function LoginPage() {
                     환영합니다 👋
                 </h1>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '40px', fontSize: '0.95rem' }}>
-                    WISE 솔루션을 다운로드하고 관리하세요.
+                    모이(Moi) 솔루션을 다운로드하고 관리하세요.
                 </p>
 
                 <button style={googleBtnStyles} onClick={handleGoogleLogin} disabled={isLoading}>

@@ -25,7 +25,7 @@ export async function getOrCreateMasterSheet(): Promise<string> {
     const drive = google.drive({ version: 'v3', auth });
     const sheets = google.sheets({ version: 'v4', auth });
     
-    const masterSheetName = '[WISE] 내 상품 마스터 DB';
+    const masterSheetName = '[Moi] 내 상품 마스터 DB';
 
     try {
         // Search Drive for existing sheet
@@ -91,7 +91,7 @@ export async function getOrCreateCategoryMasterSheet(): Promise<string> {
     const drive = google.drive({ version: 'v3', auth });
     const sheets = google.sheets({ version: 'v4', auth });
     
-    const categorySheetName = '[WISE] 카테고리 매핑 마스터 DB v3';
+    const categorySheetName = '[Moi] 카테고리 매핑 마스터 DB v3';
 
     try {
         // Search Drive for existing sheet

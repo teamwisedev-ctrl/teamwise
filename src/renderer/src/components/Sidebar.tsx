@@ -41,7 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView })
                     gap: '12px'
                 }}>
                     <span style={{ fontSize: '28px' }}><Rocket size={28} color="#4299e1" /></span>
-                    WISE<span style={{ color: '#4299e1' }}>.</span>
+                    Moi<span style={{ color: '#4299e1' }}>.</span>
                 </h1>
                 <p style={{ color: '#718096', fontSize: '13px', margin: '4px 0 0 0', fontWeight: '500' }}>Multi-Market Hub</p>
             </div>

@@ -388,7 +388,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                     <>
                         <div className="panel-title"><RefreshCcw size={20} color="#3b82f6" style={{ marginRight: '8px' }} /> 스마트스토어 - 마스터 DB 씽크 맞추기</div>
                         <p style={{ color: '#cbd5e1', marginBottom: '24px', fontSize: '15px', lineHeight: '1.6' }}>
-                            구글 드라이브에 안전하게 보관된 <b>[WISE] 내 상품 마스터 DB</b>의 기록을
+                            구글 드라이브에 안전하게 보관된 <b>[Moi] 내 상품 마스터 DB</b>의 기록을
                             단일 진실 공급원(Source of Truth)으로 삼아,
                             현재 네이버 스마트스토어의 상품 상태를 대조하고 일치시킵니다.
                         </p>

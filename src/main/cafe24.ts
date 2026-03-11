@@ -15,7 +15,7 @@ export async function getCafe24Token(mallId: string): Promise<string> {
 
   try {
     // URL fallback for dev or prod Next.js server
-    const serverUrl = process.env.WISE_WEB_URL || 'https://teamwise-sand.vercel.app';
+    const serverUrl = process.env.MOI_WEB_URL || 'https://teamwise-sand.vercel.app';
     const response = await axios.post(`${serverUrl}/api/market/cafe24/token`, {
       mallId,
     });

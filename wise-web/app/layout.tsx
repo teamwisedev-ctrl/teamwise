@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'WISE - 1:N Market Sync Solution',
+  title: 'Moi - 1:N Market Sync Solution',
   description: '다중 도매처와 오픈마켓을 통합 관리하는 지능형 스크래핑 솔루션',
 };
 
