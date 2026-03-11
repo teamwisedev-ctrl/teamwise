@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   }
 
   // TODO: Securely fetch from environment variables in production
-  // We use placeholder env vars for the Moi official Cafe24 App
+  // We use placeholder env vars for the Mo2 official Cafe24 App
   const clientId = process.env.CAFE24_CLIENT_ID;
   const clientSecret = process.env.CAFE24_CLIENT_SECRET;
   const redirectUri = process.env.CAFE24_REDIRECT_URI || `${process.env.NEXT_PUBLIC_SITE_URL}/api/market/cafe24/callback`;

@@ -97,7 +97,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                 addLog(`⚠️ 스타터 요금제(무료)는 1회 최대 500건까지만 동기화가 가능합니다. 현재 ${total}건 감지됨.`);
                 addLog('⚠️ 제한 없는 고속 1:N 씽크를 원하시면 [슈퍼셀러 무제한팩]을 구독해주세요!');
                 if (window.confirm(`스타터 요금제는 최대 500건까지만 동기화됩니다.\n결제 페이지로 이동하여 [슈퍼셀러 무제한팩]으로 업그레이드 하시겠습니까?`)) {
-                    window.electron.ipcRenderer.send('open-external-window', 'https://teamwise-sand.vercel.app/pricing');
+                    window.electron.ipcRenderer.send('open-external-window', 'https://mo2.kr/pricing');
                 }
                 setIsSyncing(false);
                 return;
@@ -258,7 +258,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                 addLog(`⚠️ 스타터 요금제(무료)는 1회 최대 500건까지만 조회 및 동기화가 가능합니다. 현재 ${total}건 감지됨.`);
                 addLog('⚠️ 제한 없는 고속 1:N 씽크를 원하시면 [슈퍼셀러 무제한팩]을 구독해주세요!');
                 if (window.confirm(`스타터 요금제는 최대 500건까지만 동기화됩니다.\n결제 페이지로 이동하여 [슈퍼셀러 무제한팩]으로 업그레이드 하시겠습니까?`)) {
-                    window.electron.ipcRenderer.send('open-external-window', 'https://teamwise-sand.vercel.app/pricing');
+                    window.electron.ipcRenderer.send('open-external-window', 'https://mo2.kr/pricing');
                 }
                 setIsSyncing(false);
                 return;
@@ -388,7 +388,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                     <>
                         <div className="panel-title"><RefreshCcw size={20} color="#3b82f6" style={{ marginRight: '8px' }} /> 스마트스토어 - 마스터 DB 씽크 맞추기</div>
                         <p style={{ color: '#cbd5e1', marginBottom: '24px', fontSize: '15px', lineHeight: '1.6' }}>
-                            구글 드라이브에 안전하게 보관된 <b>[Moi] 내 상품 마스터 DB</b>의 기록을
+                            구글 드라이브에 안전하게 보관된 <b>[Mo2] 내 상품 마스터 DB</b>의 기록을
                             단일 진실 공급원(Source of Truth)으로 삼아,
                             현재 네이버 스마트스토어의 상품 상태를 대조하고 일치시킵니다.
                         </p>
@@ -461,7 +461,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({ masterSheetId, activeP
                                         onChange={(e) => {
                                             if (market.id === 'coupang' && !activePlans.includes('addon_coupang')) {
                                                 if (window.confirm('쿠팡 연동은 [쿠팡 전용 확장팩] 구매가 필요한 기능입니다. 결제 페이지로 이동하시겠습니까?')) {
-                                                    window.electron.ipcRenderer.send('open-external-window', 'https://teamwise-sand.vercel.app/pricing');
+                                                    window.electron.ipcRenderer.send('open-external-window', 'https://mo2.kr/pricing');
                                                 }
                                                 return;
                                             }

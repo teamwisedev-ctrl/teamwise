@@ -41,7 +41,7 @@ export async function GET(request: Request) {
       
       // Ensure we don't redirect to localhost in production if origin somehow resolved to it
       if (process.env.NODE_ENV === 'production' && siteUrl.includes('localhost')) {
-          return NextResponse.redirect(`https://teamwise-sand.vercel.app${next}`)
+          return NextResponse.redirect(`https://mo2.kr${next}`)
       }
 
       return NextResponse.redirect(`${siteUrl}${next}`)

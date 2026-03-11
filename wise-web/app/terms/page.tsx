@@ -4,20 +4,20 @@ export default function TermsPage() {
     return (
         <div className="min-h-screen bg-slate-900 text-slate-200 py-20 px-6 sm:px-12">
             <div className="max-w-4xl mx-auto bg-slate-800 rounded-2xl p-8 sm:p-12 shadow-xl border border-slate-700">
-                <h1 className="text-3xl font-bold text-white mb-8">모이(Moi) 서비스 이용약관</h1>
+                <h1 className="text-3xl font-bold text-white mb-8">Mo2 서비스 이용약관</h1>
 
                 <div className="space-y-6 text-slate-300 leading-relaxed">
                     <section>
                         <h2 className="text-xl font-semibold text-white mb-3">제1조 (목적)</h2>
                         <p>
-                            본 약관은 Team Moi(이하 &quot;회사&quot;)가 제공하는 모이(Moi) 마켓 통합 솔루션 및 관련 제반 서비스(이하 &quot;서비스&quot;)의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
+                            본 약관은 Team Mo2(이하 &quot;회사&quot;)가 제공하는 Mo2 마켓 통합 솔루션 및 관련 제반 서비스(이하 &quot;서비스&quot;)의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
                         </p>
                     </section>
 
                     <section>
                         <h2 className="text-xl font-semibold text-white mb-3">제2조 (용어의 정의)</h2>
                         <ul className="list-disc pl-5 space-y-2">
-                            <li>&quot;서비스&quot;: 회원이 PC, 휴대형 단말기 등 각종 유무선 기기를 통해 이용할 수 있는 모이(Moi) 상품 연동 및 관리 서비스를 의미합니다.</li>
+                            <li>&quot;서비스&quot;: 회원이 PC, 휴대형 단말기 등 각종 유무선 기기를 통해 이용할 수 있는 Mo2 상품 연동 및 관리 서비스를 의미합니다.</li>
                             <li>&quot;회원&quot;: 회사의 서비스에 접속하여 본 약관에 따라 회사와 이용계약을 체결하고 회사가 제공하는 서비스를 이용하는 고객을 말합니다.</li>
                             <li>&quot;카페24 연동&quot;: 카페24 오픈 API를 통하여 회원의 쇼핑몰 데이터를 양방향으로 동기화하는 기능을 의미합니다.</li>
                         </ul>

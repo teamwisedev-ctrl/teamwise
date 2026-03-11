@@ -84,7 +84,7 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
     const handleCreateFallbackCategory = async () => {
         if (!cafe24Credentials.mallId) return;
         setIsLoadingCategories(true);
-        const res = await window.electron.ipcRenderer.invoke('create-cafe24-category', { mallId: cafe24Credentials.mallId }, '[Moi 수집 상품]');
+        const res = await window.electron.ipcRenderer.invoke('create-cafe24-category', { mallId: cafe24Credentials.mallId }, '[Mo2 수집 상품]');
         if (res.success && res.category) {
             const newCat = { category_no: res.category.category_no, category_name: res.category.category_name };
             setCafe24Categories(prev => [newCat, ...prev]);
@@ -327,7 +327,7 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
                                             onClick={handleCreateFallbackCategory}
                                             style={{ padding: '12px 16px', fontSize: '14px', whiteSpace: 'nowrap', backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', gap: '6px' }}
                                         >
-                                            <Sparkles size={16} /> [+ Moi 임시 수집함] 자동 생성
+                                            <Sparkles size={16} /> [+ Mo2 임시 수집함] 자동 생성
                                         </button>
                                     </div>
                                 ) : (
@@ -356,7 +356,7 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
                                             onClick={handleCreateFallbackCategory}
                                             style={{ padding: '12px 16px', fontSize: '14px', whiteSpace: 'nowrap', backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', gap: '6px' }}
                                         >
-                                            <Sparkles size={16} /> [+ Moi 임시 수집함] 자동 생성
+                                            <Sparkles size={16} /> [+ Mo2 임시 수집함] 자동 생성
                                         </button>
                                     </div>
                                 )}

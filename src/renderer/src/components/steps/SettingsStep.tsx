@@ -134,7 +134,7 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
                                 // -----------------------------------------
 
                                 const clientId = 'hxHOk08wCdCv4QSzDL0JpA';
-                                const redirectUri = 'https://teamwise-sand.vercel.app/api/market/cafe24/callback';
+                                const redirectUri = 'https://mo2.kr/api/market/cafe24/callback';
                                 const authUrl = `https://${cafe24Credentials.mallId}.cafe24api.com/api/v2/oauth/authorize?response_type=code&client_id=${clientId}&state=${cafe24Credentials.mallId}&redirect_uri=${redirectUri}&scope=mall.read_product,mall.write_product,mall.read_category,mall.write_category,mall.read_order`;
 
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -146,7 +146,7 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
                                 const pollInterval = setInterval(async () => {
                                     attempts++;
                                     try {
-                                        const res = await fetch(`https://teamwise-sand.vercel.app/api/market/cafe24/token`, {
+                                        const res = await fetch(`https://mo2.kr/api/market/cafe24/token`, {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({ mallId: cafe24Credentials.mallId })

@@ -1,5 +1,5 @@
-appId: com.teamwise.moi
-productName: Moi
+appId: com.teamwise.mo2
+productName: Mo2
 directories:
   buildResources: build
 extraResources:
@@ -15,7 +15,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: Moi
+  executableName: Mo2
   verifyUpdateCodeSignature: false
 nsis:
   artifactName: ${name}-${version}-setup.${ext}

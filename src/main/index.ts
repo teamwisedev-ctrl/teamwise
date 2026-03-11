@@ -315,7 +315,7 @@ app.whenReady().then(() => {
       }
 
       // 1-Click License Check against the Next.js unified endpoint
-      const apiUrl = 'https://teamwise-sand.vercel.app/api/verify-license';
+      const apiUrl = 'https://mo2.kr/api/verify-license';
       
       let response = await fetch(apiUrl, {
         method: 'POST',

@@ -17,7 +17,7 @@ export default function Home() {
             </h1>
             <p style={heroDescStyles}>
               도매토피아, 오너클랜 등 여러 곳의 상품을 네이버/쿠팡 등 내 마켓에 동시 전송.<br />
-              귀찮은 단순 노가다는 이제 모이(Moi)에게 맡기세요.
+              귀찮은 단순 노가다는 이제 Mo2에게 맡기세요.
             </p>
             <div style={heroActionsStyles}>
               <Link href="/download" className="btn-primary" style={{ padding: '16px 32px', fontSize: '1.1rem' }}>
@@ -37,7 +37,7 @@ export default function Home() {
                 <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FFBD2E' }}></div>
                 <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27C93F' }}></div>
               </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', flex: 1, textAlign: 'center' }}>Moi Dashboard v3.0.0</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', flex: 1, textAlign: 'center' }}>Mo2 Dashboard v3.0.0</div>
             </div>
             <div style={mockupContentStyles}>
               {/* Visual Pipeline for 1:N Sync */}
@@ -112,7 +112,7 @@ export default function Home() {
         <div className="container animate-slide-up delay-100">
           <div style={{ textAlign: 'center', marginBottom: '80px' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '16px' }}>강력한 핵심 기능</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>판매에만 집중하세요. 나머지는 모이(Moi)가 알아서 합니다.</p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>판매에만 집중하세요. 나머지는 Mo2가 알아서 합니다.</p>
           </div>
 
           <div style={featureGridStyles}>

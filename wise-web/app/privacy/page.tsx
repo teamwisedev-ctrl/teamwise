@@ -4,11 +4,11 @@ export default function PrivacyPage() {
     return (
         <div className="min-h-screen bg-slate-900 text-slate-200 py-20 px-6 sm:px-12">
             <div className="max-w-4xl mx-auto bg-slate-800 rounded-2xl p-8 sm:p-12 shadow-xl border border-slate-700">
-                <h1 className="text-3xl font-bold text-white mb-8">모이(Moi) 개인정보처리방침</h1>
+                <h1 className="text-3xl font-bold text-white mb-8">Mo2 개인정보처리방침</h1>
 
                 <div className="space-y-6 text-slate-300 leading-relaxed">
                     <p>
-                        Team Moi(이하 &quot;회사&quot;)는 개인정보 보호법, 정보통신망 이용촉진 및 정보보호 등에 관한 법률 등 관련 법령에 따라 이용자의 개인정보를 보호하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보 처리방침을 수립·공개합니다.
+                        Team Mo2(이하 &quot;회사&quot;)는 개인정보 보호법, 정보통신망 이용촉진 및 정보보호 등에 관한 법률 등 관련 법령에 따라 이용자의 개인정보를 보호하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보 처리방침을 수립·공개합니다.
                     </p>
 
                     <section>
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
                         <h2 className="text-xl font-semibold text-white mb-3">6. 개인정보 보호책임자</h2>
                         <p>
                             회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 관련 고충처리 및 피해구제를 위하여 아래와 같이 보호책임자를 지정하고 있습니다.<br />
-                            본 개인정보처리방침은 Team Moi(이하 &quot;회사&quot;)가 제공하는 모이(Moi) 마켓 통합 솔루션에 적용됩니다.
+                            본 개인정보처리방침은 Team Mo2(이하 &quot;회사&quot;)가 제공하는 Mo2 마켓 통합 솔루션에 적용됩니다.
                         </p>
                     </section>
 
