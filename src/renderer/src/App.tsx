@@ -1,14 +1,13 @@
 import * as React from 'react'
 import { useState, useRef } from 'react'
-import { Rocket, ShieldCheck } from 'lucide-react';
+import { Rocket, ShieldCheck, Layers } from 'lucide-react';
 import { ActionLogs } from './components/ActionLogs';
 import { DataPrepStep, ScrapeMethod } from './components/steps/DataPrepStep';
 import { MarketSyncStep } from './components/steps/MarketSyncStep';
 import { SyncStepMaster } from './components/steps/SyncStepMaster';
 import { SettingsStep } from './components/steps/SettingsStep';
-import { OrderSyncStep } from './components/steps/OrderSyncStep';
+import { OrderSyncStep, MockOrder } from './components/steps/OrderSyncStep';
 import { Sidebar, ViewType } from './components/Sidebar';
-import LogoImg from './assets/logo.png';
 
 type SyncStatus = 'pending' | 'syncing' | 'success' | 'failed'
 
@@ -38,6 +37,7 @@ function App(): React.JSX.Element {
 
   // Main View State
   const [currentView, setCurrentView] = useState<ViewType>('SOURCING');
+  const [orders, setOrders] = useState<MockOrder[]>([]);
 
 
   const [masterSheetId, setMasterSheetId] = useState<string>('');
@@ -836,7 +836,15 @@ function App(): React.JSX.Element {
       }}>
         <div className="glass-panel" style={{ width: '100%', maxWidth: '420px', textAlign: 'center', padding: '48px 32px', background: 'rgba(30, 41, 59, 0.7)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
           <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
-            <img src={LogoImg} alt="Mo2 Symbol" style={{ width: '80px', height: '80px', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4))' }} />
+            <svg width="0" height="0" style={{ position: 'absolute' }}>
+              <linearGradient id="mo2-gradient-auth" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop stopColor="#60a5fa" offset="0%" />
+                <stop stopColor="#a78bfa" offset="100%" />
+              </linearGradient>
+            </svg>
+            <div style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+              <Layers size={80} stroke="url(#mo2-gradient-auth)" strokeWidth={2.5} />
+            </div>
           </div>
           <h1 style={{ marginBottom: '16px', fontSize: '32px', fontWeight: 800, letterSpacing: '-0.5px', background: 'linear-gradient(to right, #60a5fa, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mo2</h1>
           <p style={{ color: '#94a3b8', marginBottom: '40px', fontSize: '15px', lineHeight: '1.6' }}>안전한 다중 마켓 연동과 통합 데이터 관리를 위해<br />Google 계정으로 간편하게 시작해 보세요.</p>
@@ -993,6 +1001,8 @@ function App(): React.JSX.Element {
                 betaMarketsInfo={betaMarketsInfo}
                 credentials={credentials}
                 cafe24Credentials={cafe24Credentials}
+                orders={orders}
+                setOrders={setOrders}
               />
             )}
 

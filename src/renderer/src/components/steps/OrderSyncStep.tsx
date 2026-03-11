@@ -7,11 +7,13 @@ interface OrderSyncStepProps {
     betaMarketsInfo: Record<string, unknown>;
     credentials?: { clientId: string, clientSecret: string };
     cafe24Credentials?: { mallId: string, connected: boolean };
+    orders: MockOrder[];
+    setOrders: React.Dispatch<React.SetStateAction<MockOrder[]>>;
 }
 
-type OrderStatus = 'PAY_WAITING' | 'PAYED' | 'DISPATCHED' | 'CANCEL_REQUEST' | 'RETURN_REQUEST';
+export type OrderStatus = 'PAY_WAITING' | 'PAYED' | 'DISPATCHED' | 'CANCEL_REQUEST' | 'RETURN_REQUEST';
 
-interface MockOrder {
+export interface MockOrder {
     id: string;
     marketName: string;
     orderDate: string;
@@ -25,10 +27,9 @@ interface MockOrder {
     phone?: string;
 }
 
-export const OrderSyncStep: React.FC<OrderSyncStepProps> = ({ addLog, licenseTier, betaMarketsInfo, credentials, cafe24Credentials }) => {
+export const OrderSyncStep: React.FC<OrderSyncStepProps> = ({ addLog, licenseTier, betaMarketsInfo, credentials, cafe24Credentials, orders, setOrders }) => {
     const [selectedMarket, setSelectedMarket] = useState<string>('all');
     const [isFetching, setIsFetching] = useState(false);
-    const [orders, setOrders] = useState<MockOrder[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<MockOrder | null>(null);
 
     const handleFetchOrders = async () => {
@@ -124,8 +125,8 @@ export const OrderSyncStep: React.FC<OrderSyncStepProps> = ({ addLog, licenseTie
             setOrders(fetchedOrders);
             addLog(`✅ 총 ${fetchedOrders.length}건의 주문 동기화가 완료되었습니다.`);
 
-        } catch (error: any) {
-            addLog(`❌ 주문 수집 중 시스템 오류 발생: ${error.message}`);
+        } catch (error: unknown) {
+            addLog(`❌ 주문 수집 중 시스템 오류 발생: ${(error as Error).message}`);
         } finally {
             setIsFetching(false);
         }
