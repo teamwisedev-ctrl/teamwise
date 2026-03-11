@@ -37,7 +37,7 @@ export default async function PricingPage() {
                 <div className="glass-panel animate-slide-up delay-200" style={pricingCardStyles}>
                     <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Package size={24} /> 오픈마켓 연동(Pro)</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
-                        ₩9,900 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
+                        ₩30,000 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
                     </div>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', wordBreak: 'keep-all' }}>
                         네이버, 쿠팡 등 국내 주요 오픈마켓<br />상품 전송 모듈 추가 제공
@@ -57,7 +57,7 @@ export default async function PricingPage() {
                 <div className="glass-panel animate-slide-up delay-300" style={pricingCardStyles}>
                     <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Zap size={24} color="#eab308" /> 슈퍼셀러 무제한팩</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
-                        ₩19,900 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
+                        ₩50,000 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
                     </div>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
                         월 500건 제한을 전면 해제하고<br />초고속 다중 스레드 업로드 제공
