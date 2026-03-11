@@ -3,6 +3,7 @@ import React from 'react';
 export type ViewType = 'SOURCING' | 'SYNC' | 'ORDERS' | 'SETTINGS';
 
 import { DownloadCloud, Rocket, ShoppingCart, Settings } from 'lucide-react';
+import LogoImg from '../assets/logo.png';
 
 interface SidebarProps {
     currentView: ViewType;
@@ -40,7 +41,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView })
                     alignItems: 'center',
                     gap: '12px'
                 }}>
-                    <span style={{ fontSize: '28px' }}><Rocket size={28} color="#4299e1" /></span>
+                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                        <img src={LogoImg} alt="Mo2 Symbol" style={{ width: '32px', height: '32px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                    </span>
                     Mo2<span style={{ color: '#4299e1' }}>.</span>
                 </h1>
                 <p style={{ color: '#718096', fontSize: '13px', margin: '4px 0 0 0', fontWeight: '500' }}>Multi-Market Hub</p>
