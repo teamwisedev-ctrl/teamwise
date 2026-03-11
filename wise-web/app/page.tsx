@@ -44,8 +44,8 @@ export default function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', padding: '24px 32px' }}>
 
                 {/* Step 1: Source */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(59, 130, 246, 0.2)', color: 'var(--accent-primary)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>📦</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-primary)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>📦</div>
                   <div style={{ flex: 1, textAlign: 'left' }}>
                     <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)' }}>1. 도매토피아 상품 수집</div>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>가전/디지털 카테고리 100건</div>
@@ -56,8 +56,8 @@ export default function Home() {
                 <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '1.2rem', margin: '-8px 0' }}>⬇</div>
 
                 {/* Step 2: Master */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-success)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>📊</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-success)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>📊</div>
                   <div style={{ flex: 1, textAlign: 'left' }}>
                     <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)' }}>2. 마스터 시트 데이터 가공</div>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>판매가 마진율(1.5x) 일괄 적용 및 이미지 호스팅 링크 생성</div>
@@ -81,7 +81,7 @@ export default function Home() {
                         <span>네이버 스마트스토어</span>
                         <span style={{ color: '#03C75A', fontWeight: 600 }}>100 / 100</span>
                       </div>
-                      <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ height: '8px', background: '#E2E8F0', borderRadius: '4px', overflow: 'hidden' }}>
                         <div style={{ width: '100%', height: '100%', background: '#03C75A' }}></div>
                       </div>
                     </div>
@@ -95,7 +95,7 @@ export default function Home() {
                         <span>쿠팡 (Coupang)</span>
                         <span style={{ color: '#CB1400', fontWeight: 600 }}>65 / 100</span>
                       </div>
-                      <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ height: '8px', background: '#E2E8F0', borderRadius: '4px', overflow: 'hidden' }}>
                         <div style={{ width: '65%', height: '100%', background: '#CB1400', transition: 'width 0.5s ease' }}></div>
                       </div>
                     </div>
@@ -243,12 +243,12 @@ const mockupContainerStyles: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
 };
 
 const mockupHeaderStyles: React.CSSProperties = {
   padding: '12px 16px',
-  background: 'rgba(0, 0, 0, 0.4)',
+  background: '#F8FAFC',
   borderBottom: '1px solid var(--border-color)',
   display: 'flex',
   alignItems: 'center',
@@ -263,7 +263,7 @@ const mockupContentStyles: React.CSSProperties = {
 
 const featuresStyles: React.CSSProperties = {
   padding: '120px 0',
-  background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))',
+  background: 'linear-gradient(to bottom, transparent, #F8FAFC)',
 };
 
 const featureGridStyles: React.CSSProperties = {
@@ -311,7 +311,7 @@ const stepNumberStyles: React.CSSProperties = {
   width: '40px',
   height: '40px',
   borderRadius: '50%',
-  background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+  background: 'var(--accent-primary)',
   color: 'white',
   display: 'flex',
   justifyContent: 'center',

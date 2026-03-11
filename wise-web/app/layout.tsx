@@ -38,11 +38,11 @@ export default async function RootLayout({
             <div className="nav-auth" style={authStyles}>
               {user ? (
                 <>
-                  <Link href="/admin" className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '8px', border: 'none' }}>
+                  <Link href="/admin" className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid var(--border-color)', boxShadow: 'none' }}>
                     <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--accent-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>
                       {user.email?.charAt(0).toUpperCase()}
                     </div>
-                    <span>{user.email?.split('@')[0]}</span>
+                    <span style={{ color: 'var(--text-primary)' }}>{user.email?.split('@')[0]}</span>
                   </Link>
                 </>
               ) : (
@@ -95,7 +95,7 @@ const navStyles: React.CSSProperties = {
   left: 0,
   right: 0,
   height: '80px',
-  background: 'rgba(10, 10, 11, 0.8)',
+  background: 'rgba(255, 255, 255, 0.85)',
   backdropFilter: 'blur(12px)',
   WebkitBackdropFilter: 'blur(12px)',
   borderBottom: '1px solid var(--border-color)',

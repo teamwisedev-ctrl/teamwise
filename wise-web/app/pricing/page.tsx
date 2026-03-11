@@ -54,7 +54,7 @@ export default async function PricingPage() {
                 </div>
 
                 {/* Super Seller Unlimited */}
-                <div className="glass-panel animate-slide-up delay-300" style={{ ...pricingCardStyles, border: '2px solid var(--accent-primary)', transform: 'scale(1.05)', backgroundColor: 'rgba(20, 20, 22, 0.9)' }}>
+                <div className="glass-panel animate-slide-up delay-300" style={{ ...pricingCardStyles, border: '2px solid var(--accent-primary)', transform: 'scale(1.05)', backgroundColor: '#EFF6FF' }}>
                     <div style={popularBadgeStyles}>가장 추천</div>
                     <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}><Zap size={24} color="#eab308" /> 슈퍼셀러 무제한팩</h3>
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
