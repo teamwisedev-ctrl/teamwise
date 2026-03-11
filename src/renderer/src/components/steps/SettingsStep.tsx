@@ -138,7 +138,7 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
                                 const authUrl = `https://${cafe24Credentials.mallId}.cafe24api.com/api/v2/oauth/authorize?response_type=code&client_id=${clientId}&state=${cafe24Credentials.mallId}&redirect_uri=${redirectUri}&scope=mall.read_product,mall.write_product,mall.read_category,mall.write_category,mall.read_order`;
 
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                (window as any).electron.ipcRenderer.send('open-external-window', authUrl);
+                                (window as any).electron.ipcRenderer.invoke('open-cafe24-auth-window', authUrl);
 
                                 addLog(`카페24(${cafe24Credentials.mallId}) 연동 브라우저 창을 열었습니다. (잠시 나타났다 사라지는 것은 자동 연결 과정입니다.)`);
 

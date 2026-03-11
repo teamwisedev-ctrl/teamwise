@@ -241,6 +241,52 @@ app.whenReady().then(() => {
     }
   });
 
+  ipcMain.handle('open-cafe24-auth-window', async (_: unknown, authUrl: string) => {
+    return new Promise((resolve) => {
+      const authWin = new BrowserWindow({
+        width: 600,
+        height: 750,
+        title: 'Cafe24 연동',
+        modal: false,
+        autoHideMenuBar: true,
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true
+        }
+      });
+
+      authWin.loadURL(authUrl);
+
+      // We load the URL and wait for Vercel to return the success HTML.
+      // The HTML from Vercel sets the title to "Cafe24 Authentication Success".
+      authWin.webContents.on('page-title-updated', (_event, title) => {
+        if (title === 'Cafe24 Authentication Success' || title.includes('연동 성공')) {
+          setTimeout(() => {
+            if (!authWin.isDestroyed()) {
+              authWin.close();
+              resolve({ success: true });
+            }
+          }, 1500); // Give user 1.5 seconds to see the success message
+        }
+      });
+
+      // Also listen for JSON error responses if it fails
+      authWin.webContents.on('did-finish-load', async () => {
+        if (authWin.isDestroyed()) return;
+        try {
+          const bodyText = await authWin.webContents.executeJavaScript('document.body.innerText');
+          if (bodyText.includes('"error":')) {
+             setTimeout(() => { if (!authWin.isDestroyed()) authWin.close(); resolve({ success: false }); }, 3000);
+          }
+        } catch {}
+      });
+
+      authWin.on('closed', () => {
+        resolve({ success: false, reason: 'closed_by_user' });
+      });
+    });
+  });
+
   // Cafe24 Handlers
   ipcMain.handle('get-cafe24-categories', async (_: unknown, credentials: any) => {
     try {
