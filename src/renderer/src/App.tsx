@@ -838,8 +838,8 @@ function App(): React.JSX.Element {
           <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
             <img src={LogoImg} alt="Mo2 Symbol" style={{ width: '80px', height: '80px', objectFit: 'contain', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4))' }} />
           </div>
-          <h1 style={{ marginBottom: '16px', fontSize: '32px', fontWeight: 800, letterSpacing: '-0.5px', background: 'linear-gradient(to right, #60a5fa, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mo2 Hub</h1>
-          <p style={{ color: '#94a3b8', marginBottom: '40px', fontSize: '15px', lineHeight: '1.6' }}>시스템 접근 권한 및 스프레드시트 연동을 위해<br />Google 계정으로 안전하게 로그인하세요.</p>
+          <h1 style={{ marginBottom: '16px', fontSize: '32px', fontWeight: 800, letterSpacing: '-0.5px', background: 'linear-gradient(to right, #60a5fa, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mo2</h1>
+          <p style={{ color: '#94a3b8', marginBottom: '40px', fontSize: '15px', lineHeight: '1.6' }}>안전한 다중 마켓 연동과 통합 데이터 관리를 위해<br />Google 계정으로 간편하게 시작해 보세요.</p>
           <button className="primary hover-scale" onClick={handleAuth} disabled={isAuthenticating} style={{ width: '100%', padding: '16px', fontSize: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', backgroundColor: isAuthenticating ? 'rgba(255,255,255,0.1)' : '#ffffff', color: isAuthenticating ? '#94a3b8' : '#0f172a', fontWeight: 600, borderRadius: '12px', border: 'none', transition: 'all 0.2s', boxShadow: isAuthenticating ? 'none' : '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', cursor: isAuthenticating ? 'not-allowed' : 'pointer' }}>
             {isAuthenticating ? (
               <span className="spinner" style={{ width: '22px', height: '22px', border: '3px solid rgba(255,255,255,0.3)', borderTop: '3px solid white', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span>
