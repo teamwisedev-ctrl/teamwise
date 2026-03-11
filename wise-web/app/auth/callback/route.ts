@@ -8,6 +8,7 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   // if "next" is in param, use it as the redirect URL
   const next = searchParams.get('next') ?? '/admin'
+  let exchangeError: unknown = null;
 
   if (code) {
     const cookieStore = await cookies()
@@ -24,7 +25,8 @@ export async function GET(request: Request) {
               cookiesToSet.forEach(({ name, value, options }) =>
                 cookieStore.set(name, value, options)
               )
-            } catch {
+            } catch (err) {
+              console.error("cookieStore.set error in callback route:", err);
               // The `setAll` method was called from a Server Component.
               // This can be ignored if you have middleware refreshing
               // user sessions.
@@ -34,6 +36,8 @@ export async function GET(request: Request) {
       }
     )
     const { error } = await supabase.auth.exchangeCodeForSession(code)
+    exchangeError = error;
+    
     if (!error) {
       // Use the NEXT_PUBLIC_SITE_URL environment variable if set (which is our Vercel prod URL),
       // otherwise fallback to the origin of the request.
@@ -45,9 +49,20 @@ export async function GET(request: Request) {
       }
 
       return NextResponse.redirect(`${siteUrl}${next}`)
+    } else {
+      console.error("Supabase exchangeCodeForSession Error:", error);
+      return NextResponse.json({
+        success: false,
+        message: "Supabase 인증 세션 교환에 실패했습니다.",
+        errorDetails: error
+      }, { status: 400 });
     }
   }
 
   // return the user to an error page with some instructions
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  console.error("OAuth Callback Error:", exchangeError || "No code provided in URL");
+  return NextResponse.json({
+    success: false,
+    message: "인증 코드가 URL에 없습니다.",
+  }, { status: 400 });
 }

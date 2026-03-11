@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, ipcMain, session } from 'electron';
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import { authorize, logout, getNewToken } from './auth';
-import { createSpreadsheet, writeToSheet, readFromSheet, updateSheetCell, getOrCreateMasterSheet, getOrCreateCategoryMasterSheet, appendToMasterSheet } from './sheets';
+import { createSpreadsheet, writeToSheet, readFromSheet, updateSheetCell, getOrCreateMasterSheet, getOrCreateCategoryMasterSheet, appendToMasterSheet, getOrCreateOrderMasterSheet, appendOrdersToSheet } from './sheets';
 import { fetchSmartStoreOrders, registerSmartStoreProduct, updateSmartStoreProduct, uploadImageToNaverFromUrl, searchSmartStoreCategories, fetchSmartstoreProductStatus, updateSmartstoreProductStatus, deleteSmartstoreProduct, updateSmartStorePrice } from './smartstore';
 import { createCafe24Product, updateCafe24Product, deleteCafe24Product, Cafe24ProductPayload, fetchCafe24Orders, fetchCafe24Categories, createCafe24Category } from './cafe24';
 import { scrapeDometopiaProduct, scrapeCategoryLinks, checkDometopiaStatus } from './scraper';
@@ -423,6 +423,24 @@ app.whenReady().then(() => {
   ipcMain.handle('write-sheet', async (_: any, spreadsheetId: string, range: string, values: string[][]) => {
     try {
       await writeToSheet(spreadsheetId, range, values);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle('get-or-create-order-db', async () => {
+    try {
+      const spreadsheetId = await getOrCreateOrderMasterSheet();
+      return { success: true, spreadsheetId };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle('append-orders-to-sheet', async (_: any, spreadsheetId: string, values: any[][]) => {
+    try {
+      await appendOrdersToSheet(spreadsheetId, values);
       return { success: true };
     } catch (error: any) {
       return { success: false, error: error.message };

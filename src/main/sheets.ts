@@ -80,9 +80,9 @@ export async function getOrCreateMasterSheet(): Promise<string> {
 
         return newSheetId;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Failed to get or create Master Sheet', error);
-        throw new Error(`Master DB Initialization Failed: ${error.message}`);
+        throw new Error(`Master DB Initialization Failed: ${(error as Error).message}`);
     }
 }
 
@@ -158,14 +158,14 @@ export async function getOrCreateCategoryMasterSheet(): Promise<string> {
 
         return newSheetId;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Failed to get or create Category Master Sheet', error);
-        throw new Error(`Category DB Initialization Failed: ${error.message}`);
+        throw new Error(`Category DB Initialization Failed: ${(error as Error).message}`);
     }
 }
 
 
-export async function appendToMasterSheet(spreadsheetId: string, values: any[][]) {
+export async function appendToMasterSheet(spreadsheetId: string, values: unknown[][]) {
     const auth = await authorize();
     const sheets = google.sheets({ version: 'v4', auth });
 
@@ -175,17 +175,17 @@ export async function appendToMasterSheet(spreadsheetId: string, values: any[][]
         valueInputOption: 'RAW',
         insertDataOption: 'INSERT_ROWS',
         requestBody: {
-            values
+            values: values as any[][]
         }
     });
 }
 
-export async function writeToSheet(spreadsheetId: string, range: string, values: any[][]) {
+export async function writeToSheet(spreadsheetId: string, range: string, values: unknown[][]) {
     const auth = await authorize();
     const sheets = google.sheets({ version: 'v4', auth });
 
     const resource = {
-        values,
+        values: values as any[][],
     };
 
     await sheets.spreadsheets.values.update({
@@ -227,8 +227,8 @@ export async function readFromSheet(spreadsheetId: string, range: string) {
         console.log(`[readFromSheet] Values length: ${response.data.values?.length}`);
         
         return response.data.values || [];
-    } catch (e: any) {
-        console.error(`[readFromSheet] API Error:`, e.message);
+    } catch (e: unknown) {
+        console.error(`[readFromSheet] API Error:`, (e as Error).message);
         throw e;
     }
 }
@@ -236,3 +236,83 @@ export async function readFromSheet(spreadsheetId: string, range: string) {
 export function setupSheetHandlers() {
     // Add internal sheet ipc handlers if needed 
 }
+
+export async function getOrCreateOrderMasterSheet(): Promise<string> {
+    const auth = await authorize();
+    const drive = google.drive({ version: 'v3', auth });
+    const sheets = google.sheets({ version: 'v4', auth });
+    
+    const orderSheetName = '[Mo2] 통합 주문수집 마스터 DB v3';
+
+    try {
+        const res = await drive.files.list({
+            q: `name='${orderSheetName}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false`,
+            spaces: 'drive',
+            fields: 'files(id, name)',
+        });
+
+        if (res.data.files && res.data.files.length > 0) {
+            const fileId = res.data.files[0].id!;
+            console.log(`[Order DB] Found existing database: ${fileId}`);
+            return fileId;
+        }
+
+        console.log(`[Order DB] Not found. Creating new Order DB sheet...`);
+        const createRes = await sheets.spreadsheets.create({
+            requestBody: {
+                properties: { title: orderSheetName }
+            },
+            fields: 'spreadsheetId'
+        });
+
+        const newSheetId = createRes.data.spreadsheetId!;
+
+        // Write Header Row
+        await sheets.spreadsheets.values.update({
+            spreadsheetId: newSheetId,
+            range: 'A1:M1', // 13 Columns
+            valueInputOption: 'RAW',
+            requestBody: {
+                values: [['주문채널', '주문번호', '주문일시', '주문상태', '상품명', '옵션명', '수량', '구매자명', '결제금액', '수취인/연락처/주소', '택배사', '송장번호', '발송일자']]
+            }
+        });
+
+        // 1행 틀고정 (Freeze header row)
+        await sheets.spreadsheets.batchUpdate({
+            spreadsheetId: newSheetId,
+            requestBody: {
+                requests: [{
+                    updateSheetProperties: {
+                        properties: {
+                            sheetId: 0,
+                            gridProperties: { frozenRowCount: 1 }
+                        },
+                        fields: 'gridProperties.frozenRowCount'
+                    }
+                }]
+            }
+        });
+
+        return newSheetId;
+
+    } catch (error: unknown) {
+        console.error('Failed to get or create Order Master Sheet', error);
+        throw new Error(`Order DB Initialization Failed: ${(error as Error).message}`);
+    }
+}
+
+export async function appendOrdersToSheet(spreadsheetId: string, values: unknown[][]) {
+    const auth = await authorize();
+    const sheets = google.sheets({ version: 'v4', auth });
+
+    await sheets.spreadsheets.values.append({
+        spreadsheetId,
+        range: 'A:M',
+        valueInputOption: 'RAW',
+        insertDataOption: 'INSERT_ROWS',
+        requestBody: {
+            values: values as any[][]
+        }
+    });
+}
+

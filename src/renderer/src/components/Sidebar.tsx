@@ -2,8 +2,7 @@ import React from 'react';
 
 export type ViewType = 'SOURCING' | 'SYNC' | 'ORDERS' | 'SETTINGS';
 
-import { DownloadCloud, Rocket, ShoppingCart, Settings } from 'lucide-react';
-import LogoImg from '../assets/logo.png';
+import { DownloadCloud, Rocket, ShoppingCart, Settings, Layers } from 'lucide-react';
 
 interface SidebarProps {
     currentView: ViewType;
@@ -42,7 +41,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView })
                     gap: '12px'
                 }}>
                     <span style={{ display: 'flex', alignItems: 'center' }}>
-                        <img src={LogoImg} alt="Mo2 Symbol" style={{ width: '32px', height: '32px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                        <svg width="0" height="0" style={{ position: 'absolute' }}>
+                            <linearGradient id="mo2-gradient-sidebar" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop stopColor="#3b82f6" offset="0%" />
+                                <stop stopColor="#8b5cf6" offset="100%" />
+                            </linearGradient>
+                        </svg>
+                        <Layers size={32} stroke="url(#mo2-gradient-sidebar)" strokeWidth={2.5} />
                     </span>
                     Mo2<span style={{ color: '#4299e1' }}>.</span>
                 </h1>

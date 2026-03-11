@@ -38,6 +38,7 @@ function App(): React.JSX.Element {
   // Main View State
   const [currentView, setCurrentView] = useState<ViewType>('SOURCING');
   const [orders, setOrders] = useState<MockOrder[]>([]);
+  const [orderDBId, setOrderDBId] = useState<string>('');
 
 
   const [masterSheetId, setMasterSheetId] = useState<string>('');
@@ -1003,6 +1004,8 @@ function App(): React.JSX.Element {
                 cafe24Credentials={cafe24Credentials}
                 orders={orders}
                 setOrders={setOrders}
+                orderDBId={orderDBId}
+                setOrderDBId={setOrderDBId}
               />
             )}
 

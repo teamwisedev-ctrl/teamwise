@@ -9,6 +9,8 @@ interface OrderSyncStepProps {
     cafe24Credentials?: { mallId: string, connected: boolean };
     orders: MockOrder[];
     setOrders: React.Dispatch<React.SetStateAction<MockOrder[]>>;
+    orderDBId: string;
+    setOrderDBId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export type OrderStatus = 'PAY_WAITING' | 'PAYED' | 'DISPATCHED' | 'CANCEL_REQUEST' | 'RETURN_REQUEST';
@@ -27,10 +29,74 @@ export interface MockOrder {
     phone?: string;
 }
 
-export const OrderSyncStep: React.FC<OrderSyncStepProps> = ({ addLog, licenseTier, betaMarketsInfo, credentials, cafe24Credentials, orders, setOrders }) => {
+export const OrderSyncStep: React.FC<OrderSyncStepProps> = ({ addLog, licenseTier, betaMarketsInfo, credentials, cafe24Credentials, orders, setOrders, orderDBId, setOrderDBId }) => {
     const [selectedMarket, setSelectedMarket] = useState<string>('all');
     const [isFetching, setIsFetching] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<MockOrder | null>(null);
+
+    // Initial load from Google Sheets if connected but memory is empty
+    React.useEffect(() => {
+        if (orderDBId && orders.length === 0) {
+            handleLoadOrdersFromDB();
+        }
+    }, [orderDBId]);
+
+    const handleLoadOrdersFromDB = async () => {
+        setIsFetching(true);
+        addLog('마스터 DB에서 기존 주문 데이터를 불러옵니다...');
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const ipcRenderer = (window as any).electron.ipcRenderer;
+            const res = await ipcRenderer.invoke('read-sheet', orderDBId, 'A2:M');
+            if (res.success && res.data) {
+                const loadedOrders: MockOrder[] = res.data.map((row: string[]) => ({
+                    marketName: row[0] || '',
+                    id: row[1] || `UNK-${Math.random()}`,
+                    orderDate: row[2] || '',
+                    status: (row[3] as OrderStatus) || 'PAYED',
+                    productName: row[4] || '',
+                    option: row[5] || '',
+                    quantity: parseInt(row[6], 10) || 1,
+                    buyerName: row[7] || '',
+                    price: parseInt(row[8], 10) || 0,
+                    address: row[9] || '', 
+                    phone: '',
+                }));
+                // Sort by date desc
+                loadedOrders.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
+                setOrders(loadedOrders);
+                addLog(`✅ 마스터 DB에서 ${loadedOrders.length}건의 주문 내역을 복원했습니다.`);
+            } else if (res.error) {
+                throw new Error(res.error);
+            }
+        } catch (err: unknown) {
+            addLog(`❌ 마스터 DB 조회 오류: ${(err as Error).message}`);
+        } finally {
+            setIsFetching(false);
+        }
+    };
+
+    const handleConnectOrderDB = async () => {
+        setIsConnecting(true);
+        addLog('구글 드라이브에서 통합 주문수집 마스터 DB를 검색/생성합니다...');
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const ipcRenderer = (window as any).electron.ipcRenderer;
+            const res = await ipcRenderer.invoke('get-or-create-order-db');
+            if (res.success && res.spreadsheetId) {
+                setOrderDBId(res.spreadsheetId);
+                addLog(`✅ 주문 마스터 DB 연결 성공! (ID: ${res.spreadsheetId})`);
+            } else {
+                throw new Error(res.error || '알 수 없는 오류');
+            }
+        } catch (err: unknown) {
+            addLog(`❌ 마스터 DB 연결 실패: ${(err as Error).message}`);
+            alert(`마스터 DB 연동 중 오류가 발생했습니다.\n${(err as Error).message}`);
+        } finally {
+            setIsConnecting(false);
+        }
+    };
 
     const handleFetchOrders = async () => {
         setIsFetching(true);
@@ -119,11 +185,44 @@ export const OrderSyncStep: React.FC<OrderSyncStepProps> = ({ addLog, licenseTie
 
             await Promise.all(fetchPromises);
 
-            // Sort by Date Descending
-            fetchedOrders.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
+            // Filter out existing orders based on ID to find only truly NEW orders
+            const newOrders = fetchedOrders.filter(fo => !orders.some(eo => eo.id === fo.id));
 
-            setOrders(fetchedOrders);
-            addLog(`✅ 총 ${fetchedOrders.length}건의 주문 동기화가 완료되었습니다.`);
+            if (newOrders.length > 0) {
+                // Sort by Date Descending
+                newOrders.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
+
+                // Append to Google Sheets directly if DB is connected
+                if (orderDBId) {
+                    addLog(`구글 시트에 신규 주문 ${newOrders.length}건을 기록합니다...`);
+                    const rowsToAppend = newOrders.map(o => [
+                        o.marketName,
+                        o.id,
+                        o.orderDate,
+                        o.status,
+                        o.productName,
+                        o.option,
+                        o.quantity,
+                        o.buyerName,
+                        o.price,
+                        `${o.buyerName} / ${o.phone} / ${o.address}`,
+                        '', // 택배사
+                        '', // 송장번호
+                        ''  // 발송일자
+                    ]);
+                    await ipcRenderer.invoke('append-orders-to-sheet', orderDBId, rowsToAppend);
+                    addLog(`✅ 구글 시트에 신규 주문 기록 완료.`);
+                } else {
+                    addLog(`⚠️ 주문 마스터 DB가 연결되지 않아 임시 보관됩니다.`);
+                }
+
+                const updatedOrders = [...orders, ...newOrders];
+                updatedOrders.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
+                setOrders(updatedOrders);
+                addLog(`✅ 총 ${newOrders.length}건의 신규 주문 동기화가 완료되었습니다.`);
+            } else {
+                addLog(`✅ 동기화 완료: 새로운 주문이 없습니다.`);
+            }
 
         } catch (error: unknown) {
             addLog(`❌ 주문 수집 중 시스템 오류 발생: ${(error as Error).message}`);
@@ -155,28 +254,57 @@ export const OrderSyncStep: React.FC<OrderSyncStepProps> = ({ addLog, licenseTie
     };
 
     return (
-        <div className="animate-fade-in" style={{ width: '100%', margin: '0 auto' }}>
-            {/* Header & Controls */}
+        <div style={{ padding: '24px 32px', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            {/* Controls & Filters Wrapper */}
             <div style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px', gap: '16px' }}>
-                    <div style={{ flex: '1 1 300px' }}>
-                        <div className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#f8fafc' }}>
-                            <ShoppingBag size={24} color="#3b82f6" /> 통합 주문 관리 (발주/배송)
-                        </div>
-                        <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '14px', lineHeight: '1.5' }}>
-                            연동된 여러 마켓의 주문을 한 곳에서 모아보고, 도매처 발주서 포맷으로 출력하세요.
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' }}>
+                    <div>
+                        <h1 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 700, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <ShoppingBag size={24} color="#3b82f6" /> 통합 주문 관리
+                        </h1>
+                        <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '14px' }}>
+                            연동된 모든 마켓의 신규 주문을 수집하고, 구글 시트에 누적 기록하여 발주를 관리합니다.
                         </p>
                     </div>
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap' }}>
-                        <button className="secondary" onClick={handleDownloadExcel} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', padding: '10px 16px', whiteSpace: 'nowrap' }} disabled={orders.length === 0}>
-                            <Download size={16} /> 도매처 발주서 다운로드
-                        </button>
-                        <button className="primary" onClick={handleFetchOrders} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', padding: '10px 16px', whiteSpace: 'nowrap' }} disabled={isFetching}>
-                            {isFetching ? <div className="spinner" style={{ width: '16px', height: '16px' }} /> : <RefreshCw size={16} />}
-                            {isFetching ? '수집 중...' : '신규 주문 마스터 동기화'}
-                        </button>
-                    </div>
                 </div>
+
+                {/* DB Connection Badge */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', padding: '16px', borderRadius: '12px', background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                    <div>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: '15px', color: 'var(--color-text)' }}>통합 주문수집 마스터 DB 연결</h3>
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--color-text-muted)' }}>
+                            {orderDBId 
+                                ? '구글 스프레드시트에 주문 데이터베이스가 안전하게 연결되어 있습니다.' 
+                                : '수집된 주문 목록을 영구적으로 보관하고 관리할 구글 시트를 연동하세요.'}
+                        </p>
+                    </div>
+                    {orderDBId ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: '#dcfce7', color: '#15803d', borderRadius: '8px', fontSize: '14px', fontWeight: 500 }}>
+                            <CheckCircle2 size={16} /> 연결됨
+                        </div>
+                    ) : (
+                        <button 
+                            className="primary"
+                            onClick={handleConnectOrderDB}
+                            disabled={isConnecting}
+                        >
+                            {isConnecting ? '연결 중...' : '마스터 DB 연동하기'}
+                        </button>
+                    )}
+                </div>
+
+                {/* Controls */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap' }}>
+                    <button className="secondary" onClick={handleDownloadExcel} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', padding: '10px 16px', whiteSpace: 'nowrap' }} disabled={orders.length === 0}>
+                        <Download size={16} /> 도매처 발주서 다운로드
+                    </button>
+                    <button className="primary" onClick={handleFetchOrders} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', padding: '10px 16px', whiteSpace: 'nowrap' }} disabled={isFetching || !orderDBId}>
+                        {isFetching ? <div className="spinner" style={{ width: '16px', height: '16px' }} /> : <RefreshCw size={16} />}
+                        {isFetching ? '수집 중...' : '신규 주문 마스터 동기화'}
+                    </button>
+                </div>
+            </div>
 
                 {/* Filters */}
                 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', paddingBottom: '16px', borderBottom: '1px solid var(--color-border)' }}>
