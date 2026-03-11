@@ -12,12 +12,12 @@ export default function Home() {
               <span style={{ color: 'var(--text-secondary)', marginLeft: '8px', fontSize: '0.9rem' }}>다중 마켓 1:N 동기화 완벽 지원</span>
             </div>
             <h1 style={heroTitleStyles}>
-              도매처 상품 수백 개,<br />
-              <span className="gradient-text-accent">클릭 한 번에 알아서 척척</span>
+              내 모든 쇼핑몰 관리를 2배 더 가볍게,<br />
+              <span className="gradient-text-accent">하나로 모이(Mo2)는 동기화 솔루션</span>
             </h1>
             <p style={heroDescStyles}>
-              도매토피아, 오너클랜 등 여러 곳의 상품을 네이버/쿠팡 등 내 마켓에 동시 전송.<br />
-              귀찮은 단순 노가다는 이제 Mo2에게 맡기세요.
+              수많은 도매처 상품을 내 마켓(카페24 등)으로 클릭 한 번에 전송하세요.<br />
+              &apos;모으다&apos;의 의미를 담은 Mo2가 귀찮은 수작업을 덜어드립니다.
             </p>
             <div style={heroActionsStyles}>
               <Link href="/download" className="btn-primary" style={{ padding: '16px 32px', fontSize: '1.1rem' }}>
@@ -73,30 +73,30 @@ export default function Home() {
                     <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--accent-primary)' }}>🚀 3. 내 마켓으로 동시 배포 중 (1:N)</div>
                   </div>
 
-                  {/* Naver */}
+                  {/* Cafe24 */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#03C75A', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>N</div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#1A1A1A', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>C</div>
                     <div style={{ flex: 1, textAlign: 'left' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '6px', color: 'var(--text-secondary)' }}>
-                        <span>네이버 스마트스토어</span>
-                        <span style={{ color: '#03C75A', fontWeight: 600 }}>100 / 100</span>
+                        <span>카페24 (Cafe24 자사몰)</span>
+                        <span style={{ color: '#1A1A1A', fontWeight: 600 }}>100 / 100</span>
                       </div>
                       <div style={{ height: '8px', background: '#E2E8F0', borderRadius: '4px', overflow: 'hidden' }}>
-                        <div style={{ width: '100%', height: '100%', background: '#03C75A' }}></div>
+                        <div style={{ width: '100%', height: '100%', background: '#1A1A1A' }}></div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Coupang */}
+                  {/* Naver */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#CB1400', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>C</div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#03C75A', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>N</div>
                     <div style={{ flex: 1, textAlign: 'left' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '6px', color: 'var(--text-secondary)' }}>
-                        <span>쿠팡 (Coupang)</span>
-                        <span style={{ color: '#CB1400', fontWeight: 600 }}>65 / 100</span>
+                        <span>네이버 스마트스토어</span>
+                        <span style={{ color: '#03C75A', fontWeight: 600 }}>65 / 100</span>
                       </div>
                       <div style={{ height: '8px', background: '#E2E8F0', borderRadius: '4px', overflow: 'hidden' }}>
-                        <div style={{ width: '65%', height: '100%', background: '#CB1400', transition: 'width 0.5s ease' }}></div>
+                        <div style={{ width: '65%', height: '100%', background: '#03C75A', transition: 'width 0.5s ease' }}></div>
                       </div>
                     </div>
                   </div>
