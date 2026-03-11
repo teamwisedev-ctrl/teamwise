@@ -26,7 +26,7 @@ export default async function RootLayout({
             <div style={logoStyles}>
               <Link href="/">
                 <span className="gradient-text-accent" style={{ fontWeight: 800, fontSize: '1.5rem', letterSpacing: '-0.5px' }}>
-                  WISE
+                  Moi
                 </span>
               </Link>
             </div>
@@ -68,7 +68,7 @@ export default async function RootLayout({
         <footer style={footerStyles}>
           <div className="container" style={footerContainerStyles}>
             <div>
-              <h3 style={{ marginBottom: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>WISE</h3>
+              <h3 style={{ marginBottom: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>Moi</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                 초보 셀러도 쉽게 시작하는<br />1:N 마켓 상품 동기화 솔루션
               </p>

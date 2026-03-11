@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       console.log(`User profile not found for email: ${email}`);
       return NextResponse.json({ 
         success: false, 
-        error: `[${email}] 웹사이트 가입 이력이 없습니다. 먼저 웹사이트(WISE)에 가입하고 요금제를 선택해 주세요.` 
+        error: `[${email}] 웹사이트 가입 이력이 없습니다. 먼저 웹사이트(Moi)에 가입하고 요금제를 선택해 주세요.` 
       }, { status: 403 });
     }
 
