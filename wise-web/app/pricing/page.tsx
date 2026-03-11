@@ -28,9 +28,9 @@ export default async function PricingPage() {
                         <li>✔️ 기본 소싱처 (도매토피아) 연동</li>
                         <li>✔️ 월 동기화 최대 500건 제한</li>
                     </ul>
-                    <button disabled className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
-                        기본 제공
-                    </button>
+                    <a href="/login" className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', textDecoration: 'none', display: 'inline-block' }}>
+                        신청하기
+                    </a>
                 </div>
 
                 {/* Open Market Add-on */}
@@ -48,7 +48,7 @@ export default async function PricingPage() {
                         <li>✔️ 플랫폼별 배송/출고지 템플릿 연동</li>
                         <li>✔️ 마켓별 무제한 스토어 계정 연결</li>
                     </ul>
-                    <button disabled className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
+                    <button disabled className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '1.1rem', marginTop: 'auto', opacity: 0.5, cursor: 'not-allowed' }}>
                         출시 준비 중
                     </button>
                 </div>
