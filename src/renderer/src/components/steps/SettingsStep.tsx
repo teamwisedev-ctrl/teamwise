@@ -146,7 +146,7 @@ export const SettingsStep: React.FC<SettingsStepProps> = ({
                                 const pollInterval = setInterval(async () => {
                                     attempts++;
                                     try {
-                                        const res = await fetch(`https://mo2.kr/api/market/cafe24/token`, {
+                                        const res = await fetch(`https://teamwise-sand.vercel.app/api/market/cafe24/token`, {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({ mallId: cafe24Credentials.mallId })

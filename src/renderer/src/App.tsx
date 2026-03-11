@@ -59,7 +59,7 @@ function App(): React.JSX.Element {
     const savedMallId = localStorage.getItem('cafe24MallId');
     if (savedMallId) {
       // 백그라운드에서 카페24 연동 상태(토큰 유효성)를 자동 복구
-      fetch(`https://mo2.kr/api/market/cafe24/token`, {
+      fetch(`https://teamwise-sand.vercel.app/api/market/cafe24/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mallId: savedMallId })
