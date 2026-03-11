@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
+import { Layers } from 'lucide-react';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -19,13 +20,17 @@ export default async function RootLayout({
   return (
     <html lang="ko">
       <body>
-        {/* Global Navigation Bar */}
-        {/* Global Navigation Bar */}
         <nav className="nav-wrapper" style={navStyles}>
           <div className="container nav-container" style={navContainerStyles}>
             <div style={logoStyles}>
-              <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-                <img src="/logo.png" alt="Mo2 Icon" style={{ width: '36px', height: '36px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+              <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                <svg width="0" height="0">
+                  <linearGradient id="mo2-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop stopColor="var(--accent-primary)" offset="0%" />
+                    <stop stopColor="var(--accent-secondary)" offset="100%" />
+                  </linearGradient>
+                </svg>
+                <Layers size={32} stroke="url(#mo2-gradient)" strokeWidth={2.5} />
                 <span className="gradient-text-accent" style={{ fontWeight: 800, fontSize: '1.6rem', letterSpacing: '-0.5px' }}>
                   Mo2
                 </span>
