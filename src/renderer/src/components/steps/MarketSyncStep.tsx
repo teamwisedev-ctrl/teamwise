@@ -197,12 +197,12 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
                             <table className="data-table">
                                 <thead>
                                     <tr>
-                                        <th>순번</th>
-                                        <th>상품명</th>
-                                        <th>카테고리ID</th>
-                                        <th>최종 판매가</th>
-                                        <th>상태</th>
-                                        <th>응답 결과</th>
+                                        <th style={{ whiteSpace: 'nowrap' }}>순번</th>
+                                        <th style={{ whiteSpace: 'nowrap' }}>상품명</th>
+                                        <th style={{ whiteSpace: 'nowrap' }}>카테고리ID</th>
+                                        <th style={{ whiteSpace: 'nowrap' }}>최종 판매가</th>
+                                        <th style={{ whiteSpace: 'nowrap' }}>상태</th>
+                                        <th style={{ whiteSpace: 'nowrap', minWidth: '160px' }}>응답 결과</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -221,14 +221,16 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
                                                     <td style={{ whiteSpace: 'nowrap' }}>
                                                         <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>{idx + 1}</div>
                                                     </td>
-                                                    <td style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                                        {row[3] ? (
-                                                            <img className="table-thumbnail" src={row[3]} alt="thumbnail" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                                                        ) : (
-                                                            <div className="table-thumbnail" style={{ borderStyle: 'dashed' }} />
-                                                        )}
-                                                        <div style={{ maxWidth: '240px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 600, letterSpacing: '-0.02em', color: '#f8fafc' }}>
-                                                            {row[1]}
+                                                    <td>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                                            {row[3] ? (
+                                                                <img className="table-thumbnail" src={row[3]} alt="thumbnail" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                                            ) : (
+                                                                <div className="table-thumbnail" style={{ borderStyle: 'dashed' }} />
+                                                            )}
+                                                            <div style={{ maxWidth: '240px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 600, letterSpacing: '-0.02em', color: '#f8fafc' }}>
+                                                                {row[1]}
+                                                            </div>
                                                         </div>
                                                     </td>
                                                     <td>
@@ -247,13 +249,13 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
                                                             </span>
                                                         </div>
                                                     </td>
-                                                    <td>
+                                                    <td style={{ whiteSpace: 'nowrap' }}>
                                                         <div className={`badge ${statusInfo.status}`}>
                                                             <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'currentColor' }}></span>
                                                             {statusInfo.status}
                                                         </div>
                                                     </td>
-                                                    <td style={{ color: statusInfo.status === 'failed' ? '#f87171' : (statusInfo.status === 'success' ? '#34d399' : '#cbd5e1') }}>
+                                                    <td style={{ color: statusInfo.status === 'failed' ? '#f87171' : (statusInfo.status === 'success' ? '#34d399' : '#cbd5e1'), wordBreak: 'keep-all', minWidth: '160px' }}>
                                                         {statusInfo.message}
                                                     </td>
                                                 </tr>
