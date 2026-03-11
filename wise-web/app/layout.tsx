@@ -24,8 +24,9 @@ export default async function RootLayout({
         <nav className="nav-wrapper" style={navStyles}>
           <div className="container nav-container" style={navContainerStyles}>
             <div style={logoStyles}>
-              <Link href="/">
-                <span className="gradient-text-accent" style={{ fontWeight: 800, fontSize: '1.5rem', letterSpacing: '-0.5px' }}>
+              <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+                <img src="/logo.png" alt="Mo2 Icon" style={{ width: '36px', height: '36px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                <span className="gradient-text-accent" style={{ fontWeight: 800, fontSize: '1.6rem', letterSpacing: '-0.5px' }}>
                   Mo2
                 </span>
               </Link>
