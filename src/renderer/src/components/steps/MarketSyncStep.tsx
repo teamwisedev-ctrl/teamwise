@@ -218,7 +218,9 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
 
                                             return (
                                                 <tr key={rowIdx}>
-                                                    <td style={{ whiteSpace: 'nowrap' }}>{idx + 1}번째 상품</td>
+                                                    <td style={{ whiteSpace: 'nowrap' }}>
+                                                        <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>{idx + 1}</div>
+                                                    </td>
                                                     <td style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                                                         {row[3] ? (
                                                             <img className="table-thumbnail" src={row[3]} alt="thumbnail" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />

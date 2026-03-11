@@ -270,7 +270,7 @@ function App(): React.JSX.Element {
           const writeRes = await window.electron.ipcRenderer.invoke('write-sheet', sheetId, writeRange, [rowData]);
 
           if (writeRes.success) {
-            addLog(`  ✅ ${i + 1}번째 상품 시트 기록 완료!`);
+            addLog(`  ✅ 상품 [${i + 1}] 시트 기록 완료!`);
             nextRow++;
           } else {
             addLog(`  ❌ 시트 기록 실패: ${writeRes.error}`);
@@ -531,7 +531,7 @@ function App(): React.JSX.Element {
     const cafe24MallId = cafe24Credentials.mallId;
 
     if (targetMarkets.includes('cafe24') && (!cafe24MallId || !cafe24Credentials.connected)) {
-      addLog('에러: 카페24 API 인증 정보가 누락되었습니다. 1:N 설정(스토어 로고 클릭)에서 기입해주세요.');
+      addLog('에러: 카페24 API 인증 정보가 누락되었습니다. [연동 및 환경 설정] 메뉴에서 기입해주세요.');
       return;
     }
 
