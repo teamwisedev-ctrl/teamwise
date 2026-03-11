@@ -31,7 +31,7 @@ export default function GuidePage() {
                     <div style={{ flex: 1 }}>
                         <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '12px' }}>2단계: 소싱처(도매토피아) 연동</h3>
                         <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '16px', wordBreak: 'keep-all' }}>
-                            앱 내 <strong>[도매처 관리]</strong> 메뉴로 이동하여 도매토피아 발급 API 키(Client ID / Secret)를 입력합니다. 검증 버튼을 눌러 상태가 <span style={{ color: '#10B981', fontWeight: 'bold' }}>Active</span>로 변경되면 도매처 상품을 성공적으로 불러올 준비가 완료된 것입니다.
+                            앱 내 <strong>[도매처 관리]</strong> 메뉴로 이동하여 도매토피아 소싱처를 선택하고 연결을 진행합니다. 별도의 복잡한 API 키 발급 없이도 간단하게 계정 연동 상태가 <span style={{ color: '#10B981', fontWeight: 'bold' }}>Active</span>로 변경되며, 즉시 수만 개의 상품을 불러올 준비가 갖춰집니다.
                         </p>
                     </div>
                 </div>
