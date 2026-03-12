@@ -96,8 +96,48 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView })
                 ))}
             </nav>
 
+            {/* Affiliate B2B Banner (Highly Visible on every page) */}
+            <a 
+                href="https://link.coupang.com/a/bGZZZZ"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                    marginTop: 'auto',
+                    marginBottom: '12px',
+                    padding: '12px',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#3b82f6';
+                    e.currentTarget.style.backgroundColor = '#eff6ff';
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e2e8f0';
+                    e.currentTarget.style.backgroundColor = '#f8fafc';
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>AD</span>
+                    <ShoppingCart size={14} color="#64748b" />
+                </div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b', marginTop: '4px' }}>
+                    셀러 최저가 부자재
+                </div>
+                <div style={{ fontSize: '11px', color: '#64748b' }}>
+                    택배박스 & 뽁뽁이 로켓배송 특가
+                </div>
+            </a>
+
             <div style={{
-                marginTop: 'auto',
                 padding: '16px',
                 backgroundColor: 'rgba(255, 255, 255, 0.5)',
                 borderRadius: '12px',
