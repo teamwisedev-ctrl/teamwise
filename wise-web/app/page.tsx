@@ -27,7 +27,8 @@ export default function Home() {
               </span>
             </div>
             <h1 style={heroTitleStyles}>
-              내 모든 쇼핑몰 관리를 2배 더 가볍게,
+              내 모든 쇼핑몰 관리를{' '}
+              <span style={{ color: 'var(--accent-primary)', fontWeight: 900 }}>2배</span> 더 가볍게,
               <br />
               <span className="gradient-text-accent">하나로 모이(Mo2)는 동기화 솔루션</span>
             </h1>
