@@ -41,7 +41,7 @@ export default async function RootLayout({
             </div>
             <div className="nav-menu">
               <Link href="/" style={linkStyles}>홈</Link>
-              <Link href="/guide" style={linkStyles}>이용 가이드</Link>
+              <Link href="/guide" style={linkStyles}>가이드</Link>
               <Link href="/pricing" style={linkStyles}>요금제</Link>
               <Link href="/admin" style={linkStyles}>대시보드</Link>
             </div>
