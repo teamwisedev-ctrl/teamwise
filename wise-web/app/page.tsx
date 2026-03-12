@@ -606,8 +606,8 @@ const featuresStyles: React.CSSProperties = {
 
 const featureGridStyles: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-  gap: '32px'
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+  gap: '24px'
 }
 
 const featureCardStyles: React.CSSProperties = {
@@ -636,7 +636,7 @@ const stepGridStyles: React.CSSProperties = {
 
 const stepCardStyles: React.CSSProperties = {
   padding: '40px 32px',
-  flex: '1 1 280px',
+  flex: '1 1 250px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
