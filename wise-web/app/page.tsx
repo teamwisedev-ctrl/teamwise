@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section style={heroStyles}>
+      <section className="hero-section" style={heroStyles}>
         <div className="container animate-slide-up" style={heroContainerStyles}>
           <div style={heroContentStyles}>
             <div style={badgeStyles}>
@@ -19,7 +19,9 @@ export default function Home() {
                   fontSize: '0.85rem',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px'
+                  gap: '4px',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
                 }}
               >
                 <ShieldCheck size={16} strokeWidth={2.5} /> 평생 무료 선언
@@ -515,7 +517,6 @@ export default function Home() {
 
 // Inline Styles
 const heroStyles: React.CSSProperties = {
-  padding: '160px 0 80px 0',
   minHeight: '80vh',
   display: 'flex',
   alignItems: 'flex-start'
@@ -542,7 +543,8 @@ const badgeStyles: React.CSSProperties = {
   borderRadius: '24px',
   display: 'inline-flex',
   alignItems: 'center',
-  marginBottom: '24px'
+  marginBottom: '24px',
+  gap: '8px'
 }
 
 const heroTitleStyles: React.CSSProperties = {
