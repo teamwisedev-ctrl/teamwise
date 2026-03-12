@@ -1,6 +1,9 @@
 import { Rocket, Package, Zap } from 'lucide-react'
+import { redirect } from 'next/navigation'
 
 export default async function PricingPage() {
+  redirect('/')
+
   return (
     <div
       className="container animate-fade-in"
