@@ -49,6 +49,9 @@ export default async function AdminPage() {
                             👑 전체 관리자 (Super Admin)
                         </a>
                     )}
+                    <a href="/admin/inquiries" className="btn-secondary" style={{ padding: '10px 20px', fontSize: '0.9rem', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)', textDecoration: 'none' }}>
+                        💬 1:1 문의
+                    </a>
                     <form action="/auth/signout" method="post">
                         <button className="btn-secondary" style={{ padding: '10px 20px', fontSize: '0.9rem', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)' }}>
                             로그아웃
