@@ -108,7 +108,7 @@ export default function Home() {
           </div>
 
           {/* Dashboard Mockup Video/Image Area */}
-          <div className="glass-panel animate-slide-up delay-200" style={mockupContainerStyles}>
+          <div className="glass-panel animate-slide-up delay-200 mockup-container" style={mockupContainerStyles}>
             <div style={mockupHeaderStyles}>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <div
@@ -417,7 +417,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section style={featuresStyles}>
+      <section className="features-section" style={featuresStyles}>
         <div className="container animate-slide-up delay-100">
           <div style={{ textAlign: 'center', marginBottom: '80px' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '16px' }}>
@@ -466,7 +466,7 @@ export default function Home() {
       </section>
 
       {/* How it works section */}
-      <section style={howItWorksStyles}>
+      <section className="how-it-works-section" style={howItWorksStyles}>
         <div className="container animate-slide-up delay-200">
           <div style={{ textAlign: 'center', marginBottom: '80px' }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '16px' }}>

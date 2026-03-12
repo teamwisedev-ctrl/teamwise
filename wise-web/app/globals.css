@@ -255,7 +255,16 @@ button {
   }
 
   .hero-section {
-    padding: 40px 0 60px 0 !important;
+    padding: 40px 0 40px 0 !important;
+  }
+
+  .features-section,
+  .how-it-works-section {
+    padding: 60px 0 !important;
+  }
+
+  .mockup-container {
+    margin-top: 40px !important;
   }
 
   .nav-container {
