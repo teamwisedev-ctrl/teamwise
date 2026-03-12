@@ -62,8 +62,8 @@ export default function TermsPage() {
                         </p>
                         <ul style={{ paddingLeft: '24px', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
                             <li>상호명 : Team Mo2</li>
-                            <li>대표자 : 서현우</li>
-                            <li>주요 연락처 : 010-2433-3184</li>
+                            <li>대표자 : 강윤영</li>
+                            <li>주요 연락처 : 010-2189-0052</li>
                             <li>공식 이메일 : mo2kr.team@gmail.com</li>
                         </ul>
                     </section>

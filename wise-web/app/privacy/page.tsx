@@ -57,8 +57,8 @@ export default function PrivacyPage() {
                         <p>
                             회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 관련 고충처리 및 피해구제를 위하여 아래와 같이 보호책임자 및 고객센터를 지정하고 있습니다.<br /><br />
                             <strong style={{ color: 'var(--accent-primary)' }}>[Team Mo2 고객센터]</strong><br />
-                            - 담당자 성명 : 서현우<br />
-                            - 전화번호 : 010-2433-3184<br />
+                            - 담당자 성명 : 강윤영<br />
+                            - 전화번호 : 010-2189-0052<br />
                             - 이메일 (CS) : mo2kr.team@gmail.com
                         </p>
                     </section>
