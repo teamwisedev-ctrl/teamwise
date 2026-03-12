@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ShieldCheck } from 'lucide-react'
 
 export default function Home() {
   return (
@@ -12,13 +13,16 @@ export default function Home() {
                 style={{
                   background: 'rgba(16, 185, 129, 0.1)',
                   color: '#10b981',
-                  padding: '2px 10px',
-                  borderRadius: '12px',
+                  padding: '4px 12px',
+                  borderRadius: '16px',
                   fontWeight: 800,
-                  fontSize: '0.85rem'
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
                 }}
               >
-                🎉 평생 무료 선언
+                <ShieldCheck size={16} strokeWidth={2.5} /> 평생 무료 선언
               </span>
               <span
                 style={{ color: 'var(--text-secondary)', marginLeft: '8px', fontSize: '0.9rem' }}
