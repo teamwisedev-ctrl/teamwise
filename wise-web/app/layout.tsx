@@ -7,6 +7,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Mo2 - 1:N Market Sync Solution',
   description: '다중 도매처와 오픈마켓을 통합 관리하는 지능형 스크래핑 솔루션',
+  verification: {
+    google: 'qsYaNXddxtUliIGmFE-vlCzJUDtMAYMB-FhNmFQ7nJI',
+  },
 };
 
 export default async function RootLayout({
