@@ -62,14 +62,17 @@ export async function updateUserSubscription(userId: string, planId: string, exp
 
     // We will do a robust upsert or update. Since users should have a subscription row from the trigger, we try to update first.
     // If not found, we insert.
-    const { data: existingSub } = await adminClient.from('subscriptions').select('id').eq('user_id', userId).limit(1).single();
+    const { data: existingSub, error: fetchError } = await adminClient.from('subscriptions').select('id').eq('user_id', userId).limit(1).maybeSingle();
+
+    if (fetchError) {
+        throw new Error(`Failed to check existing subscription: ${fetchError.message}`);
+    }
 
     if (existingSub) {
         const { error } = await adminClient.from('subscriptions').update({
             plan_id: planId,
             current_period_end: new Date(expiryDateString).toISOString(),
-            status: 'active',
-            updated_at: new Date().toISOString()
+            status: 'active'
         }).eq('id', existingSub.id);
         
         if (error) throw new Error(error.message);
