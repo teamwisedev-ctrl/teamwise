@@ -23,9 +23,9 @@ export default async function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <nav className="nav-wrapper" style={navStyles}>
-          <div className="container nav-container" style={navContainerStyles}>
-            <div style={logoStyles}>
+        <nav className="nav-wrapper">
+          <div className="container nav-container">
+            <div className="nav-logo">
               <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
                 <svg width="0" height="0">
                   <linearGradient id="mo2-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -39,13 +39,13 @@ export default async function RootLayout({
                 </span>
               </Link>
             </div>
-            <div className="nav-menu" style={menuStyles}>
+            <div className="nav-menu">
               <Link href="/" style={linkStyles}>홈</Link>
               <Link href="/guide" style={linkStyles}>이용 가이드</Link>
               <Link href="/pricing" style={linkStyles}>요금제</Link>
               <Link href="/admin" style={linkStyles}>대시보드</Link>
             </div>
-            <div className="nav-auth" style={authStyles}>
+            <div className="nav-auth">
               {user ? (
                 <>
                   <Link href="/admin" className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid var(--border-color)', boxShadow: 'none' }}>
@@ -103,45 +103,6 @@ export default async function RootLayout({
 }
 
 // Inline styles for skeleton speed (In production, move to CSS modules or globals)
-const navStyles: React.CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: '80px',
-  background: 'rgba(255, 255, 255, 0.85)',
-  backdropFilter: 'blur(12px)',
-  WebkitBackdropFilter: 'blur(12px)',
-  borderBottom: '1px solid var(--border-color)',
-  zIndex: 100,
-  display: 'flex',
-  alignItems: 'center',
-};
-
-const navContainerStyles: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-};
-
-const logoStyles: React.CSSProperties = {
-  flex: '1',
-};
-
-const menuStyles: React.CSSProperties = {
-  display: 'flex',
-  gap: '32px',
-  flex: '2',
-  justifyContent: 'center',
-};
-
-const authStyles: React.CSSProperties = {
-  display: 'flex',
-  gap: '12px',
-  flex: '1',
-  justifyContent: 'flex-end',
-};
-
 const linkStyles: React.CSSProperties = {
   fontWeight: 500,
   fontSize: '0.95rem',

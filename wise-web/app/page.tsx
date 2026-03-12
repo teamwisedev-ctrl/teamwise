@@ -228,7 +228,7 @@ const heroTitleStyles: React.CSSProperties = {
   lineHeight: 1.1,
   letterSpacing: '-1.5px',
   marginBottom: '24px',
-  wordBreak: 'break-word',
+  wordBreak: 'keep-all',
 };
 
 const heroDescStyles: React.CSSProperties = {
@@ -237,7 +237,7 @@ const heroDescStyles: React.CSSProperties = {
   lineHeight: 1.6,
   marginBottom: '40px',
   maxWidth: '600px',
-  wordBreak: 'break-word',
+  wordBreak: 'keep-all',
 };
 
 const heroActionsStyles: React.CSSProperties = {

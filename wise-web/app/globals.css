@@ -145,6 +145,46 @@ button {
   background-clip: text;
 }
 
+/* Navbar Base */
+.nav-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  flex: 1;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 32px;
+  flex: 2;
+  justify-content: center;
+}
+
+.nav-auth {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {
