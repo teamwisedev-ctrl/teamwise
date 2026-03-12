@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { replyToInquiry } from './actions';
 
-export default function SuperAdminInquiryClient({ initialInquiries }: { initialInquiries: Record<string, unknown>[] }) {
+// Use any here because Supabase return types aren't strictly generated in this project yet
+export default function SuperAdminInquiryClient({ initialInquiries }: { initialInquiries: any[] }) {
     const [inquiries] = useState(initialInquiries);
     const [submittingId, setSubmittingId] = useState<string | null>(null);
 
