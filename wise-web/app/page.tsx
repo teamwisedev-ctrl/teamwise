@@ -8,13 +8,22 @@ export default function Home() {
         <div className="container animate-slide-up" style={heroContainerStyles}>
           <div style={heroContentStyles}>
             <div style={badgeStyles}>
-              <span className="gradient-text-accent" style={{ fontWeight: 600 }}>
-                v3.0 릴리즈
+              <span
+                style={{
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  color: '#10b981',
+                  padding: '2px 10px',
+                  borderRadius: '12px',
+                  fontWeight: 800,
+                  fontSize: '0.85rem'
+                }}
+              >
+                🎉 평생 무료 선언
               </span>
               <span
                 style={{ color: 'var(--text-secondary)', marginLeft: '8px', fontSize: '0.9rem' }}
               >
-                다중 마켓 1:N 동기화 완벽 지원
+                숨겨진 결제(In-App) 없이 1:N 마켓 동기화 완벽 지원
               </span>
             </div>
             <h1 style={heroTitleStyles}>
@@ -33,16 +42,27 @@ export default function Home() {
                 className="btn-primary"
                 style={{ padding: '16px 32px', fontSize: '1.1rem' }}
               >
-                Windows용 다운로드
+                Windows용 다운로드 (무료)
               </Link>
-              {/* <Link
-                href="/pricing"
-                className="btn-secondary"
-                style={{ padding: '16px 32px', fontSize: '1.1rem' }}
-              >
-                요금제 보기
-              </Link> */}
             </div>
+            <p
+              style={{
+                marginTop: '16px',
+                fontSize: '0.95rem',
+                color: '#10b981',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              카드 등록 없음 · 제한 없는 완전 무료 연동
+            </p>
             <div
               style={{
                 marginTop: '20px',
