@@ -361,7 +361,8 @@ app.whenReady().then(() => {
       }
 
       // 1-Click License Check against the Next.js unified endpoint
-      const apiUrl = 'https://mo2.kr/api/verify-license';
+      const isDev = !app.isPackaged;
+      const apiUrl = isDev ? 'http://localhost:3000/api/verify-license' : 'https://mo2.kr/api/verify-license';
       
       let response = await fetch(apiUrl, {
         method: 'POST',
