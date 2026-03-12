@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
-import { OAuth2Client } from 'google-auth-library';
 import { createClient } from '@supabase/supabase-js';
-import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-
-// The Desktop Application's Google OAuth Client ID
-const DESKTOP_CLIENT_ID = '439781948006-uun33gogqmfnklmpkf35u1d4higre6qr.apps.googleusercontent.com';
-const client = new OAuth2Client(DESKTOP_CLIENT_ID);
 
 // We no longer need google-auth-library for ID Tokens, we use raw fetch for Access Tokens
 export async function POST(request: Request) {
@@ -70,14 +64,16 @@ export async function POST(request: Request) {
       }, { status: 403 });
     }
 
-    // 2b. Check the user's active subscription status(es) for Add-ons
-    const { data: subscriptions, error: subError } = await supabaseAdmin
+    // 2b. Check the user's latest subscription status to match web dashboard logic
+    const { data: subData, error: subError } = await supabaseAdmin
       .from('subscriptions')
       .select('plan_id, status, tier')
       .eq('user_id', profile.id)
-      .eq('status', 'active');
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-    if (subError) {
+    if (subError && subError.code !== 'PGRST116') {
       console.error('Subscription Query Error:', subError);
     }
     
@@ -97,13 +93,12 @@ export async function POST(request: Request) {
       }
     };
 
-    // Convert active subscriptions into an array of plan_ids
-    const activePlans = subscriptions ? subscriptions.map(sub => sub.plan_id) : [];
+    // Convert latest subscription into an array of plan_ids for backwards compatibility
+    const activePlans = subData && subData.plan_id ? [subData.plan_id] : [];
     
-    // Determine the user's tier based on active plans or the tier column
-    const hasProPlan = subscriptions?.some(sub => 
-      sub.tier === 'pro' || sub.plan_id?.includes('pro') || sub.plan_id?.includes('premium')
-    );
+    // Determine the user's tier based on the latest plan exactly like the web dashboard
+    const isValidStatus = subData && (subData.status === 'active' || subData.status === 'trialing' || subData.status === 'trial');
+    const hasProPlan = isValidStatus && (subData.tier === 'pro' || subData?.plan_id?.includes('pro') || subData?.plan_id?.includes('premium'));
     const userTier = hasProPlan ? 'pro' : 'free';
 
     // 3. Return Success to Desktop (always success for Freemium model)
