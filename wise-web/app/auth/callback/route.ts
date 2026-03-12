@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       // If we are behind a reverse proxy/load balancer, use forwarded host to preserve the correct domain
       if (!isLocalEnv && forwardedHost) {
         // Only use forwardedHost if it matches our canonical domains to prevent open redirect
-        if (forwardedHost === 'mo2.kr' || forwardedHost.endsWith('.vercel.app')) {
+        if (forwardedHost === 'mo2.kr' || forwardedHost === 'www.mo2.kr' || forwardedHost.endsWith('.vercel.app')) {
             redirectUrl = `https://${forwardedHost}${next}`;
         }
       } else if (!isLocalEnv && process.env.NEXT_PUBLIC_SITE_URL) {
