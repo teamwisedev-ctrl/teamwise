@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { Download, Link as LinkIcon, Play, Settings } from 'lucide-react'
 
 export default function GuidePage() {
@@ -43,6 +44,9 @@ export default function GuidePage() {
               </a>
               을 다운로드하여 설치합니다. 설치 후 앱을 실행하고 웹에서 가입한 계정으로 로그인합니다.
             </p>
+            <div style={{ marginTop: '24px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+              <Image src="/screen1.png" alt="다운로드 및 로그인 화면" width={800} height={450} style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
           </div>
         </div>
 
@@ -68,6 +72,9 @@ export default function GuidePage() {
               <span style={{ color: '#10B981', fontWeight: 'bold' }}>Active</span>로 변경되며, 즉시
               수만 개의 상품을 불러올 준비가 갖춰집니다.
             </p>
+            <div style={{ marginTop: '24px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+              <Image src="/screen2.png" alt="도매처 연동 화면" width={800} height={450} style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
           </div>
         </div>
 
@@ -105,6 +112,9 @@ export default function GuidePage() {
               <strong>💡 팁:</strong> 무료 플랜은 1개의 쇼핑몰 계정만 연결 가능하며, 유료 플랜을
               이용하시면 여러 개의 스토어를 무제한으로 연동할 수 있습니다.
             </div>
+            <div style={{ marginTop: '24px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+              <Image src="/screen3.png" alt="카페24 마켓 연동 화면" width={800} height={450} style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
           </div>
         </div>
 
@@ -123,6 +133,9 @@ export default function GuidePage() {
               켜져 있는 동안 시스템이 자동으로 상품 이미지, 옵션, 상세페이지를 내 쇼핑몰 형식에 맞게
               변환하여 업로드를 진행합니다!
             </p>
+            <div style={{ marginTop: '24px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+              <Image src="/screen4.png" alt="동기화 진행 화면" width={800} height={450} style={{ width: '100%', height: 'auto', display: 'block' }} />
+            </div>
           </div>
         </div>
       </div>
