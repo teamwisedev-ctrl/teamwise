@@ -51,7 +51,7 @@ export default function Home() {
             </div>
             <div style={mockupContentStyles}>
               {/* Visual Pipeline for 1:N Sync */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', padding: '24px 32px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', padding: '16px 16px' }}>
 
                 {/* Step 1: Source */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
