@@ -12,7 +12,7 @@ export default async function SuperAdminPage() {
         redirect('/login');
     }
 
-    let initialUsers = [];
+    let initialUsers: any[] = [];
     try {
         initialUsers = await getAllUsersData();
     } catch (e) {
