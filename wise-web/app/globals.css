@@ -274,7 +274,7 @@ button {
   }
 
   .guide-page-container {
-    padding-top: 180px !important;
+    padding-top: 60px !important;
   }
 
   .nav-container {
@@ -312,9 +312,7 @@ button {
     font-size: 0.85rem !important;
   }
 
-  main {
-    margin-top: 0 !important; /* Remove top margin because nav is no longer fixed */
-  }
+
 }
 
 @media (max-width: 480px) {
