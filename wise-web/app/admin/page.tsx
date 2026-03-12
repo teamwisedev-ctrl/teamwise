@@ -23,8 +23,9 @@ export default async function AdminPage() {
     const hasActiveSub = subData && (subData.status === 'active' || subData.status === 'trialing' || subData.status === 'trial' || subData.plan_id?.includes('trial') || subData.plan_id === 'free');
     const pId = subData?.plan_id || 'free';
     const planName = pId === 'free' ? '무료 플랜 (Free)' : (pId === 'trial_14days' ? '무료 플랜 (Free)' : (pId.includes('pro') ? '프로 플랜 (Pro)' : pId));
-    const statusStr = subData ? subData.status : 'none';
-    const statusText = statusStr.charAt(0).toUpperCase() + statusStr.slice(1);
+    const rawStatusStr = subData ? subData.status : 'none';
+    const statusStr = (rawStatusStr === 'trial' || rawStatusStr === 'trialing') ? 'active' : rawStatusStr;
+    const statusText = statusStr === 'active' ? 'Active' : (statusStr.charAt(0).toUpperCase() + statusStr.slice(1));
     const statusColor = hasActiveSub ? '#10B981' : (statusStr === 'none' ? 'var(--text-muted)' : '#EF4444');
     const statusBg = hasActiveSub ? 'rgba(16, 185, 129, 0.2)' : (statusStr === 'none' ? 'rgba(255,255,255,0.1)' : 'rgba(239, 68, 68, 0.2)');
 
