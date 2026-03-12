@@ -4,8 +4,8 @@ import { Download, Link as LinkIcon, Play, Settings } from 'lucide-react'
 export default function GuidePage() {
   return (
     <div
-      className="container animate-fade-in"
-      style={{ padding: '80px 24px', maxWidth: '1000px', margin: '0 auto' }}
+      className="container animate-fade-in guide-page-container"
+      style={{ padding: '120px 24px 80px', maxWidth: '1000px', margin: '0 auto' }}
     >
       <div style={{ textAlign: 'center', marginBottom: '60px' }}>
         <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '16px' }}>

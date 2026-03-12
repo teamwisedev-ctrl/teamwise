@@ -273,6 +273,10 @@ button {
     padding: 24px !important;
   }
 
+  .guide-page-container {
+    padding-top: 60px !important;
+  }
+
   .nav-container {
     flex-wrap: wrap; /* Allow wrapping instead of strict column */
     justify-content: space-between;
