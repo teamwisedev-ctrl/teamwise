@@ -267,6 +267,12 @@ button {
     margin-top: 40px !important;
   }
 
+  .guide-step-card {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 24px !important;
+  }
+
   .nav-container {
     flex-wrap: wrap; /* Allow wrapping instead of strict column */
     justify-content: space-between;

@@ -18,7 +18,7 @@ export default function GuidePage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
         {/* Step 1 */}
-        <div className="glass-panel animate-slide-up delay-100" style={stepCardStyles}>
+        <div className="glass-panel animate-slide-up delay-100 guide-step-card" style={stepCardStyles}>
           <div style={iconWrapperStyles}>
             <Download size={28} strokeWidth={2.5} />
           </div>
@@ -47,7 +47,7 @@ export default function GuidePage() {
         </div>
 
         {/* Step 2 */}
-        <div className="glass-panel animate-slide-up delay-200" style={stepCardStyles}>
+        <div className="glass-panel animate-slide-up delay-200 guide-step-card" style={stepCardStyles}>
           <div style={iconWrapperStyles}>
             <Settings size={28} strokeWidth={2.5} />
           </div>
@@ -72,7 +72,7 @@ export default function GuidePage() {
         </div>
 
         {/* Step 3 */}
-        <div className="glass-panel animate-slide-up delay-300" style={stepCardStyles}>
+        <div className="glass-panel animate-slide-up delay-300 guide-step-card" style={stepCardStyles}>
           <div style={iconWrapperStyles}>
             <LinkIcon size={28} strokeWidth={2.5} />
           </div>
@@ -109,7 +109,7 @@ export default function GuidePage() {
         </div>
 
         {/* Step 4 */}
-        <div className="glass-panel animate-slide-up delay-400" style={stepCardStyles}>
+        <div className="glass-panel animate-slide-up delay-400 guide-step-card" style={stepCardStyles}>
           <div style={iconWrapperStyles}>
             <Play size={28} fill="currentColor" strokeWidth={2.5} />
           </div>
