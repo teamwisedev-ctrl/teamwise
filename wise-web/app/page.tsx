@@ -541,21 +541,23 @@ const badgeStyles: React.CSSProperties = {
 }
 
 const heroTitleStyles: React.CSSProperties = {
-  fontSize: 'clamp(2rem, 6vw, 4.5rem)',
+  fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
   fontWeight: 800,
-  lineHeight: 1.1,
+  lineHeight: 1.25,
   letterSpacing: '-1.5px',
-  marginBottom: '24px',
-  wordBreak: 'keep-all'
+  marginBottom: '20px',
+  wordBreak: 'keep-all',
+  textAlign: 'center'
 }
 
 const heroDescStyles: React.CSSProperties = {
-  fontSize: 'clamp(1rem, 3.5vw, 1.25rem)',
+  fontSize: 'clamp(1.1rem, 3vw, 1.3rem)',
   color: 'var(--text-secondary)',
   lineHeight: 1.6,
   marginBottom: '40px',
-  maxWidth: '600px',
-  wordBreak: 'keep-all'
+  maxWidth: '700px',
+  wordBreak: 'keep-all',
+  textAlign: 'center'
 }
 
 const heroActionsStyles: React.CSSProperties = {
