@@ -53,10 +53,13 @@ export default function PrivacyPage() {
                     </section>
 
                     <section>
-                        <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px', borderBottom: '2px solid var(--border-color)', paddingBottom: '8px' }}>6. 개인정보 보호책임자</h2>
+                        <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px', borderBottom: '2px solid var(--border-color)', paddingBottom: '8px' }}>6. 개인정보 보호책임자 및 고객센터</h2>
                         <p>
-                            회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 관련 고충처리 및 피해구제를 위하여 아래와 같이 보호책임자를 지정하고 있습니다.<br />
-                            본 개인정보처리방침은 Team Mo2(이하 &quot;회사&quot;)가 제공하는 Mo2 마켓 통합 솔루션에 적용됩니다.
+                            회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 관련 고충처리 및 피해구제를 위하여 아래와 같이 보호책임자 및 고객센터를 지정하고 있습니다.<br /><br />
+                            <strong style={{ color: 'var(--accent-primary)' }}>[필수 작성 정보 (카페24 심사용)]</strong><br />
+                            - 담당자 성명 : [대표자 성명 입력]<br />
+                            - 전화번호 : [고객센터 전화번호 입력]<br />
+                            - 이메일 (CS) : [공식 이메일 입력]
                         </p>
                     </section>
 

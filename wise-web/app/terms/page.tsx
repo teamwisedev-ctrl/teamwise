@@ -56,6 +56,21 @@ export default function TermsPage() {
                     </section>
 
                     <section>
+                        <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px', borderBottom: '2px solid var(--border-color)', paddingBottom: '8px' }}>제7조 (회사 정보 표기)</h2>
+                        <p>
+                            <strong style={{ color: 'var(--accent-primary)' }}>[필수 작성 정보 (카페24 등 마켓 심사용)]</strong>
+                        </p>
+                        <ul style={{ paddingLeft: '24px', listStyleType: 'disc', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+                            <li>상호명 : [회사명 또는 팀명 입력]</li>
+                            <li>대표자 : [대표자 성명 입력]</li>
+                            <li>사업자등록번호 : [사업자번호 입력 (있는 경우)]</li>
+                            <li>통신판매업 신고번호 : [번호 입력 (있는 경우)]</li>
+                            <li>주요 연락처 : [전화번호 입력]</li>
+                            <li>이메일 : [CS 이메일 입력]</li>
+                        </ul>
+                    </section>
+
+                    <section>
                         <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '12px', borderBottom: '2px solid var(--border-color)', paddingBottom: '8px' }}>부칙</h2>
                         <p>본 약관은 2026년 3월 10일부터 렌더링 및 적용됩니다.</p>
                     </section>
