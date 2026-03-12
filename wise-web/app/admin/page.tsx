@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { Layers } from "lucide-react";
+import SponsorBanners from "@/components/SponsorBanners";
 
 export default async function AdminPage() {
     const supabase = await createClient();
@@ -91,6 +92,8 @@ export default async function AdminPage() {
                     )}
                 </div>
             </div>
+
+            <SponsorBanners />
 
             <div className="glass-panel animate-slide-up delay-300" style={{ padding: '24px', overflowX: 'auto' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '24px' }}>라이선스 상태</h3>
