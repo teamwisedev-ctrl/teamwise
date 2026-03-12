@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { OAuth2Client } from 'google-auth-library';
 import { createClient } from '@supabase/supabase-js';
+import { unstable_noStore as noStore } from 'next/cache';
+
+export const dynamic = 'force-dynamic';
 
 // The Desktop Application's Google OAuth Client ID
 const DESKTOP_CLIENT_ID = '439781948006-uun33gogqmfnklmpkf35u1d4higre6qr.apps.googleusercontent.com';
