@@ -880,8 +880,8 @@ function App(): React.JSX.Element {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 14px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
                 <span style={{ fontSize: '13px', fontWeight: 500, color: '#475569' }}>{userEmail}</span>
                 {licenseTier && (
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#ffffff', backgroundColor: licenseTier.includes('trial') ? '#f59e0b' : '#3b82f6', padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    {licenseTier.replace('trial_14days', 'TRIAL').replace('pro', 'PRO')}
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#ffffff', backgroundColor: licenseTier.includes('pro') ? '#3b82f6' : '#10B981', padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    {licenseTier.replace('trial_14days', 'FREE').replace('free', 'FREE')}
                   </span>
                 )}
                 <button

@@ -18,7 +18,7 @@ export default async function DownloadPage() {
         .limit(1)
         .single();
 
-    const hasActiveSub = subData && (subData.status === 'active' || subData.status === 'trialing' || subData.status === 'trial' || subData.plan_id?.includes('trial'));
+    const hasActiveSub = subData && (subData.status === 'active' || subData.status === 'trialing' || subData.status === 'trial' || subData.plan_id?.includes('trial') || subData.plan_id === 'free');
 
     if (!hasActiveSub) {
         return (

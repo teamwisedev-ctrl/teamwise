@@ -20,8 +20,9 @@ export default async function AdminPage() {
         .single();
 
     // Prepare variables for display
-    const hasActiveSub = subData && (subData.status === 'active' || subData.status === 'trialing' || subData.status === 'trial' || subData.plan_id?.includes('trial'));
-    const planName = subData?.plan_id || '무료 대기 (Free)';
+    const hasActiveSub = subData && (subData.status === 'active' || subData.status === 'trialing' || subData.status === 'trial' || subData.plan_id?.includes('trial') || subData.plan_id === 'free');
+    const pId = subData?.plan_id || 'free';
+    const planName = pId === 'free' ? '무료 플랜 (Free)' : (pId === 'trial_14days' ? '무료 플랜 (Free)' : (pId.includes('pro') ? '프로 플랜 (Pro)' : pId));
     const statusStr = subData ? subData.status : 'none';
     const statusText = statusStr.charAt(0).toUpperCase() + statusStr.slice(1);
     const statusColor = hasActiveSub ? '#10B981' : (statusStr === 'none' ? 'var(--text-muted)' : '#EF4444');
@@ -63,7 +64,7 @@ export default async function AdminPage() {
             <div className="glass-panel animate-slide-up delay-200" style={{ padding: '32px', marginBottom: '40px' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px' }}>앱 다운로드</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                    유효한 라이선스(Pro 또는 무료 체험)를 보유한 회원만 다운로드할 수 있습니다.
+                    유효한 라이선스(Pro 또는 무료 플랜)를 보유한 회원만 다운로드할 수 있습니다.
                 </p>
                 <div style={{ display: 'flex', gap: '16px' }}>
                     {hasActiveSub ? (
