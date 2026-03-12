@@ -9,6 +9,10 @@ export default function SuperAdminClient({ initialUsers, currentUserEmail }: { i
     const [searchTerm, setSearchTerm] = useState('');
     const [editingUser, setEditingUser] = useState<any>(null);
     
+    // Analytics State
+    const [stats, setStats] = useState<any>(null);
+    const [isLoadingStats, setIsLoadingStats] = useState(false);
+
     // Edit Form State
     const [planId, setPlanId] = useState('free');
     const [expiryDate, setExpiryDate] = useState('');
@@ -18,6 +22,20 @@ export default function SuperAdminClient({ initialUsers, currentUserEmail }: { i
         u.email?.toLowerCase().includes(searchTerm.toLowerCase()) || 
         u.id.includes(searchTerm)
     );
+
+    const handleFetchStats = async () => {
+        setIsLoadingStats(true);
+        try {
+            // Dynamically import to avoid client-side bundling issues with server action initially
+            const { getAnalyticsData } = await import('./analytics');
+            const data = await getAnalyticsData();
+            setStats(data);
+        } catch (e: any) {
+            alert(`통계 로딩 실패: ${e.message}\n(백엔드 환경변수에 구글 프로퍼티 ID가 등록되었는지 확인하세요)`);
+        } finally {
+            setIsLoadingStats(false);
+        }
+    };
 
     const handleEditClick = (user: any) => {
         setEditingUser(user);
@@ -34,16 +52,15 @@ export default function SuperAdminClient({ initialUsers, currentUserEmail }: { i
     };
 
     const handleSave = async (e: React.FormEvent) => {
+        // ... (existing save logic remains)
         e.preventDefault();
         if (!editingUser) return;
         setIsLoading(true);
 
         try {
-            // Append time to ensure robust parsing
             const fullIsoDate = `${expiryDate}T23:59:59Z`;
             await updateUserSubscription(editingUser.id, planId, fullIsoDate);
             
-            // Update local state to reflect changes without a full page reload
             setUsers(prev => prev.map(u => {
                 if (u.id === editingUser.id) {
                     return {
@@ -70,13 +87,56 @@ export default function SuperAdminClient({ initialUsers, currentUserEmail }: { i
 
     return (
         <div className="animate-fade-in">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-                <ShieldAlert size={40} color="#3b82f6" />
-                <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>전체 관리자 대시보드</h1>
-                    <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>최고 권한 계정 ({currentUserEmail}) 접속 중 - 전체 사용자: {users.length}명</p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <ShieldAlert size={40} color="#3b82f6" />
+                    <div>
+                        <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>전체 관리자 대시보드</h1>
+                        <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>최고 권한 계정 ({currentUserEmail}) 접속 중 - 전체 사용자: {users.length}명</p>
+                    </div>
                 </div>
+                <button 
+                    onClick={handleFetchStats}
+                    disabled={isLoadingStats}
+                    className="btn-primary" 
+                    style={{ background: 'var(--accent-primary)', opacity: isLoadingStats ? 0.7 : 1 }}
+                >
+                    {isLoadingStats ? '통계 불러오는 중...' : '🔥 실시간 트래픽 (GA4) 조회'}
+                </button>
             </div>
+
+            {stats && (
+                <div className="glass-panel animate-slide-up" style={{ padding: '24px', marginBottom: '24px', background: 'var(--bg-card)' }}>
+                    <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem' }}>최근 7일 트래픽 (Google Analytics 4)</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                        <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                            <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>주간 활성 사용자(WAU)</div>
+                            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#2563EB' }}>{stats.totalActiveUsers} <span style={{fontSize:'1rem', fontWeight:'normal'}}>명</span></div>
+                        </div>
+                    </div>
+                    
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ minWidth: '100%', borderCollapse: 'collapse', textAlign: 'center' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                    <th style={{ padding: '8px', color: 'var(--text-secondary)' }}>날짜</th>
+                                    {stats.dailyStats.map((s:any) => <th key={`th-${s.date}`} style={{ padding: '8px' }}>{s.displayDate}</th>)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                    <td style={{ padding: '12px', color: 'var(--text-secondary)', fontWeight: 600 }}>활성 방문자 수</td>
+                                    {stats.dailyStats.map((s:any) => <td key={`tu-${s.date}`} style={{ padding: '12px', color: '#2563EB', fontWeight: 700 }}>{s.activeUsers}</td>)}
+                                </tr>
+                                <tr>
+                                    <td style={{ padding: '12px', color: 'var(--text-secondary)', fontWeight: 600 }}>총 페이지뷰</td>
+                                    {stats.dailyStats.map((s:any) => <td key={`pv-${s.date}`} style={{ padding: '12px', color: '#10B981', fontWeight: 700 }}>{s.pageViews}</td>)}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
 
             <div className="glass-panel" style={{ padding: '24px', marginBottom: '40px' }}>
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', alignItems: 'center', background: '#f8fafc', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>

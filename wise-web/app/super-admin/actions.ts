@@ -6,7 +6,7 @@ import { createClient as createSupabaseAdmin } from '@supabase/supabase-js';
 const SUPER_ADMIN_EMAIL = 'mo2kr.team@gmail.com';
 
 // Validate if the current session belongs to the super admin
-async function requireSuperAdmin() {
+export async function requireSuperAdmin() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
