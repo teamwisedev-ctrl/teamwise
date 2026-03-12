@@ -152,11 +152,9 @@ button {
   left: 0;
   right: 0;
   height: 80px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-primary); /* solid background to prevent scroll overlap */
   border-bottom: 1px solid var(--border-color);
-  z-index: 100;
+  z-index: 1000; /* Increased z-index to ensure it stays on top of any absolute elements */
   display: flex;
   align-items: center;
 }
