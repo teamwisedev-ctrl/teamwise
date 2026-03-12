@@ -28,6 +28,8 @@ export default async function AdminPage() {
     const statusText = statusStr === 'active' ? 'Active' : (statusStr.charAt(0).toUpperCase() + statusStr.slice(1));
     const statusColor = hasActiveSub ? '#10B981' : (statusStr === 'none' ? 'var(--text-muted)' : '#EF4444');
     const statusBg = hasActiveSub ? 'rgba(16, 185, 129, 0.2)' : (statusStr === 'none' ? 'rgba(255,255,255,0.1)' : 'rgba(239, 68, 68, 0.2)');
+    
+    const isSuperAdmin = user.email === 'mo2kr.team@gmail.com';
 
     return (
         <div className="container animate-fade-in" style={{ paddingTop: '60px', paddingBottom: '60px' }}>
@@ -41,11 +43,18 @@ export default async function AdminPage() {
                         환영합니다, <strong style={{ color: 'var(--text-primary)' }}>{user.email}</strong>님!
                     </p>
                 </div>
-                <form action="/auth/signout" method="post">
-                    <button className="btn-secondary" style={{ padding: '10px 20px', fontSize: '0.9rem', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)' }}>
-                        로그아웃
-                    </button>
-                </form>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    {isSuperAdmin && (
+                        <a href="/super-admin" className="btn-secondary" style={{ padding: '10px 20px', fontSize: '0.9rem', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)', textDecoration: 'none', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            👑 전체 관리자 (Super Admin)
+                        </a>
+                    )}
+                    <form action="/auth/signout" method="post">
+                        <button className="btn-secondary" style={{ padding: '10px 20px', fontSize: '0.9rem', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)' }}>
+                            로그아웃
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <div style={statsGridStyles}>
