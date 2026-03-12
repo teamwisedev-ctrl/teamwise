@@ -23,7 +23,7 @@ export default function Home() {
               <span
                 style={{ color: 'var(--text-secondary)', marginLeft: '8px', fontSize: '0.9rem' }}
               >
-                숨겨진 결제(In-App) 없이 1:N 마켓 동기화 완벽 지원
+                숨겨진 결제(In-App) 없이 카페24 동기화 완벽 무료 지원
               </span>
             </div>
             <h1 style={heroTitleStyles}>
@@ -61,7 +61,7 @@ export default function Home() {
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
-              카드 등록 없음 · 제한 없는 완전 무료 연동
+              카드 등록 없음 · 카페24 완전 무료 연동
             </p>
             <div
               style={{
