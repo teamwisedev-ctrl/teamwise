@@ -20,8 +20,8 @@ export async function POST(request: Request) {
           } catch {
             // The `setAll` method was called from a Server Component.
           }
-        },
-      },
+        }
+      }
     }
   )
 

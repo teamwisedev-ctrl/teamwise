@@ -1,5 +1,20 @@
 :root {
-  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+  font-family:
+    'Pretendard Variable',
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    'Helvetica Neue',
+    'Segoe UI',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'Malgun Gothic',
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    sans-serif;
   line-height: 1.6;
   font-weight: 400;
 
@@ -15,28 +30,28 @@
   /* Premium Layered Dark Theme Colors - Deeper Navy Base */
   --color-surface-0: #060913;
   /* Deepest void background */
-  --color-surface-1: #0B1121;
+  --color-surface-1: #0b1121;
   /* Main app background */
-  --color-surface-2: #151E32;
+  --color-surface-2: #151e32;
   /* Elevated panels */
-  --color-surface-3: #1E2B45;
+  --color-surface-3: #1e2b45;
   /* Higher elevated elements / hover */
 
-  --color-primary: #4F46E5;
+  --color-primary: #4f46e5;
   /* Deep Indigo */
-  --color-primary-hover: #6366F1;
-  --color-secondary: #8B5CF6;
+  --color-primary-hover: #6366f1;
+  --color-secondary: #8b5cf6;
   /* Violet */
-  --color-secondary-hover: #A855F7;
-  --color-success: #10B981;
+  --color-secondary-hover: #a855f7;
+  --color-success: #10b981;
   /* Emerald */
   --color-success-hover: #059669;
-  --color-danger: #EF4444;
+  --color-danger: #ef4444;
   /* Red */
-  --color-danger-hover: #DC2626;
-  --color-warning: #F59E0B;
+  --color-danger-hover: #dc2626;
+  --color-warning: #f59e0b;
   /* Amber */
-  --color-info: #0EA5E9;
+  --color-info: #0ea5e9;
   /* Sky Blue */
 
   --color-border: rgba(255, 255, 255, 0.06);
@@ -110,7 +125,9 @@ input::placeholder {
 
 input:focus {
   border-color: var(--color-primary);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(99, 102, 241, 0.2);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(99, 102, 241, 0.2);
   background-color: rgba(15, 23, 42, 0.8);
 }
 

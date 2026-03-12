@@ -3,8 +3,8 @@ productName: Mo2
 directories:
   buildResources: build
 extraResources:
-  - from: "src/main/credentials.json"
-    to: "credentials.json"
+  - from: 'src/main/credentials.json'
+    to: 'credentials.json'
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -43,5 +43,6 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  owner: 'teamwisedev-ctrl'
+  repo: 'teamwise'

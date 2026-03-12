@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-const appPath = path.join(__dirname, 'src/renderer/src/App.tsx');
-let content = fs.readFileSync(appPath, 'utf8');
+const appPath = path.join(__dirname, 'src/renderer/src/App.tsx')
+let content = fs.readFileSync(appPath, 'utf8')
 
 // 1. Add Imports
 const imports = `
@@ -19,17 +19,23 @@ const WIZARD_STEPS: StepInfo[] = [
   { id: 3, label: 'Sync Manager' },
   { id: 4, label: 'Auto-Pilot' },
 ];
-`;
+`
 
-content = content.replace("type SyncStatus = 'pending' | 'syncing' | 'success' | 'failed'", "type SyncStatus = 'pending' | 'syncing' | 'success' | 'failed'\n" + imports);
+content = content.replace(
+  "type SyncStatus = 'pending' | 'syncing' | 'success' | 'failed'",
+  "type SyncStatus = 'pending' | 'syncing' | 'success' | 'failed'\n" + imports
+)
 
 // 2. Add State Hook
-content = content.replace("// Phase 6 States", "// Wizard State\n  const [currentStep, setCurrentStep] = useState<number>(1);\n\n  // Phase 6 States");
+content = content.replace(
+  '// Phase 6 States',
+  '// Wizard State\n  const [currentStep, setCurrentStep] = useState<number>(1);\n\n  // Phase 6 States'
+)
 
 // 3. Replace return block
-const returnIndex = content.indexOf('  return (');
+const returnIndex = content.indexOf('  return (')
 if (returnIndex !== -1) {
-  content = content.substring(0, returnIndex); // Keep everything before 'return ('
+  content = content.substring(0, returnIndex) // Keep everything before 'return ('
   const newReturn = `  return (
     <div className="app-container">
       {/* Left: Main Steps Wizard */}
@@ -111,9 +117,9 @@ if (returnIndex !== -1) {
 }
 
 export default App;
-`;
-  content += newReturn;
+`
+  content += newReturn
 }
 
-fs.writeFileSync(appPath, content);
-console.log('App.tsx successfully updated!');
+fs.writeFileSync(appPath, content)
+console.log('App.tsx successfully updated!')

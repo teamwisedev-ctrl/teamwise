@@ -136,7 +136,9 @@
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   border-color: transparent;
   color: white;
-  box-shadow: 0 0 20px rgba(79, 70, 229, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 0 20px rgba(79, 70, 229, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
 
