@@ -77,7 +77,7 @@ export default async function DownloadPage() {
                 */}
             </div>
 
-            <div className="glass-panel" style={{ marginTop: '60px', padding: '32px', maxWidth: '800px', margin: '60px auto 0' }}>
+            <div className="glass-panel" style={{ marginTop: '60px', padding: '24px', maxWidth: '800px', margin: '60px auto 0' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px' }}>설치 안내</h3>
                 <ol style={{ paddingLeft: '24px', color: 'var(--text-secondary)', lineHeight: 1.8 }}>
                     <li>다운로드한 파일을 더블 클릭하여 설치를 진행합니다.</li>
@@ -92,14 +92,14 @@ export default async function DownloadPage() {
 
 const downloadGridStyles: React.CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
     gap: '32px',
     maxWidth: '800px',
     margin: '0 auto',
 };
 
 const downloadCardStyles: React.CSSProperties = {
-    padding: '40px',
+    padding: '32px 24px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',

@@ -49,7 +49,7 @@ export default async function PricingPage() {
                     <div style={{ fontSize: '2.5rem', fontWeight: 800, margin: '24px 0' }}>
                         ₩30,000 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 'normal' }}>/ 월</span>
                     </div>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', wordBreak: 'keep-all' }}>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', wordBreak: 'break-word' }}>
                         네이버, 쿠팡 등 국내 주요 오픈마켓<br />상품 전송 모듈 추가 제공
                     </p>
                     <ul style={featureListStyles}>
@@ -89,7 +89,7 @@ export default async function PricingPage() {
 
 const pricingGridStyles: React.CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
     gap: '32px',
     maxWidth: '1100px',
     margin: '0 auto',
@@ -97,7 +97,7 @@ const pricingGridStyles: React.CSSProperties = {
 };
 
 const pricingCardStyles: React.CSSProperties = {
-    padding: '40px',
+    padding: '32px 24px',
     display: 'flex',
     flexDirection: 'column',
     textAlign: 'center',

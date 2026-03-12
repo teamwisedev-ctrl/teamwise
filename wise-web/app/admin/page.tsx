@@ -30,7 +30,7 @@ export default async function AdminPage() {
     const statusBg = hasActiveSub ? 'rgba(16, 185, 129, 0.2)' : (statusStr === 'none' ? 'rgba(255,255,255,0.1)' : 'rgba(239, 68, 68, 0.2)');
 
     return (
-        <div className="container animate-fade-in" style={{ padding: '60px 24px' }}>
+        <div className="container animate-fade-in" style={{ paddingTop: '60px', paddingBottom: '60px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                     <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -62,7 +62,7 @@ export default async function AdminPage() {
                 </div>
             </div>
 
-            <div className="glass-panel animate-slide-up delay-200" style={{ padding: '32px', marginBottom: '40px' }}>
+            <div className="glass-panel animate-slide-up delay-200" style={{ padding: '24px', marginBottom: '40px' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px' }}>앱 다운로드</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
                     유효한 라이선스(Pro 또는 무료 플랜)를 보유한 회원만 다운로드할 수 있습니다.
@@ -80,7 +80,7 @@ export default async function AdminPage() {
                 </div>
             </div>
 
-            <div className="glass-panel animate-slide-up delay-300" style={{ padding: '32px', overflowX: 'auto' }}>
+            <div className="glass-panel animate-slide-up delay-300" style={{ padding: '24px', overflowX: 'auto' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '24px' }}>라이선스 상태</h3>
                 <table style={tableStyles}>
                     <thead>

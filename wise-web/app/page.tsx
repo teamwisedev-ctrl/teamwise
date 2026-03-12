@@ -54,8 +54,8 @@ export default function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', padding: '24px 32px' }}>
 
                 {/* Step 1: Source */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-primary)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>📦</div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-primary)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem', flexShrink: 0 }}>📦</div>
                   <div style={{ flex: 1, textAlign: 'left' }}>
                     <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)' }}>1. 도매토피아 상품 수집</div>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>가전/디지털 카테고리 100건</div>
@@ -66,8 +66,8 @@ export default function Home() {
                 <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '1.2rem', margin: '-8px 0' }}>⬇</div>
 
                 {/* Step 2: Master */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-success)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>📊</div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', flexWrap: 'wrap' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-success)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem', flexShrink: 0 }}>📊</div>
                   <div style={{ flex: 1, textAlign: 'left' }}>
                     <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)' }}>2. 마스터 시트 데이터 가공</div>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>판매가 마진율(1.5x) 일괄 적용 및 이미지 호스팅 링크 생성</div>
@@ -84,8 +84,8 @@ export default function Home() {
                   </div>
 
                   {/* Cafe24 */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#1A1A1A', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>C</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#1A1A1A', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.8rem', fontWeight: 'bold', flexShrink: 0 }}>C</div>
                     <div style={{ flex: 1, textAlign: 'left' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '6px', color: 'var(--text-secondary)' }}>
                         <span>카페24 (Cafe24 자사몰)</span>
@@ -98,8 +98,8 @@ export default function Home() {
                   </div>
 
                   {/* Naver */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#03C75A', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>N</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#03C75A', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.8rem', fontWeight: 'bold', flexShrink: 0 }}>N</div>
                     <div style={{ flex: 1, textAlign: 'left' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '6px', color: 'var(--text-secondary)' }}>
                         <span>네이버 스마트스토어</span>
@@ -223,21 +223,21 @@ const badgeStyles: React.CSSProperties = {
 };
 
 const heroTitleStyles: React.CSSProperties = {
-  fontSize: 'clamp(3rem, 5vw, 4.5rem)',
+  fontSize: 'clamp(2rem, 6vw, 4.5rem)',
   fontWeight: 800,
   lineHeight: 1.1,
   letterSpacing: '-1.5px',
   marginBottom: '24px',
-  wordBreak: 'keep-all',
+  wordBreak: 'break-word',
 };
 
 const heroDescStyles: React.CSSProperties = {
-  fontSize: '1.25rem',
+  fontSize: 'clamp(1rem, 3.5vw, 1.25rem)',
   color: 'var(--text-secondary)',
   lineHeight: 1.6,
   marginBottom: '40px',
   maxWidth: '600px',
-  wordBreak: 'keep-all',
+  wordBreak: 'break-word',
 };
 
 const heroActionsStyles: React.CSSProperties = {
