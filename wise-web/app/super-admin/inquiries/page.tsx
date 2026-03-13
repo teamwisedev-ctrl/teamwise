@@ -8,7 +8,10 @@ export default async function SuperAdminInquiriesPage() {
   const inquiries = await getAllInquiries()
 
   return (
-    <div className="animate-fade-in" style={{ padding: '0 24px 24px 24px' }}>
+    <div
+      className="animate-fade-in"
+      style={{ padding: '40px 24px', maxWidth: '1400px', margin: '0 auto' }}
+    >
       <div
         style={{
           display: 'flex',
