@@ -122,7 +122,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </nav>
 
         {/* Main Content */}
-        <main style={{ flex: 1, marginTop: '80px', paddingBottom: '60px' }}>{children}</main>
+        <main className="main-content" style={{ flex: 1, paddingBottom: '60px' }}>
+          {children}
+        </main>
 
         {/* Footer */}
         <footer style={footerStyles}>

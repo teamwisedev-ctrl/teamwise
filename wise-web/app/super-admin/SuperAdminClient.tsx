@@ -249,7 +249,8 @@ export default function SuperAdminClient({
               width: '100%',
               borderCollapse: 'collapse',
               textAlign: 'left',
-              minWidth: '800px'
+              minWidth: '800px',
+              whiteSpace: 'nowrap'
             }}
           >
             <thead style={{ background: '#f8fafc', borderBottom: '2px solid var(--border-color)' }}>

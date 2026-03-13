@@ -23,14 +23,14 @@ export default async function AdminPage() {
     .single()
 
   // Prepare variables for display
-  const hasActiveSub =
-    subData &&
-    (subData.status === 'active' ||
-      subData.status === 'trialing' ||
-      subData.status === 'trial' ||
-      subData.plan_id?.includes('trial') ||
-      subData.plan_id === 'free')
   const pId = subData?.plan_id || 'free'
+  const hasActiveSub =
+    pId === 'free' ||
+    (subData &&
+      (subData.status === 'active' ||
+        subData.status === 'trialing' ||
+        subData.status === 'trial' ||
+        subData.plan_id?.includes('trial')))
   const planName =
     pId === 'free'
       ? '무료 플랜 (Free)'
@@ -264,7 +264,9 @@ const statValueStyles: React.CSSProperties = {
 const tableStyles: React.CSSProperties = {
   width: '100%',
   borderCollapse: 'collapse',
-  textAlign: 'left'
+  textAlign: 'left',
+  minWidth: '600px',
+  whiteSpace: 'nowrap'
 }
 
 const thStyles: React.CSSProperties = {

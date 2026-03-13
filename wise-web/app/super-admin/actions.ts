@@ -73,6 +73,7 @@ export async function updateUserSubscription(
     .from('subscriptions')
     .select('id')
     .eq('user_id', userId)
+    .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()
 

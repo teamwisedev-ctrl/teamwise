@@ -231,20 +231,22 @@ button {
   animation-delay: 300ms;
 }
 
+.main-content {
+  margin-top: 80px;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
+  .main-content {
+    margin-top: 0;
+  }
+
   h1 {
     font-size: 2.2rem !important;
   }
 
   h2 {
     font-size: 1.8rem !important;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    text-align: center;
   }
 
   /* Navbar Mobile Overrides */
@@ -278,36 +280,34 @@ button {
   }
 
   .nav-container {
-    flex-wrap: wrap; /* Allow wrapping instead of strict column */
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .nav-menu {
-    order: 3; /* Move menu to the bottom row */
-    width: 100%;
+    flex-wrap: nowrap;
     justify-content: flex-start;
     gap: 16px;
-    overflow-x: auto; /* Enable horizontal scrolling for menu */
+    overflow-x: auto;
     padding-bottom: 4px;
-    white-space: nowrap;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none; /* Firefox */
   }
 
-  .nav-menu::-webkit-scrollbar {
+  .nav-container::-webkit-scrollbar {
     display: none; /* Chrome/Safari */
   }
 
+  .nav-menu {
+    order: 0;
+    width: auto;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
   .nav-auth {
-    order: 2; /* Auth buttons next to logo or below */
+    order: 0;
     flex: none;
     width: auto;
-    justify-content: flex-end;
+    margin-left: auto;
   }
 
   .nav-auth a {
-    width: auto !important; /* Prevent 100% width override from .btn-primary above */
     padding: 8px 12px !important;
     font-size: 0.85rem !important;
   }
@@ -327,39 +327,11 @@ button {
   .btn-secondary {
     padding: 12px 16px !important;
     font-size: 1rem !important;
-    width: 100%;
-    text-align: center;
   }
   .container {
     padding: 0 16px !important;
   }
   .glass-panel {
     padding: 24px 20px !important;
-  }
-}
-
-/* Specific breakpoint for narrow screens like Galaxy Z Flip (320px ~ 360px) */
-@media (max-width: 380px) {
-  h1 {
-    font-size: 1.5rem !important;
-    letter-spacing: -1px !important;
-  }
-  h2 {
-    font-size: 1.35rem !important;
-  }
-  p,
-  div {
-    font-size: 0.9rem !important;
-  }
-
-  .nav-auth {
-    flex-direction: column;
-    width: 100%;
-    margin-top: 8px;
-    gap: 8px;
-  }
-  .nav-auth a {
-    width: 100% !important;
-    text-align: center;
   }
 }
