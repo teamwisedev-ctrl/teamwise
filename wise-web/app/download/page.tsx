@@ -127,6 +127,21 @@ export default async function DownloadPage() {
           </ol>
         </div>
 
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px', marginTop: '32px', color: 'var(--accent-warning)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          💊 알약(ALYac) &quot;랜섬웨어 차단&quot; 알림이 뜨나요?
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: 1.6 }}>
+          보안 프로그램인 <strong>알약(ALYac)</strong>을 사용하시는 경우, 설치 파일을 <strong>&quot;랜섬웨어 의심 행위&quot;</strong>로 오진하여 차단할 수 있습니다.<br/>
+          이는 국내 스타트업이나 개인 개발자의 신규 프로그램 설치 시 매우 흔하게 발생하는 <strong style={{ color: 'var(--text-primary)' }}>단순 오탐지(False Positive)</strong> 현상이므로 안심하셔도 됩니다.
+        </p>
+        <div style={{ background: 'rgba(255,200,0,0.05)', border: '1px solid rgba(255,200,0,0.2)', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
+          <strong style={{ display: 'block', marginBottom: '8px', color: 'var(--accent-warning)' }}>💡 알약 오진 해결 방법:</strong>
+          <ol style={{ paddingLeft: '24px', color: 'var(--text-secondary)', lineHeight: 1.8, margin: 0 }}>
+            <li>알약 랜섬웨어 차단 알림창 하단의 <u><strong>[의심 파일 차단 제외 하기]</strong></u> 체크박스에 체크합니다.</li>
+            <li>하단의 <strong>[예(Y)]</strong> 버튼을 클릭하여 차단을 해제하고 설치를 계속 진행합니다.</li>
+          </ol>
+        </div>
+
         <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px', marginTop: '40px' }}>기본 설치 안내</h3>
         <ol style={{ paddingLeft: '24px', color: 'var(--text-secondary)', lineHeight: 1.8 }}>
           <li>다운로드한 파일을 더블 클릭하여 설치를 진행합니다.</li>
