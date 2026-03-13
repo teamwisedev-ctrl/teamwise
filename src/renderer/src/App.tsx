@@ -579,6 +579,11 @@ function App(): React.JSX.Element {
 
             setSheetData(filteredData)
 
+            if (filteredData.length > 1) {
+              window.electron.ipcRenderer.invoke('save-sheet-cache', sheetId, filteredData)
+                .catch(e => console.error('Failed to save sheet cache', e))
+            }
+
             const validRows = filteredData.slice(
               filteredData.length > 0 &&
                 (filteredData[0][0] === '카테고리ID' || filteredData[0][1] === '상품명')
@@ -594,12 +599,111 @@ function App(): React.JSX.Element {
               `📦 수집 대기 목록 (${validRows.length}건): ${sampleNames} ${extraCount > 0 ? `외 ${extraCount}건` : ''}`
             )
           } else {
-            addLog(`데이터 내용이 유효하지 않거나 헤더만 존재합니다.`)
-            setSheetData([])
+            addLog(`소스 시트가 비어있습니다. 이전 데이터 복원(이어올리기)을 시도합니다...`)
+
+            let hasCache = false
+            try {
+              const cacheRes = await window.electron.ipcRenderer.invoke('load-sheet-cache', sheetId)
+              if (cacheRes.success && cacheRes.data && cacheRes.data.length > 1) {
+                if (masterSheetId) {
+                  const masterRes = await window.electron.ipcRenderer.invoke('read-sheet', masterSheetId, 'A:F')
+                  if (masterRes.success && masterRes.data && masterRes.data.length > 1) {
+                    const pendingNames = new Set<string>()
+                    for (let j = 1; j < masterRes.data.length; j++) {
+                      const mRow = masterRes.data[j]
+                      const statusVal = mRow[5] || ''
+                      if (statusVal.includes('[미등록]') || statusVal.includes('[실패')) {
+                         pendingNames.add(mRow[1])
+                      }
+                    }
+
+                    if (pendingNames.size > 0) {
+                      const restoredData: string[][] = []
+                      restoredData.push(cacheRes.data[0]) // Header
+                      let restoredCount = 0
+
+                      for (let k = 1; k < cacheRes.data.length; k++) {
+                        const cRow = cacheRes.data[k]
+                        if (cRow.length >= 2 && pendingNames.has(cRow[1])) {
+                           const newRow = [...cRow]
+                           newRow[0] = newRow[0] || '[복구됨]'
+                           restoredData.push(newRow)
+                           restoredCount++
+                        }
+                      }
+
+                      if (restoredCount > 0) {
+                         addLog(`✅ 로컬 캐시에서 완벽한 원본 데이터를 찾아 ${restoredCount}건의 미완료 항목을 이미지/옵션 손실 없이 복원했습니다!`)
+                         setSheetData(restoredData)
+                         hasCache = true
+                      }
+                    } else {
+                       addLog(`마스터 DB를 검사했으나 미완료 항목이 없습니다. 모두 완벽히 연동되었습니다!`)
+                       setSheetData([])
+                       hasCache = true
+                    }
+                  }
+                }
+              }
+            } catch (e) {
+               console.error('Local cache failed', e)
+            }
+
+            if (!hasCache && masterSheetId) {
+             addLog(`⚠️ 로컬 캐시를 찾을 수 없습니다. 마스터 DB 최소 정보로 복원을 시도합니다...`)
+             try {
+                const masterRes = await window.electron.ipcRenderer.invoke('read-sheet', masterSheetId, 'A:F')
+                if (masterRes.success && masterRes.data && masterRes.data.length > 1) {
+                  const pendingData: string[][] = []
+                  const headerRow = [
+                    '카테고리ID', '상품명', '판매가정가', '이미지URL', '공급가', '옵션유무', '옵션1명', '옵션1항목'
+                  ]
+                  pendingData.push(headerRow)
+
+                  let pendingCount = 0
+                  for (let j = 1; j < masterRes.data.length; j++) {
+                    const mRow = masterRes.data[j]
+                    // F column is Status. If it includes 미등록 or 실패, we must resume
+                    const statusVal = mRow[5] || ''
+                    if (statusVal.includes('[미등록]') || statusVal.includes('[실패')) {
+                       pendingCount++
+                       const productName = mRow[1]
+                       // Reconstruct UI Row
+                       const finalPriceStr = mRow[3] || '0'
+                       const finalPriceNum = parseInt(finalPriceStr.replace(/,/g, ''), 10)
+                       const reversedSupplyPrice = Math.floor((finalPriceNum - 3000) / 1.3)
+                       pendingData.push([
+                         '[복구됨]', // Category ID - Must not be falsy so UI table renders
+                         productName, // 1: Name
+                         finalPriceStr, // 2: SellPrice
+                         '', // 3: Image URL
+                         reversedSupplyPrice.toString(), // 4: Supply Price
+                         '없음', // 5
+                         '', // 6
+                         '', // 7
+                       ])
+                    }
+                  }
+                  if (pendingCount > 0) {
+                     addLog(`⚠️ 원본 시트는 비어있지만, 마스터 DB에서 ${pendingCount}건의 [미등록]/[실패] 항목을 찾아 복원했습니다!`)
+                     addLog(`💡 단, 이전 수집 데이터(상세 이미지 등)가 유실되었을 수 있으므로 가급적 [B2B 상품 소싱]에서 새로 수집 후 연동하는 것을 권장합니다.`)
+                     setSheetData(pendingData)
+                  } else {
+                     addLog(`마스터 DB를 검사했으나 미완료 항목이 없습니다. 모두 완벽히 연동되었습니다!`)
+                     setSheetData([])
+                  }
+                } else {
+                  addLog(`마스터 DB에 접근할 수 없거나 데이터가 없습니다.`)
+                }
+             } catch(e) {
+                addLog(`마스터 DB 확인 중 오류 발생: ${e}`)
+             }
+            } else {
+              addLog(`마스터 DB가 등록되지 않아 이어올리기를 확인할 수 없습니다.`)
+              setSheetData([])
+            }
           }
         } else {
-          addLog(`시트가 비어있거나 A:Q 범위에서 유효한 데이터를 찾지 못했습니다.`)
-          setSheetData([])
         }
       } else {
         addLog(`시트 읽기 실패: ${response.error}`)
@@ -610,7 +714,7 @@ function App(): React.JSX.Element {
     }
   }
 
-  const handleSyncProducts = async (targetMarkets: string[], selectedCafe24CategoryNo?: number) => {
+  const handleSyncProducts = async (targetMarkets: string[], selectedCafe24CategoryObj?: { category_no: number; full_category_no?: string }) => {
     if (sheetData.length === 0) {
       addLog(
         '메모리에 상품 데이터가 없습니다. 먼저 [등록할 상품 시트에서 가져오기]를 실행해주세요.'
@@ -640,30 +744,34 @@ function App(): React.JSX.Element {
 
     addLog(`총 ${itemsCount}개 상품의 연동을 시작합니다...`)
 
-    // Stage 2 Duplicate Filtering (Upsert Check): Fetch Master DB to see what's already registered
-    const registeredProducts = new Map<string, string>() // Key: "[Vendor]_[Name]", Value: channelProductNo
+    // Stage 2 Duplicate Filtering: Fetch Master DB to see what's already registered
+    const registeredProducts = new Map<string, string>() // Key: uniqueKey, Value: channelProductNo
+    const registeredProductsRowMap = new Map<string, number>() // Key: uniqueKey, Value: sheet row (1-indexed)
+    let masterNextRowNumber = 1
+
     if (masterSheetId) {
-      addLog('마스터 DB(기등록 상품 목록)를 조회하여 업데이트 대상을 확인합니다...')
+      addLog('마스터 DB를 조회하여 기등록 상품 밑 진행 상태를 파악합니다...')
       try {
-        // Read columns A (Vendor), B (Name/SKU), and C (ChannelProductNo)
         const masterRes = await window.electron.ipcRenderer.invoke(
           'read-sheet',
           masterSheetId,
-          'A:C'
+          'A:F'
         )
-        if (masterRes.success && masterRes.data && masterRes.data.length > 1) {
+        if (masterRes.success && masterRes.data && masterRes.data.length > 0) {
+          masterNextRowNumber = masterRes.data.length + 1
           // Skip header row
           for (let j = 1; j < masterRes.data.length; j++) {
             const mRow = masterRes.data[j]
-            if (mRow.length >= 3 && mRow[0] && mRow[1] && mRow[2]) {
+            if (mRow.length >= 2 && mRow[0] && mRow[1]) {
               const uniqueKey = `${mRow[0]}_${mRow[1]}`
-              registeredProducts.set(uniqueKey, mRow[2])
+              registeredProducts.set(uniqueKey, mRow[2] || '')
+              registeredProductsRowMap.set(uniqueKey, j + 1)
             }
           }
-          addLog(`기등록 상품 ${registeredProducts.size}건 확인 됨.`)
+          addLog(`기등록/이전 대기 상품 ${registeredProducts.size}건 확인 됨.`)
         }
       } catch (e) {
-        addLog(`마스터 DB 조회 실패 (신규 등록으로 간주합니다): ${e}`)
+        addLog(`마스터 DB 조회 실패: ${e}`)
       }
     }
 
@@ -685,15 +793,13 @@ function App(): React.JSX.Element {
     }
 
     // --- Cafe24 Selected Category ---
-    const defaultCafe24CategoryNo: number | null = selectedCafe24CategoryNo || null
+    const defaultCafe24CategoryNo = selectedCafe24CategoryObj?.category_no || null
+    const defaultCafe24FullCategoryNo = selectedCafe24CategoryObj?.full_category_no || null
     if (targetMarkets.includes('cafe24')) {
       if (defaultCafe24CategoryNo)
         addLog(`적용할 카페24 기본 카테고리 ID: ${defaultCafe24CategoryNo}`)
       else
-        addLog(
-          '⚠️ 카페24 ' +
-            (defaultCafe24CategoryNo ? '기본 매핑 진행' : '지정된 카테고리 없음. 미분류로 전송됨.')
-        )
+        addLog('⚠️ 카페24 카테고리 없음. (미분류로 전송됨)')
     }
     // ----------------------------------------
 
@@ -707,6 +813,56 @@ function App(): React.JSX.Element {
       }
     }
     setSyncStatuses(initialStatuses)
+
+    // Phase 3: Identify completely new items and BULK APPEND to Master DB as [미등록]
+    const newMasterRows: string[][] = []
+    const newMasterRowMapKeys: string[] = []
+
+    for (let i = startIndex; i < sheetData.length; i++) {
+      const row = sheetData[i]
+      if (row.length < 6 || !row[0]) continue
+
+      const productName = row[1]
+      const uniqueKey = `도매토피아_${productName}`
+
+      if (!registeredProductsRowMap.has(uniqueKey)) {
+        const originalPrice = parseInt((row[4] || '0').replace(/,/g, ''), 10)
+        const rawFinalPrice = originalPrice * (1 + marginRate / 100) + extraShippingCost
+        const finalPrice = Math.floor(rawFinalPrice / 10) * 10
+
+        newMasterRows.push([
+          '도매토피아',
+          productName,
+          '',
+          finalPrice.toString(),
+          new Date().toISOString(),
+          '[미등록]'
+        ])
+        newMasterRowMapKeys.push(uniqueKey)
+      }
+    }
+
+    if (masterSheetId && newMasterRows.length > 0) {
+      addLog(`새로운 상품 ${newMasterRows.length}건을 마스터 DB에 [미등록] 상태로 선행 기록합니다...`)
+      try {
+        const appendRes = await window.electron.ipcRenderer.invoke(
+          'append-to-master-sheet',
+          masterSheetId,
+          newMasterRows
+        )
+        if (appendRes.success) {
+          for (let idx = 0; idx < newMasterRowMapKeys.length; idx++) {
+            registeredProductsRowMap.set(newMasterRowMapKeys[idx], masterNextRowNumber + idx)
+            registeredProducts.set(newMasterRowMapKeys[idx], '')
+          }
+          addLog(`✅ 마스터 DB 선행 기록 완료. 이어서 동기화를 시작합니다.`)
+        } else {
+          addLog(`⚠️ 마스터 DB 선행 기록 실패: ${appendRes.error}`)
+        }
+      } catch (e: unknown) {
+        addLog(`⚠️ 마스터 DB 기록 오류: ${e instanceof Error ? e.message : String(e)}`)
+      }
+    }
 
     // Skip row 0 which is headers
     let updateCount = 0
@@ -732,6 +888,7 @@ function App(): React.JSX.Element {
 
       const existingChannelProductNo = registeredProducts.get(uniqueKey)
       const isUpdate = !!existingChannelProductNo
+      let updatedChannelProductNo = existingChannelProductNo || ''
 
       if (isUpdate) {
         addLog(
@@ -845,24 +1002,7 @@ function App(): React.JSX.Element {
                 addLog(`⚠️ 시트저장 실패: ${sheetRes.error}`)
               }
 
-              // Phase 7: Append to Master DB Sheet
-              if (masterSheetId && !isUpdate) {
-                const currentDate = new Date().toISOString()
-                const masterRow = [
-                  '도매토피아',
-                  sheetData[i][1] || 'UnknownItem',
-                  response.channelProductNo,
-                  finalPrice.toString(),
-                  currentDate
-                ]
-                const appendRes = await window.electron.ipcRenderer.invoke(
-                  'append-to-master-sheet',
-                  masterSheetId,
-                  [masterRow]
-                )
-                if (!appendRes.success) addLog(`⚠️ 마스터 DB 기록 실패: ${appendRes.error}`)
-                else addLog(`✅ 마스터 DB 신규 기록 완료: ${response.channelProductNo}`)
-              }
+              updatedChannelProductNo = response.channelProductNo
             } catch (e: unknown) {
               addLog(
                 `⚠️ 시트저장/마스터DB 연동 오류: ${e instanceof Error ? e.message : String(e)}`
@@ -903,9 +1043,15 @@ function App(): React.JSX.Element {
               // Origin fields removed to avoid mismatch errors
               has_option: payloadRow[6] && payloadRow[7] ? 'T' : 'F',
               shipping_fee_type: 'T',
-              ...(defaultCafe24CategoryNo
-                ? { category: [{ category_no: defaultCafe24CategoryNo, recommend: 'F', new: 'F' }] }
-                : {})
+              ...(defaultCafe24FullCategoryNo
+                ? {
+                    category: String(defaultCafe24FullCategoryNo)
+                      .split(',')
+                      .map((idStr) => ({ category_no: Number(idStr), recommend: 'F' as const, new: 'F' as const }))
+                  }
+                : defaultCafe24CategoryNo
+                  ? { category: [{ category_no: defaultCafe24CategoryNo, recommend: 'F' as const, new: 'F' as const }] }
+                  : {})
             }
           }
 
@@ -928,8 +1074,7 @@ function App(): React.JSX.Element {
             addLog(
               `✅ ${i}번째 상품 카페24 [신규등록] 성공! (상품번호: ${cafe24Response.productNo})`
             )
-            // Phase 6.5: Sync Cafe24 Product ID to Google Sheets if possible.
-            // For now, logging guarantees success visibility. Future update will write back to sheet.
+            if (!updatedChannelProductNo) updatedChannelProductNo = cafe24Response.productNo.toString()
           } else {
             marketLogMsgs.push('카페24(오류)')
             addLog(`❌ [카페24] ${i}번째 상품 전송 실패: ${cafe24Response.error}`)
@@ -951,10 +1096,28 @@ function App(): React.JSX.Element {
       }
 
       // Aggregating 1:N Status
+      const finalStateStr = marketLogMsgs.join(' | ')
       setSyncStatuses((prev) => ({
         ...prev,
-        [i]: { status: allSuccess ? 'success' : 'failed', message: marketLogMsgs.join(' | ') }
+        [i]: { status: allSuccess ? 'success' : 'failed', message: finalStateStr }
       }))
+
+      // Phase 8: Finalize Master DB Status for this row
+      if (masterSheetId) {
+        const mRowIdx = registeredProductsRowMap.get(uniqueKey)
+        if (mRowIdx) {
+           const finalStatusTxt = allSuccess ? '[성공]' : `[실패: ${finalStateStr.substring(0, 30)}]`
+           const updateData = [[
+             updatedChannelProductNo, // C
+             finalPrice.toString(),   // D
+             new Date().toISOString(),// E
+             finalStatusTxt           // F
+           ]]
+           window.electron.ipcRenderer.invoke(
+             'write-sheet', masterSheetId, `C${mRowIdx}:F${mRowIdx}`, updateData
+           ).catch(err => addLog(`⚠️ 마스터 DB 상태 갱신 통신 오류: ${err}`))
+        }
+      }
 
       // Increment total counts based on if AT LEAST ONE market succeeded
       if (itemCreated) newRegisterCount++

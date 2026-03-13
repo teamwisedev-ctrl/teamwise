@@ -130,7 +130,13 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
       }
 
       setSyncTotal(total)
-      addLog(`총 ${total}개의 상품을 네이버 스마트스토어와 대조합니다.`)
+
+      const selectedMarketsList = Object.keys(targetMarkets).filter((k) => targetMarkets[k])
+      const targetMarket = selectedMarketsList[0] || 'naver'
+      const isCafe24 = targetMarket === 'cafe24'
+      const marketName = isCafe24 ? '카페24' : '스마트스토어'
+
+      addLog(`총 ${total}개의 상품을 ${marketName}와(과) 대조합니다.`)
 
       let successCount = 0
       let skipCount = 0
@@ -147,11 +153,13 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
         if (product.itemCode.includes('[단종]') || product.itemCode.includes('[삭제]')) {
           addLog(`🗑️ 단종 처리 대상 발견: ${productDesc}`)
           try {
-            await window.electron.ipcRenderer.invoke('delete-smartstore-product', {
-              credentials,
+            const apiEndpoint = isCafe24 ? 'delete-cafe24-product' : 'delete-smartstore-product'
+            const apiCredentials = isCafe24 ? cafe24Credentials : credentials
+            await window.electron.ipcRenderer.invoke(apiEndpoint as any, {
+              credentials: apiCredentials,
               channelProductNo: product.channelProductNo
             })
-            addLog(`  ✅ 스마트스토어 판매삭제 완료`)
+            addLog(`  ✅ ${marketName} 판매삭제 완료`)
             deletedCount++
           } catch (err: unknown) {
             const errMsg = err instanceof Error ? err.message : String(err)
@@ -161,12 +169,16 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
           continue
         }
 
-        // Normal Case: Fetch current status from SmartStore
+        // Normal Case: Fetch current status from the selected market
         try {
+          const fetchEndpoint = isCafe24
+            ? 'fetch-cafe24-product-status'
+            : 'fetch-smartstore-product-status'
+          const apiCredentials = isCafe24 ? cafe24Credentials : credentials
           const statusRes = await window.electron.ipcRenderer.invoke(
-            'fetch-smartstore-product-status',
+            fetchEndpoint as any,
             {
-              credentials,
+              credentials: apiCredentials,
               channelProductNo: product.channelProductNo
             }
           )
@@ -175,10 +187,10 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
             throw new Error(statusRes.error)
           }
 
-          const smartStoreStatus = statusRes.status // 'SALE', 'OUTOFSTOCK', 'NOT_FOUND', etc.
+          const currentStatus = statusRes.status // 'SALE', 'OUTOFSTOCK', 'NOT_FOUND', etc.
 
-          // Case C: Missing from SmartStore (404 Not Found or Explicitly Deleted 403)
-          if (smartStoreStatus === 'NOT_FOUND') {
+          // Case C: Missing from Store (404 Not Found or Explicitly Deleted 403)
+          if (currentStatus === 'NOT_FOUND') {
             addLog(`⚠️ 스토어 미존재(수동삭제됨) 상품 발견: ${productDesc}`)
             addLog(`  🧹 마스터 DB 정리 수행됨 -> [스토어삭제됨] 마킹`)
             // Update MasterDB row Vendor code to mark it as [스토어삭제됨]
@@ -195,13 +207,17 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
           // For now, MasterDB doesn't natively store its own Sale Status in a dedicated column,
           // it only stores that the item was synced. In Phase 9, MasterDB is assumed to represent "SALE"
           // unless marked with [단종] (checked above) or later expanded with a Status column.
-          // If SmartStore says it's OUTOFSTOCK but it exists in MasterDB (and not marked 단종),
+          // If the store says it's OUTOFSTOCK but it exists in MasterDB (and not marked 단종),
           // this means someone manually out-of-stocked it or it's a discrepancy.
           // For now, if we want MasterDB to be the Source of Truth of "SALE", we should enforce SALE.
-          if (smartStoreStatus === 'OUTOFSTOCK' || smartStoreStatus === 'SUSPENSION') {
+          if (currentStatus === 'OUTOFSTOCK' || currentStatus === 'SUSPENSION') {
             addLog(`🔄 상태 불일치 발견 (스토어:품절/중지 -> DB기준:판매중 표출): ${productDesc}`)
-            const updateRes = await window.electron.ipcRenderer.invoke('update-smartstore-status', {
-              credentials,
+            const updateEndpoint = isCafe24
+              ? 'update-cafe24-product-status'
+              : 'update-smartstore-status'
+            const apiCredentials = isCafe24 ? cafe24Credentials : credentials
+            const updateRes = await window.electron.ipcRenderer.invoke(updateEndpoint as any, {
+              credentials: apiCredentials,
               channelProductNo: product.channelProductNo,
               statusType: 'SALE'
             })
@@ -212,11 +228,11 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
               addLog(`  ❌ 상태 복원 실패: ${updateRes.error}`)
               errorCount++
             }
-          } else if (smartStoreStatus === 'SALE') {
+          } else if (currentStatus === 'SALE') {
             addLog(`✓ 정상 씽크 유지 중: ${productDesc}`)
             skipCount++
           } else {
-            addLog(`? 알 수 없는 상태(${smartStoreStatus}): ${productDesc}`)
+            addLog(`? 알 수 없는 상태(${currentStatus}): ${productDesc}`)
             skipCount++
           }
         } catch (err: unknown) {
@@ -481,7 +497,8 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
         {activeTab === 'statusSync' ? (
           <>
             <div className="panel-title">
-              <RefreshCcw size={20} color="#3b82f6" style={{ marginRight: '8px' }} /> 스마트스토어 -
+              <RefreshCcw size={20} color="#3b82f6" style={{ marginRight: '8px' }} />{' '}
+              {targetMarkets.cafe24 ? '카페24' : '스마트스토어'} -
               마스터 DB 씽크 맞추기
             </div>
             <p
@@ -493,7 +510,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
               }}
             >
               구글 드라이브에 안전하게 보관된 <b>[Mo2] 내 상품 마스터 DB</b>의 기록을 단일 진실
-              공급원(Source of Truth)으로 삼아, 현재 네이버 스마트스토어의 상품 상태를 대조하고
+              공급원(Source 연 Truth)으로 삼아, 현재 선택하신 스토어의 상품 상태를 대조하고
               일치시킵니다.
             </p>
           </>
@@ -760,7 +777,7 @@ export const SyncStepMaster: React.FC<SyncStepProps> = ({
                 {activeTab === 'statusSync' ? <Rocket size={20} /> : <Zap size={20} />}
                 <span>
                   {activeTab === 'statusSync'
-                    ? '스마트스토어 기준 데이터 정리 시작'
+                    ? `${targetMarkets.cafe24 ? '카페24' : '스마트스토어'} 기준 데이터 정리 시작`
                     : '100% 자동 모니터링 & 가격 갱신 시작'}
                 </span>
               </div>

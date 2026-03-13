@@ -1,5 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain, session } from 'electron'
 import { join } from 'path'
+import * as fs from 'fs'
 import icon from '../../resources/icon.png?asset'
 import { authorize, logout, getNewToken } from './auth'
 import {
@@ -31,7 +32,9 @@ import {
   Cafe24ProductPayload,
   fetchCafe24Orders,
   fetchCafe24Categories,
-  createCafe24Category
+  createCafe24Category,
+  fetchCafe24ProductStatus,
+  updateCafe24ProductStatus
 } from './cafe24'
 import { scrapeDometopiaProduct, scrapeCategoryLinks, checkDometopiaStatus } from './scraper'
 import {
@@ -131,6 +134,32 @@ function createWindow(): void {
 app.whenReady().then(() => {
   // Set app user model id for windows
   app.setAppUserModelId('com.electron')
+
+  // --- Local Sheet Cache ---
+  ipcMain.handle('save-sheet-cache', async (_event, fileName: string, data: any[]) => {
+    try {
+      const cachePath = join(app.getPath('userData'), `${fileName}.json`)
+      fs.writeFileSync(cachePath, JSON.stringify(data), 'utf8')
+      return { success: true }
+    } catch (err: any) {
+      console.error('save-sheet-cache error', err)
+      return { success: false, error: err.message }
+    }
+  })
+
+  ipcMain.handle('load-sheet-cache', async (_event, fileName: string) => {
+    try {
+      const cachePath = join(app.getPath('userData'), `${fileName}.json`)
+      if (!fs.existsSync(cachePath)) {
+        return { success: false, error: 'Cache file not found' }
+      }
+      const data = fs.readFileSync(cachePath, 'utf8')
+      return { success: true, data: JSON.parse(data) }
+    } catch (err: any) {
+       console.error('load-sheet-cache error', err)
+       return { success: false, error: err.message }
+    }
+  })
 
   // Category Rules IPC Handlers
   ipcMain.handle('get-category-rules', () => {
@@ -444,10 +473,43 @@ app.whenReady().then(() => {
 
   ipcMain.handle(
     'delete-cafe24-product',
-    async (_: unknown, credentials: any, productNo: number) => {
+    async (_: unknown, data: { credentials: any; channelProductNo: number | string }) => {
       try {
-        const result = await deleteCafe24Product(credentials.mallId, productNo)
-        return result
+        const result = await deleteCafe24Product(data.credentials.mallId, Number(data.channelProductNo))
+        return { success: true, result } // Wrap boolean in standard response object
+      } catch (error: unknown) {
+        const err = error as any
+        return { success: false, error: err.message }
+      }
+    }
+  )
+
+  ipcMain.handle(
+    'fetch-cafe24-product-status',
+    async (_: unknown, data: { credentials: any; channelProductNo: number | string }) => {
+      try {
+        const status = await fetchCafe24ProductStatus(data.credentials.mallId, data.channelProductNo)
+        return { success: true, status }
+      } catch (error: unknown) {
+        const err = error as any
+        return { success: false, error: err.message }
+      }
+    }
+  )
+
+  ipcMain.handle(
+    'update-cafe24-product-status',
+    async (
+      _: unknown,
+      data: { credentials: any; channelProductNo: number | string; statusType: 'SALE' | 'OUTOFSTOCK' | 'SUSPENSION' }
+    ) => {
+      try {
+        const result = await updateCafe24ProductStatus(
+          data.credentials.mallId,
+          data.channelProductNo,
+          data.statusType
+        )
+        return { success: true, result }
       } catch (error: unknown) {
         const err = error as any
         return { success: false, error: err.message }

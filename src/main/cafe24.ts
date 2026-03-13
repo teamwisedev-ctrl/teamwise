@@ -33,9 +33,10 @@ export async function getCafe24Token(mallId: string): Promise<string> {
     }
   } catch (error: unknown) {
     const err = error as any
-    console.error('Cafe24 백엔드 연동 토큰 갱신 실패:', err?.response?.data || err.message)
+    const realError = err?.response?.data ? JSON.stringify(err.response.data) : err.message
+    console.error(`Cafe24 백엔드 연동 토큰 갱신 실패 (mallId: ${mallId}):`, realError)
     throw new Error(
-      '카페24 API 토큰 갱신 여부를 확인해 주세요. [1클릭 연동] 버튼을 다시 눌러주세요.'
+      `'카페24 API 토큰 갱신 여부를 확인해 주세요. [1클릭 연동] 버튼을 다시 눌러주세요.' (상세: ${realError})`
     )
   }
 }
@@ -57,7 +58,7 @@ export interface Cafe24ProductPayload {
     custom_product_code: string // Our master DB ItemCode
     origin_classification?: string
     origin_place_no?: number
-    // Categorization
+    // Categorization (Cafe24 array format)
     category?: { category_no: number; recommend: 'T' | 'F'; new: 'T' | 'F' }[]
     // Options
     has_option: 'T' | 'F'
@@ -351,3 +352,82 @@ export async function createCafe24Category(
     }
   }
 }
+
+/**
+ * Fetch Cafe24 Product Status
+ * Maps Cafe24's 'T'/'F' states to SmartStore's standard STATUS states for unified front-end interpretation.
+ */
+export async function fetchCafe24ProductStatus(
+  mallId: string,
+  productNo: number | string
+): Promise<string> {
+  try {
+    const token = await getCafe24Token(mallId)
+    const response = await axios.get(
+      `https://${mallId}.cafe24api.com/api/v2/admin/products/${productNo}?fields=display_state,selling_state`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 10000
+      }
+    )
+    
+    const p = response.data?.product
+    if (!p) return 'UNKNOWN'
+
+    // Cafe24 Quirk: Requesting a non-existent product returns HTTP 200 with `{ "product": {} }` instead of 404.
+    if (Object.keys(p).length === 0 || p.display_state === undefined) {
+      return 'NOT_FOUND'
+    }
+
+    if (p.display_state === 'T' && p.selling_state === 'T') {
+      return 'SALE'
+    } else {
+      // Treat any combination with 'F' as essentially suspended/outofstock for sync purposes
+      return 'SUSPENSION'
+    }
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return 'NOT_FOUND'
+    }
+    const errObj = error.response?.data || error.message
+    throw new Error(`Failed to fetch Cafe24 product status: ${JSON.stringify(errObj)}`)
+  }
+}
+
+/**
+ * Update Cafe24 Product Status
+ * Re-activates or suspends a product.
+ */
+export async function updateCafe24ProductStatus(
+  mallId: string,
+  productNo: number | string,
+  statusType: 'SALE' | 'OUTOFSTOCK' | 'SUSPENSION'
+): Promise<boolean> {
+  try {
+    const token = await getCafe24Token(mallId)
+    const isSale = statusType === 'SALE'
+    
+    await axios.put(
+      `https://${mallId}.cafe24api.com/api/v2/admin/products/${productNo}`,
+      {
+        shop_no: 1,
+        request: {
+          display_state: isSale ? 'T' : 'F',
+          selling_state: isSale ? 'T' : 'F'
+        }
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000
+      }
+    )
+    return true
+  } catch (error: any) {
+    const errObj = error.response?.data || error.message
+    throw new Error(`Failed to update Cafe24 product status: ${JSON.stringify(errObj)}`)
+  }
+}
+

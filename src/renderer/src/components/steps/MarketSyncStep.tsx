@@ -18,7 +18,10 @@ interface MarketSyncStepProps {
   sheetData: string[][]
   syncStatuses: { [rowIdx: number]: { status: SyncStatus; message: string } }
   handleReadProducts: () => Promise<void>
-  handleSyncProducts: (selectedMarkets: string[], cafe24CategoryNo?: number) => Promise<void>
+  handleSyncProducts: (
+    selectedMarkets: string[],
+    cafe24Category?: { category_no: number; full_category_no?: string }
+  ) => Promise<void>
   handleFetchSmartStoreOrders: () => Promise<void>
   marginRate: number
   setMarginRate: React.Dispatch<React.SetStateAction<number>>
@@ -50,7 +53,7 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
 
   // Cafe24 Category State
   const [cafe24Categories, setCafe24Categories] = useState<
-    { category_no: number; category_name: string }[]
+    { category_no: number; category_name: string; full_category_no?: string }[]
   >([])
   const [selectedCafe24Category, setSelectedCafe24Category] = useState<number | null>(null)
   const [isLoadingCategories, setIsLoadingCategories] = useState(false)
@@ -112,7 +115,8 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
     if (res.success && res.category) {
       const newCat = {
         category_no: res.category.category_no,
-        category_name: res.category.category_name
+        category_name: res.category.category_name,
+        full_category_no: res.category.category_no.toString()
       }
       setCafe24Categories((prev) => [newCat, ...prev])
       setSelectedCafe24Category(newCat.category_no)
@@ -176,7 +180,11 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
       return
     }
 
-    handleSyncProducts(selectedMarkets, selectedCafe24Category || undefined)
+    const categoryObj = selectedCafe24Category
+      ? cafe24Categories.find((c) => c.category_no === selectedCafe24Category)
+      : undefined
+
+    handleSyncProducts(selectedMarkets, categoryObj)
   }
 
   return (
@@ -303,7 +311,10 @@ export const MarketSyncStep: React.FC<MarketSyncStepProps> = ({
 
                     return dataRows.map((row, idx) => {
                       const rowIdx = startIndex + idx
-                      if (row.length < 6 || !row[0]) return null
+                      if (row.length < 6 || !row[0]) {
+                        console.log('Skipping row due to length or empty 0 index:', row);
+                        return null;
+                      }
                       const statusInfo = syncStatuses[rowIdx] || {
                         status: 'pending',
                         message: '연동 대기 중'

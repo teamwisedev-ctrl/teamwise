@@ -35,6 +35,18 @@ declare global {
           data: { credentials: any; channelProductNo: string }
         ): Promise<{ success: boolean; result?: boolean; error?: string }>
         invoke(
+          channel: 'fetch-cafe24-product-status',
+          data: { credentials: any; channelProductNo: string | number }
+        ): Promise<{ success: boolean; status?: string; error?: string }>
+        invoke(
+          channel: 'update-cafe24-product-status',
+          data: { credentials: any; channelProductNo: string | number; statusType: string }
+        ): Promise<{ success: boolean; result?: boolean; error?: string }>
+        invoke(
+          channel: 'delete-cafe24-product',
+          data: { credentials: any; channelProductNo: string | number }
+        ): Promise<{ success: boolean; result?: boolean; error?: string }>
+        invoke(
           channel: 'supabase-auth'
         ): Promise<{ success: boolean; email?: string; error?: string }>
         invoke(
@@ -52,6 +64,15 @@ declare global {
           finalPrice: number,
           originalPrice: number
         ): Promise<{ success: boolean; suggestedPrice?: number; error?: string }>
+        invoke(
+          channel: 'save-sheet-cache',
+          fileName: string,
+          data: any[]
+        ): Promise<{ success: boolean; error?: string }>
+        invoke(
+          channel: 'load-sheet-cache',
+          fileName: string
+        ): Promise<{ success: boolean; data?: any[]; error?: string }>
         invoke(channel: string, ...args: any[]): Promise<any>
       }
     }
