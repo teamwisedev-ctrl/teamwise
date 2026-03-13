@@ -12,13 +12,20 @@ files:
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!wise-web{,/**/*}'
+  - '!electron_cache{,/**/*}'
+  - '!scripts{,/**/*}'
+  - '!public{,/**/*}'
+  - '!tmp_img_gen{,/**/*}'
+  - '!test_toss_webhook.php'
 asarUnpack:
   - resources/**
 win:
   executableName: Mo2
   verifyUpdateCodeSignature: false
+  icon: build/icon.ico
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  artifactName: ${productName}-Official-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
