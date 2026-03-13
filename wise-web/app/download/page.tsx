@@ -112,7 +112,22 @@ export default async function DownloadPage() {
         className="glass-panel"
         style={{ marginTop: '60px', padding: '24px', maxWidth: '800px', margin: '60px auto 0' }}
       >
-        <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px' }}>설치 안내</h3>
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px', color: 'var(--accent-primary)' }}>
+          🚨 윈도우 설치 시 &quot;PC 보호&quot; 파란 화면이 뜨나요?
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: 1.6 }}>
+          안녕하세요, <strong>Team Mo2</strong>입니다.<br/>
+          Mo2 설치 시 간혹 나타나는 파란색 <strong>&quot;Windows 사용자 보호&quot;</strong> 화면은 프로그램 오류나 바이러스가 아니며, 아직 다운로드 수가 충분히 누적되지 않은 신규 소프트웨어에 대해 Windows가 기본적으로 띄우는 정상적인 보안 알림입니다.
+        </p>
+        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
+          <strong style={{ display: 'block', marginBottom: '8px', color: 'var(--text-primary)' }}>💡 10초 해결 방법:</strong>
+          <ol style={{ paddingLeft: '24px', color: 'var(--text-secondary)', lineHeight: 1.8, margin: 0 }}>
+            <li>파란 화면 좌측 중간의 <u><strong>[추가 정보(More info)]</strong></u> 글자를 클릭합니다.</li>
+            <li>우측 하단에 나타나는 <strong>[실행(Run anyway)]</strong> 버튼을 클릭하면 정상 설치됩니다.</li>
+          </ol>
+        </div>
+
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px', marginTop: '40px' }}>기본 설치 안내</h3>
         <ol style={{ paddingLeft: '24px', color: 'var(--text-secondary)', lineHeight: 1.8 }}>
           <li>다운로드한 파일을 더블 클릭하여 설치를 진행합니다.</li>
           <li>
