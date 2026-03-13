@@ -1,12 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { replyToInquiry } from './actions'
+import { Search } from 'lucide-react'
+
+type TabType = 'all' | 'pending' | 'answered'
 
 // Use any here because Supabase return types aren't strictly generated in this project yet
 export default function SuperAdminInquiryClient({ initialInquiries }: { initialInquiries: any[] }) {
   const [inquiries] = useState(initialInquiries)
   const [submittingId, setSubmittingId] = useState<string | null>(null)
+  
+  const [activeTab, setActiveTab] = useState<TabType>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
   async function handleReply(e: React.FormEvent<HTMLFormElement>, inquiryId: string) {
     e.preventDefault()
@@ -31,9 +37,100 @@ export default function SuperAdminInquiryClient({ initialInquiries }: { initialI
     }
   }
 
+  const filteredInquiries = useMemo(() => {
+    return inquiries.filter((iq) => {
+      // 1. Tab filter
+      if (activeTab === 'pending' && iq.status === 'answered') return false
+      if (activeTab === 'answered' && iq.status !== 'answered') return false
+
+      // 2. Search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase()
+        const matchTitle = iq.title?.toLowerCase().includes(query)
+        const matchEmail = iq.user_email?.toLowerCase().includes(query)
+        const matchContent = iq.content?.toLowerCase().includes(query)
+        if (!matchTitle && !matchEmail && !matchContent) return false
+      }
+
+      return true
+    })
+  }, [inquiries, activeTab, searchQuery])
+
   return (
     <div className="glass-panel animate-slide-up" style={{ padding: '24px' }}>
-      {inquiries.length === 0 ? (
+      {/* Controls Row */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '16px',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '24px',
+          paddingBottom: '20px',
+          borderBottom: '1px solid var(--border-color)'
+        }}
+      >
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {(
+            [
+              { id: 'all', label: '전체' },
+              { id: 'pending', label: '답변 대기' },
+              { id: 'answered', label: '답변 완료' }
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '20px',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                background: activeTab === tab.id ? 'var(--accent-primary)' : 'rgba(0,0,0,0.05)',
+                color: activeTab === tab.id ? '#FFFFFF' : 'var(--text-secondary)'
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: '300px' }}>
+          <Search
+            size={18}
+            style={{
+              position: 'absolute',
+              left: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'var(--text-muted)'
+            }}
+          />
+          <input
+            type="text"
+            placeholder="제목, 내용, 이메일 검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px 12px 10px 38px',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)',
+              fontSize: '0.9rem',
+              outline: 'none',
+              transition: 'border-color 0.2s'
+            }}
+          />
+        </div>
+      </div>
+
+      {filteredInquiries.length === 0 ? (
         <div
           style={{
             display: 'flex',
@@ -51,7 +148,7 @@ export default function SuperAdminInquiryClient({ initialInquiries }: { initialI
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {inquiries.map((iq) => (
+          {filteredInquiries.map((iq) => (
             <div
               key={iq.id}
               style={{
