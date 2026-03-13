@@ -1,4 +1,4 @@
-import { BrowserWindow, session } from 'electron'
+import { BrowserWindow, session, Notification, shell } from 'electron'
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 // Use exactly the same public keys from your web project
@@ -124,6 +124,59 @@ export function requireLogin(
       reject(new Error('User closed login window.'))
     })
   })
+}
+
+/**
+ * Subscribes to Supabase Realtime for push notifications.
+ */
+export function setupPushNotifications(userId: string) {
+  // We only care about updates where status changes to 'answered' for THIS user
+  const channel = supabase
+    .channel('inquiries-updates')
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'inquiries',
+        filter: `user_id=eq.${userId}`
+      },
+      (payload) => {
+        const oldRow = payload.old as any
+        const newRow = payload.new as any
+
+        // Check if status changed from 'pending' to 'answered'
+        if (oldRow.status !== 'answered' && newRow.status === 'answered') {
+          if (Notification.isSupported()) {
+            const notif = new Notification({
+              title: 'Mo2 관리자 답변 알림',
+              body: `[${newRow.title}] 문의에 대한 답변이 등록되었습니다.`,
+              icon: __dirname + '/../../resources/icon.png' // Use app icon if available
+            })
+
+            notif.on('click', () => {
+              // Bring the main window to front
+              const win = BrowserWindow.getAllWindows()[0]
+              if (win) {
+                if (win.isMinimized()) win.restore()
+                win.show()
+                win.focus()
+              } else {
+                // If the app is somehow fully closed (unlikely in tray), open external
+                shell.openExternal('https://mo2.kr/admin/inquiries')
+              }
+            })
+
+            notif.show()
+          }
+        }
+      }
+    )
+    .subscribe((status) => {
+      console.log('Realtime notification subscription status:', status)
+    })
+
+  return channel
 }
 
 export function setupAuthHandlers() {

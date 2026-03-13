@@ -76,10 +76,10 @@ export default async function DownloadPage() {
           <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
             Windows 10, 11 (64-bit)
             <br />
-            버전 1.0.0
+            버전 3.5.0
           </p>
           <a
-            href="https://github.com/teamwisedev-ctrl/teamwise/releases/latest/download/Mo2-1.0.0-setup.exe"
+            href="https://github.com/teamwisedev-ctrl/teamwise/releases/latest/download/Mo2-3.5.0-setup.exe"
             className="btn-primary"
             style={{
               width: '100%',

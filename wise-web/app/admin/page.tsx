@@ -185,7 +185,7 @@ export default async function AdminPage() {
             className="btn-primary"
             style={{ padding: '14px 24px', textDecoration: 'none', display: 'inline-block' }}
           >
-            💻 Windows 버전 다운로드 (v3.0.0)
+            💻 Windows 버전 다운로드 (v3.5.0)
           </a>
         </div>
       </div>

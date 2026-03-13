@@ -41,7 +41,7 @@ import {
   findRuleByUrl,
   CategoryRule
 } from './db'
-import { requireLogin, checkLicense } from './supabase'
+import { requireLogin, checkLicense, setupPushNotifications } from './supabase'
 import { setupSheetHandlers } from './sheets'
 import { setupCrawlerHandlers } from './scraper'
 import { setupSmartstoreHandlers } from './smartstore'
@@ -517,6 +517,15 @@ app.whenReady().then(() => {
 
       if (!result.success) {
         throw new Error(result.error || '라이선스 확인 실패')
+      }
+
+      // Initialize Native Push Notifications if authenticated and licensed
+      try {
+        if (result.userId) {
+          setupPushNotifications(result.userId)
+        }
+      } catch (e) {
+        console.error('Failed to setup push notifications', e)
       }
 
       return {
