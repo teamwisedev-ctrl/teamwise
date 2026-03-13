@@ -79,7 +79,7 @@ export default async function DownloadPage() {
             버전 3.5.0
           </p>
           <a
-            href="https://github.com/teamwisedev-ctrl/teamwise/releases/latest/download/Mo2-3.5.0-setup.exe"
+            href="https://github.com/teamwisedev-ctrl/teamwise/releases/latest/download/Mo2-Official-3.5.0-setup.exe"
             className="btn-primary"
             style={{
               width: '100%',
@@ -89,7 +89,7 @@ export default async function DownloadPage() {
               display: 'inline-block'
             }}
           >
-            Mo2-3.5.0-setup.exe 다운로드 (135MB)
+            Mo2-Official-3.5.0-setup.exe 다운로드 (135MB)
           </a>
         </div>
 
