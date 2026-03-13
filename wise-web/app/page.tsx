@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { ShieldCheck } from 'lucide-react'
 
 export default function Home() {
   return (
@@ -8,30 +7,6 @@ export default function Home() {
       <section className="hero-section" style={heroStyles}>
         <div className="container animate-slide-up" style={heroContainerStyles}>
           <div style={heroContentStyles}>
-            <div style={badgeStyles}>
-              <span
-                style={{
-                  background: 'rgba(16, 185, 129, 0.1)',
-                  color: '#10b981',
-                  padding: '4px 12px',
-                  borderRadius: '16px',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0
-                }}
-              >
-                <ShieldCheck size={16} strokeWidth={2.5} /> 평생 무료 선언
-              </span>
-              <span
-                style={{ color: 'var(--text-secondary)', marginLeft: '8px', fontSize: '0.9rem' }}
-              >
-                숨겨진 결제(In-App) 없이 카페24 동기화 완벽 무료 지원
-              </span>
-            </div>
             <h1 style={heroTitleStyles}>
               내 모든 쇼핑몰 관리를{' '}
               <span style={{ color: 'var(--accent-primary)', fontWeight: 900 }}>2배</span> 더 가볍게,
@@ -534,17 +509,6 @@ const heroContentStyles: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center'
-}
-
-const badgeStyles: React.CSSProperties = {
-  background: 'rgba(59, 130, 246, 0.1)',
-  border: '1px solid rgba(59, 130, 246, 0.2)',
-  padding: '6px 16px',
-  borderRadius: '24px',
-  display: 'inline-flex',
-  alignItems: 'center',
-  marginBottom: '24px',
-  gap: '8px'
 }
 
 const heroTitleStyles: React.CSSProperties = {
