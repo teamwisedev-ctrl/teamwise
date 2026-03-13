@@ -32,9 +32,21 @@ export default function SuperAdminInquiryClient({ initialInquiries }: { initialI
   }
 
   return (
-    <div className="glass-panel" style={{ padding: '24px' }}>
+    <div className="glass-panel animate-slide-up" style={{ padding: '24px' }}>
       {inquiries.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '200px',
+            color: 'var(--text-muted)',
+            fontSize: '1rem',
+            textAlign: 'center',
+            background: 'rgba(248, 250, 252, 0.5)',
+            borderRadius: '12px'
+          }}
+        >
           등록된 문의 내역이 없습니다.
         </div>
       ) : (
