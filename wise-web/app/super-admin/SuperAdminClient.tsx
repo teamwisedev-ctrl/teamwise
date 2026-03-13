@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { updateUserSubscription } from './actions'
+import { getAnalyticsData } from './analytics'
 import { ShieldAlert, Search, Edit2 } from 'lucide-react'
 
 export default function SuperAdminClient({
@@ -31,13 +32,12 @@ export default function SuperAdminClient({
   const handleFetchStats = async () => {
     setIsLoadingStats(true)
     try {
-      // Dynamically import to avoid client-side bundling issues with server action initially
-      const { getAnalyticsData } = await import('./analytics')
       const data = await getAnalyticsData()
       setStats(data)
     } catch (e: any) {
+      console.error('Analytics Error:', e)
       alert(
-        `통계 로딩 실패: ${e.message}\n(백엔드 환경변수에 구글 프로퍼티 ID가 등록되었는지 확인하세요)`
+        `통계 로딩 실패: ${e?.message || '알 수 없는 오류'}\n(백엔드 환경변수에 구글 프로퍼티 ID가 등록되었는지 확인하세요)`
       )
     } finally {
       setIsLoadingStats(false)
