@@ -89,7 +89,7 @@ export default async function DownloadPage() {
               display: 'inline-block'
             }}
           >
-            .exe 다운로드 (135MB)
+            Mo2-3.5.0-setup.exe 다운로드 (135MB)
           </a>
         </div>
 
