@@ -9,8 +9,8 @@ export default async function SuperAdminInquiriesPage() {
 
   return (
     <div
-      className="animate-fade-in"
-      style={{ padding: '40px 24px', maxWidth: '1400px', margin: '0 auto' }}
+      className="container animate-fade-in"
+      style={{ paddingTop: '40px', paddingBottom: '40px' }}
     >
       <div
         style={{

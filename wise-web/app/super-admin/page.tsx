@@ -23,7 +23,7 @@ export default async function SuperAdminPage() {
   }
 
   return (
-    <div style={{ padding: '40px 24px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="container animate-fade-in" style={{ paddingTop: '40px', paddingBottom: '40px' }}>
       <div
         style={{
           marginBottom: '40px',
