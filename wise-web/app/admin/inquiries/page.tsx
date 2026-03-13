@@ -20,7 +20,7 @@ export default async function InquiriesPage() {
   return (
     <div
       className="container animate-fade-in"
-      style={{ paddingTop: '60px', paddingBottom: '60px', maxWidth: '900px' }}
+      style={{ paddingTop: '60px', paddingBottom: '60px' }}
     >
       <div style={{ marginBottom: '40px' }}>
         <Link
