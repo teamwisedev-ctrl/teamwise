@@ -47,15 +47,40 @@ export async function getAnalyticsData() {
       ]
     })
 
-    // Parse rows
-    const dailyStats =
-      response.rows?.map((row) => {
-        return {
-          date: row.dimensionValues?.[0]?.value || '',
-          activeUsers: parseInt(row.metricValues?.[0]?.value || '0', 10),
-          pageViews: parseInt(row.metricValues?.[1]?.value || '0', 10)
+    // 2. Generate a baseline 7-day array to ensure the table always renders
+    const baselineStats: Record<string, any> = {}
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(d.getDate() - i)
+      // Format as YYYYMMDD to match GA response
+      const yyyy = d.getFullYear()
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      const dd = String(d.getDate()).padStart(2, '0')
+      const dateKey = `${yyyy}${mm}${dd}`
+      baselineStats[dateKey] = {
+        date: dateKey,
+        activeUsers: 0,
+        pageViews: 0
+      }
+    }
+
+    // 3. Merge actual GA data overriding the baseline zeros
+    if (response.rows && response.rows.length > 0) {
+      response.rows.forEach((row) => {
+        const dateStr = row.dimensionValues?.[0]?.value
+        if (dateStr && baselineStats[dateStr]) {
+          baselineStats[dateStr].activeUsers = parseInt(row.metricValues?.[0]?.value || '0', 10)
+          baselineStats[dateStr].pageViews = parseInt(row.metricValues?.[1]?.value || '0', 10)
         }
-      }) || []
+      })
+    }
+
+    // Convert object back to array
+    const dailyStats = Object.values(baselineStats) as {
+      date: string
+      activeUsers: number
+      pageViews: number
+    }[]
 
     // Sort by date sequentially
     dailyStats.sort((a, b) => a.date.localeCompare(b.date))
