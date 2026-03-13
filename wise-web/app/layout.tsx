@@ -9,7 +9,10 @@ export const metadata: Metadata = {
   title: 'Mo2 - 1:N Market Sync Solution',
   description: '다중 도매처와 오픈마켓을 통합 관리하는 지능형 스크래핑 솔루션',
   verification: {
-    google: 'qsYaNXddxtUliIGmFE-vlCzJUDtMAYMB-FhNmFQ7nJI'
+    google: 'qsYaNXddxtUliIGmFE-vlCzJUDtMAYMB-FhNmFQ7nJI',
+    other: {
+      'naver-site-verification': '2439768ffa31048511f4f95c4a81b37cebb7a02f'
+    }
   }
 }
 
