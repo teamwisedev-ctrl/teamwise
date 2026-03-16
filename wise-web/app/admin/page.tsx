@@ -90,7 +90,7 @@ export default async function AdminPage() {
             환영합니다, <strong style={{ color: 'var(--text-primary)' }}>{user.email}</strong>님!
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           {isSuperAdmin && (
             <a
               href="/super-admin"
@@ -102,12 +102,12 @@ export default async function AdminPage() {
                 color: 'var(--accent-primary)',
                 textDecoration: 'none',
                 background: 'rgba(59, 130, 246, 0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
+                textAlign: 'center'
               }}
             >
-              👑 전체 관리자 (Super Admin)
+              전체관리자
             </a>
           )}
           <a
@@ -119,12 +119,15 @@ export default async function AdminPage() {
               border: '1px solid var(--border-color)',
               background: 'transparent',
               color: 'var(--text-primary)',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              display: 'inline-block',
+              whiteSpace: 'nowrap',
+              textAlign: 'center'
             }}
           >
-            💬 1:1 문의
+            1:1문의
           </a>
-          <form action="/auth/signout" method="post">
+          <form action="/auth/signout" method="post" style={{ margin: 0 }}>
             <button
               className="btn-secondary"
               style={{
@@ -132,7 +135,9 @@ export default async function AdminPage() {
                 fontSize: '0.9rem',
                 border: '1px solid var(--border-color)',
                 background: 'transparent',
-                color: 'var(--text-primary)'
+                color: 'var(--text-primary)',
+                whiteSpace: 'nowrap',
+                textAlign: 'center'
               }}
             >
               로그아웃

@@ -52,7 +52,7 @@ export default async function SuperAdminPage() {
             시스템의 모든 사용자를 모니터링하고 관리할 수 있는 전용 대시보드입니다.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <Link
             href="/super-admin/inquiries"
             className="btn-secondary"
@@ -65,7 +65,8 @@ export default async function SuperAdminPage() {
               color: 'var(--accent-primary)',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px'
+              gap: '6px',
+              whiteSpace: 'nowrap'
             }}
           >
             💬 1:1 문의 관리
@@ -79,7 +80,8 @@ export default async function SuperAdminPage() {
               border: '1px solid var(--border-color)',
               textDecoration: 'none',
               background: 'transparent',
-              color: 'var(--text-primary)'
+              color: 'var(--text-primary)',
+              whiteSpace: 'nowrap'
             }}
           >
             ← 일반 대시보드로 돌아가기

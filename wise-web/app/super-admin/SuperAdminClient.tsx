@@ -108,11 +108,11 @@ export default function SuperAdminClient({
           gap: '16px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <ShieldAlert size={40} color="#3b82f6" />
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>전체 관리자 대시보드</h1>
-            <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, lineHeight: '1.2' }}>전체 관리자 대시보드</h1>
+            <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', wordBreak: 'keep-all' }}>
               최고 권한 계정 ({currentUserEmail}) 접속 중 - 전체 사용자: {users.length}명
             </p>
           </div>
@@ -163,8 +163,8 @@ export default function SuperAdminClient({
             </div>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ minWidth: '100%', borderCollapse: 'collapse', textAlign: 'center' }}>
+          <div style={{ overflowX: 'auto', paddingBottom: '8px' }}>
+            <table style={{ minWidth: '600px', width: '100%', borderCollapse: 'collapse', textAlign: 'center' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                   <th style={{ padding: '8px', color: 'var(--text-secondary)' }}>날짜</th>
@@ -375,7 +375,14 @@ export default function SuperAdminClient({
         >
           <div
             className="glass-panel animate-slide-up"
-            style={{ width: '400px', padding: '32px', background: 'white' }}
+            style={{
+              width: '90%',
+              maxWidth: '400px',
+              padding: '24px',
+              background: 'white',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
           >
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0 0 24px 0' }}>
               라이선스 권한 강제 수정
