@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Wand2, Copy, Check, ArrowRight, TrendingUp } from 'lucide-react'
+import { Wand2, Copy, Check, ArrowRight, TrendingUp, Sparkles, Loader2 } from 'lucide-react'
 
 export default function KeywordMixerClient() {
   const [keywordGroup1, setKeywordGroup1] = useState('가성비, 고급, 예쁜')
@@ -10,6 +10,47 @@ export default function KeywordMixerClient() {
   const [keywordGroup4, setKeywordGroup4] = useState('케이스, 필름')
   
   const [copied, setCopied] = useState(false)
+  
+  // AI Magic State
+  const [magicKeyword, setMagicKeyword] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
+
+  const handleMagicGeneration = async () => {
+    if (!magicKeyword.trim()) return
+    
+    setIsGenerating(true)
+    try {
+      const res = await fetch(`/api/tools/keywords?q=${encodeURIComponent(magicKeyword.trim())}`)
+      if (!res.ok) throw new Error('API fetch failed')
+      
+      const data = await res.json()
+      
+      // Map properties back to our state groups
+      // Group 1: Modifiers
+      if (data.modifiers && data.modifiers.length > 0) {
+        setKeywordGroup1(data.modifiers.join(', '))
+      }
+      
+      // Group 2: Brands
+      if (data.brands && data.brands.length > 0) {
+        setKeywordGroup2(data.brands.join(', '))
+      }
+      
+      // Group 3: Original Base Keyword
+      setKeywordGroup3(data.original)
+      
+      // Group 4: Subs
+      if (data.subs && data.subs.length > 0) {
+        setKeywordGroup4(data.subs.join(', '))
+      }
+      
+    } catch (error) {
+      console.error('Magic Generation Error:', error)
+      alert('자동 조합 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setIsGenerating(false)
+    }
+  }
 
   // Compute results synchronously on render based on state
   const parse = (str: string) => str.split(',').map(s => s.trim()).filter(Boolean)
@@ -38,7 +79,7 @@ export default function KeywordMixerClient() {
 
   return (
     <div className="container animate-fade-in" style={{ padding: '80px 24px', maxWidth: '1000px', margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
           <Wand2 size={40} className="text-accent-primary" color="#3b82f6" />
           쇼핑몰 <span className="gradient-text-accent">상품명(키워드) 조합기</span>
@@ -46,6 +87,37 @@ export default function KeywordMixerClient() {
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
           엑셀 없이 수식어, 브랜드, 카테고리를 쉼표(,)로 묶어서 수십 개의 키워드를 단숨에 생성하세요.
         </p>
+      </div>
+
+      {/* Magic Keyword Form */}
+      <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px', background: 'linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-primary)' }}>
+          <Sparkles size={20} fill="currentColor" />
+          AI 연관 키워드 자동 채우기
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '16px' }}>
+          단어를 일일이 생각하기 힘들다면 코어 키워드(예: <strong style={{color: 'var(--text-primary)'}}>캠핑 의자</strong>)만 넣고 버튼을 눌러보세요. 
+          네이버 쇼핑 트렌드에 기반한 수식어와 연관검색어를 빈칸에 자동으로 꽉 채워드립니다.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <input 
+            type="text" 
+            value={magicKeyword}
+            onChange={(e) => setMagicKeyword(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleMagicGeneration()}
+            placeholder="핵심 단어를 입력하세요 (예: 노트북 파우치)"
+            disabled={isGenerating}
+            style={{ ...inputStyles, flex: '1 1 200px', border: '2px solid rgba(59, 130, 246, 0.3)', background: 'white' }}
+          />
+          <button
+            onClick={handleMagicGeneration}
+            disabled={isGenerating || !magicKeyword.trim()}
+            className="btn-primary"
+            style={{ padding: '0 24px', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap', opacity: isGenerating ? 0.7 : 1 }}
+          >
+            {isGenerating ? <><Loader2 size={18} className="animate-spin" /> 트렌드 분석 중...</> : <><Sparkles size={18} /> 자동 조합하기</>}
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
