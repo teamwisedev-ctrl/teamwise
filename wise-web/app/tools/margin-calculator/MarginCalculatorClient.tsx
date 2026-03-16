@@ -8,6 +8,8 @@ const MARKET_FEES = {
   smartstore: { name: '네이버 스마트스토어', feeRatio: 0.058, icon: '🟢' }, // ~5.8% max
   cafe24: { name: '카페24 자사몰 (PG)', feeRatio: 0.035, icon: '⚫️' }, // ~3.5% avg
   coupang: { name: '쿠팡 (로켓/마켓)', feeRatio: 0.108, icon: '🚀' }, // ~10.8% avg
+  gmarket: { name: '지마켓 (G마켓)', feeRatio: 0.13, icon: '🟩' }, // ~13% avg
+  auction: { name: '옥션 (Auction)', feeRatio: 0.13, icon: '🟥' }, // ~13% avg
   eleven11: { name: '11번가', feeRatio: 0.13, icon: '🔴' } // ~13% avg
 }
 
