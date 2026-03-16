@@ -1,4 +1,13 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Mo2 - 1:N 마켓 상품 동기화 솔루션 (무료 연동)',
+  description: '도매토피아 등 B2B 도매사이트의 상품을 1초 만에 스마트스토어, 카페24로 복사하세요. 이미지 자동 변환부터 마진 계산까지.',
+  alternates: {
+    canonical: '/'
+  }
+}
 
 export default function Home() {
   return (

@@ -1,5 +1,14 @@
 import { Rocket, Package, Zap } from 'lucide-react'
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '요금제 안내 | 평생 무료 플랜으로 즉시 시작하기',
+  description: '초기 비용 0원에 카페24 연동부터 시작하세요. 매출이 오르면 그때 고민하셔도 늦지 않습니다. 무제한팩 등 합리적인 Mo2 요금제를 확인해보세요.',
+  alternates: {
+    canonical: '/pricing'
+  }
+}
 
 export default async function PricingPage() {
   redirect('/')

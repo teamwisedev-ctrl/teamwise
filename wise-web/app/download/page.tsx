@@ -1,5 +1,14 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: '설치 파일 다운로드 | Mo2 Windows 전용 앱',
+  description: '최신 버전의 Mo2 데스크톱 자동화 앱을 다운로드하고, 클릭 한 번으로 상품 연동을 시작하세요. (Windows 10/11 지원)',
+  alternates: {
+    canonical: '/download'
+  }
+}
 
 export default async function DownloadPage() {
   const supabase = await createClient()

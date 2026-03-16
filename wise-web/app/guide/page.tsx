@@ -1,6 +1,15 @@
 import React from 'react'
 import Image from 'next/image'
 import { Download, Link as LinkIcon, Play, Settings } from 'lucide-react'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Mo2 사용 가이드 | 초보자도 쉬운 4단계 쇼핑몰 연동',
+  description: '도매토피아 소싱처 연동부터 카페24 마켓 자동 등록까지. 누구라도 쉽게 따라할 수 있는 Mo2 4단계 필수 사용법을 확인하세요.',
+  alternates: {
+    canonical: '/guide'
+  }
+}
 
 export default function GuidePage() {
   return (

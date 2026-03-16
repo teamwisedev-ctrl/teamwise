@@ -6,8 +6,35 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Mo2 - 1:N Market Sync Solution',
-  description: '다중 도매처와 오픈마켓을 통합 관리하는 지능형 스크래핑 솔루션',
+  metadataBase: new URL('https://mo2.kr'),
+  title: {
+    default: 'Mo2 - 1:N 쇼핑몰 통합관리 솔루션',
+    template: '%s | Mo2'
+  },
+  description: '도매토피아, 네이버 스마트스토어, 카페24 등 다중 마켓을 한 번에 관리하는 지능형 상품 연동 솔루션',
+  keywords: ['도매토피아', '카페24 연동', '스마트스토어 연동', '쇼핑몰 통합관리', '상품 대량등록', 'Mo2', '모투', '오픈마켓 연동', '마진계산'],
+  openGraph: {
+    title: 'Mo2 - 초보 셀러도 쉬운 1:N 마켓 통합관리',
+    description: '구글 시트 기반의 투명한 쇼핑몰 관리. 클릭 한 번으로 수만 개 상품을 내 마켓에 동시 배포하세요.',
+    url: 'https://mo2.kr',
+    siteName: 'Mo2 (모투)',
+    images: [
+      {
+        url: '/app_banner_740x416_final.jpg',
+        width: 740,
+        height: 416,
+        alt: 'Mo2 자동화 솔루션 배너'
+      }
+    ],
+    locale: 'ko_KR',
+    type: 'website'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mo2 - 1:N 마켓 상품 동기화 솔루션',
+    description: '무겁고 복잡한 상세페이지 이미지? 걱정 마세요. 알아서 리사이징하고 호스팅까지 붙여 여러 쇼핑몰에 전송합니다.',
+    images: ['/app_banner_740x416_final.jpg']
+  },
   verification: {
     google: 'qsYaNXddxtUliIGmFE-vlCzJUDtMAYMB-FhNmFQ7nJI',
     other: {
