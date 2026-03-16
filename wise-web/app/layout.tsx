@@ -86,6 +86,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/guide" style={linkStyles}>
                 가이드
               </Link>
+              <Link href="/tools/margin-calculator" style={linkStyles}>
+                마진 계산기
+              </Link>
+              <Link href="/tools/keyword-mixer" style={linkStyles}>
+                상품명 조합기
+              </Link>
               {/* <Link href="/pricing" style={linkStyles}>
                 요금제
               </Link> */}
@@ -205,6 +211,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}
                   >
                     개인정보처리방침
+                  </Link>
+                </li>
+                <li style={{ marginBottom: '8px' }}>
+                  <Link
+                    href="/tools/margin-calculator"
+                    style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}
+                  >
+                    오픈마켓 마진 계산기 (무료)
+                  </Link>
+                </li>
+                <li style={{ marginBottom: '8px' }}>
+                  <Link
+                    href="/tools/keyword-mixer"
+                    style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}
+                  >
+                    스마트스토어 키워드 조합기 (무료)
                   </Link>
                 </li>
                 {/* <li style={{ marginBottom: '8px' }}>
