@@ -134,7 +134,8 @@ export default function KeywordMixerClient() {
               value={keywordGroup1} 
               onChange={(e) => setKeywordGroup1(e.target.value)}
               placeholder="단어들을 쉼표(,)로 구분해주세요"
-              style={inputStyles}
+              style={{ ...inputStyles, opacity: isGenerating ? 0.5 : 1 }}
+              readOnly={isGenerating}
             />
           </div>
 
@@ -145,7 +146,8 @@ export default function KeywordMixerClient() {
               value={keywordGroup2} 
               onChange={(e) => setKeywordGroup2(e.target.value)}
               placeholder="단어들을 쉼표(,)로 구분해주세요"
-              style={inputStyles}
+              style={{ ...inputStyles, opacity: isGenerating ? 0.5 : 1 }}
+              readOnly={isGenerating}
             />
           </div>
 
@@ -156,7 +158,8 @@ export default function KeywordMixerClient() {
               value={keywordGroup3} 
               onChange={(e) => setKeywordGroup3(e.target.value)}
               placeholder="단어들을 쉼표(,)로 구분해주세요"
-              style={inputStyles}
+              style={{ ...inputStyles, opacity: isGenerating ? 0.5 : 1 }}
+              readOnly={isGenerating}
             />
           </div>
 
@@ -167,7 +170,8 @@ export default function KeywordMixerClient() {
               value={keywordGroup4} 
               onChange={(e) => setKeywordGroup4(e.target.value)}
               placeholder="선택 사항입니다"
-              style={inputStyles}
+              style={{ ...inputStyles, opacity: isGenerating ? 0.5 : 1 }}
+              readOnly={isGenerating}
             />
           </div>
         </div>

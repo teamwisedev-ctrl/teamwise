@@ -64,32 +64,45 @@ export async function GET(request: Request) {
       relatedKeywords.push(`${query} 추천`, `가성비 ${query}`, `${query} 비교`, `${query} 브랜드`)
     }
 
-    // Rule-based Classification (Heuristics)
-    const modifiers: string[] = [] // 짧고 수식하는 말 (가성비, 예쁜, 미니)
-    const brands: string[] = [] // 영어나 3자 영/한
-    const subs: string[] = [] // 긴 확장 단어
+
+
+    // Enhanced Rule-based Classification (Heuristics)
+    const modifiers: string[] = [] // 짧고 수식하는 분할 단어 (예: 초경량, 접이식, 미니)
+    const brands: string[] = [] // 영어, 3음절 유명 브랜드, 혹은 '~브랜드' 명시
+    const subs: string[] = [] // 비교적 긴 파생 단어
 
     relatedKeywords.forEach(kw => {
-      // Remove the main keyword from the related term to isolate the modifier if present
+      // 본래 키워드(query) 구문 자체를 삭제해서 순수 파생 단어만 남깁니다.
       const stripped = kw.replace(new RegExp(query, 'gi'), '').trim()
       
       if (!stripped) return
 
-      if (stripped.length <= 2) {
-        // e.g., "가방 투명" -> "투명" (Modifier)
+      // 브랜드 감지 로직 (강화됨)
+      // 1. 순수 영문자이거나 영문+숫자 조합 (예: LG, K2)
+      // 2. 단어가 '브랜드' 혹은 '메이커' 로 끝남
+      // 3. 특정 2~4글자 고유명사 패턴 (정확히는 알 수 없지만, 네이버 연관검색어 생리상 쿼리 앞에 붙는 2~3글자 단어가 브랜드일 확률이 매우 높음)
+      const isEnglishOrBrand = /^[a-zA-Z0-9]+$/.test(stripped) || stripped.endsWith('브랜드') || stripped.endsWith('메이커')
+      
+      const isPrefixPattern = kw.startsWith(stripped) && stripped.length >= 2 && stripped.length <= 4 // e.g., "다이소 캠핑의자" -> "다이소"
+      
+      if (isEnglishOrBrand) {
+        brands.push(stripped.replace(/(브랜드|메이커)/g, '').trim())
+      } else if (isPrefixPattern && !stripped.includes(' ')) {
+        // 단어 앞에 붙는 2~4글자의 띄어쓰기 없는 단어는 브랜드나 주요 수식어일 확률이 큼
+        // 이 중 너무 흔한 형용사(예: 예쁜, 좋은)가 아니면 브랜드 배열에도 슬쩍 넣어봄
+        brands.push(stripped)
+        modifiers.push(stripped) // 동시에 수식어에도 넣음 (사용자 선택권)
+      } else if (stripped.length <= 3) {
+        // 짧은 단어는 수식어로 분류 (투명, 미니, 소형 등)
         modifiers.push(stripped)
-      } else if (/^[a-zA-Z]+$/.test(stripped) || stripped.endsWith('브랜드')) {
-        // English words or ends with '브랜드' (Brand)
-        brands.push(stripped.replace('브랜드', '').trim())
-      } else if (kw.length > query.length + 3) {
-        // Significantly longer words -> Sub keywords
+      } else if (kw.length > query.length + 3 || stripped.includes(' ')) {
+        // 전체 길이가 길거나, 남은 파생 단어에 띄어쓰기가 포함된 긴 구절 -> 서브 키워드
         subs.push(kw)
       } else {
+        // 나머지는 수식어로 편입
         modifiers.push(stripped)
       }
     })
-
-    // Deduplicate and filter empty strings
     const cleanModifiers = [...new Set(modifiers)].filter(Boolean)
     const cleanBrands = [...new Set(brands)].filter(Boolean)
     const cleanSubs = [...new Set(subs)].filter(Boolean)
